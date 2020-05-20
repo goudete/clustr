@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'qr.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-          'NAME': 'cargoful',
+          'NAME': 'qr',
           'USER': 'root',
           'PASSWORD': env("MYSQL_PASS"),
           'HOST': 'localhost',   # Or an IP Address that your DB is hosted on

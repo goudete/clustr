@@ -2,3 +2,4 @@
 env/
 venv/
 db.sqlite3
+mysqlclient-1.4.6-cp38-cp38-macosx_10_9_x86_64.whl
