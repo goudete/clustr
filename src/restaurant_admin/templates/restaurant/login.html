@@ -1,0 +1,72 @@
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+<div class="container">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- <div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+      <h1 style="color:Black;">Login</h1>
+    </div>
+  </div> -->
+  <div class="row pb-5">
+    <!-- adding some spacing -->
+  </div>
+<!-- class="shadow p-3 mb-5 bg-white rounded" -->
+  <div class="row justify-content-center mt-5">
+    <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 25rem;">
+      <div class="card-body">
+      <h5 class="card-title">{% trans "Login to you account" %}</h5>
+        <form action= "" method="post">
+          {% csrf_token %}
+
+          <!-- Form -->
+          <div class="col-md-12">
+            <label for = 'username'>{% trans 'Username' %}</label>
+            <input class = 'form-control' type = 'text' id = 'username' name = 'username'/>
+          </div>
+
+          <div class="col-md-12">
+            <label for = 'username'>{% trans 'Password' %}</label>
+            <input class = 'form-control' type = 'password' id = 'password' name = 'password'/>
+          </div>
+
+          <!-- Buttons -->
+          <div class="row justify-content-center">
+            <div class="btn-group" role="group">
+                <button type="submit" class="btn btn-secondary">{% trans "Login" %}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center pt-1">
+    <h6>{% trans "Don't have an account?" %} <a href="/restaurant_admin/register">{% trans "Sign up" %}</a></h6>
+  </div>
+  <!-- <div class="row justify-content-center pt-1">
+    <h6>{% trans "Forgotten your Password?" %} <a href="/reset-password">{% trans "Reset Password" %}</a></h6>
+  </div> -->
+
+  <div class="row justify-content-center mt-4">
+    {% for message in messages %}
+      <p id="messages">{{message}}</p>
+    {% endfor %}
+  </div>
+
+  <div class="row justify-content-center mt-4">
+    <!-- {% for error in form.errors %}
+      <p id="errors">{{error}}</p>
+    {% endfor %} -->
+
+    {{ form.errors }}
+  </div>
+
+</div>
+
+<style media="screen">
+.errorlist{
+    color: #E4007D;
+  }
+</style>

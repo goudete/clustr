@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'customers',
     'kitchen',
     'restaurant_admin',
+    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -88,10 +89,10 @@ WSGI_APPLICATION = 'qr.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-          'NAME': 'cargoful',
+          'NAME': 'qr',
           'USER': 'root',
           'PASSWORD': env("MYSQL_PASS"),
-          'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+          'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
           'PORT': '3306',
     }
 }
@@ -132,5 +133,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
+LOGIN_REDIRECT_URL = 'restaurant_admin/my_menus'
+LOGOUT_REDIRECT_URL = 'restaurant_admin/logout_view'
 STATIC_URL = '/static/'
