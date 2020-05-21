@@ -1,0 +1,71 @@
+{% load i18n %}
+{% load static %}
+<div class = 'container'>
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+
+      <form method="post" action= "" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% for message in messages %}
+          <p id="messages">{{message}}</p>
+        {% endfor %}
+
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <label for='name'>{% trans 'Name' %}</label>
+            <input type = 'text' id = 'name' name = 'name' value = "{{item.name}}">
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <label for='description'>{% trans 'Description' %}</label>
+            <input type = 'text' id = 'description' name = 'description' value = "{{item.description}}">
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <label for='course'>{% trans 'Course' %}</label>
+            <input type = 'text' id = 'course' name = 'course' value = "{{item.course}}">
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <label for='price'>{% trans 'Price' %}</label>
+            <input type = 'number' step = '1.0' id = 'price' name = 'price' value = {{item.price}}>
+          </div>
+        </div>
+
+        {% if item.photo_path is not none %}
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <label for = 'photo'>{% trans 'Current Photo' %}</label>
+            <img src = "{% static item.photo_path %}" border=3 height=80 width=80>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <label for = 'photo'>{% trans 'Item Photo(Optional)' %}</label>
+            <input type = 'file' accept="image/*" id = 'photo' name = "photo">
+          </div>
+        </div>
+
+
+        <!-- Buttons -->
+        <div class="row justify-content-center mb-5">
+          <div class="btn-group">
+              <button type="submit" class="btn btn-secondary">{% trans "Update" %}</button>
+          </div>
+        </div>
+
+      </form>
+      <a href = '/restaurant_admin/{{item.menu.id}}/edit_menu'>{% trans 'Cancel' %}</a>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+{% load i18n %}
+
+<div class = 'container'>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <div class = 'card'>
+    <div class = 'card-body'>
+
+      <!-- if menu isnt null, then this is about deleting a menu -->
+      {% if menu %}
+        <h3>{% trans 'Are You Sure You Want to Delete ' %}{{menu.name}}?</h3>
+        <table class = 'table'>
+          <thead>
+            <tr>
+              <th scope = 'col'>{% trans 'All These Items Will Be Deleted as Well' %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if items|length == 0 %}
+              <tr>
+                <td scope = 'col'><h5>{% trans 'No Items' %}</h5></td>
+              </tr>
+            {% else %}
+              {% for item in items %}
+                <tr>
+                  <td scope = 'col'>{{ item.name }}</td>
+                </tr>
+              {% endfor %}
+            {% endif %}
+            <tr>
+              <form action = "" method = 'post'>
+                {% csrf_token %}
+                <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Menu' %}</button>
+              </form>
+              <a href = "/restaurant_admin/my_menus">{% trans 'Cancel' %}</a>
+            </tr>
+          </tbody>
+        </table>
+
+      <!-- if menu is null then this is about deleting an item (its called items but its only one thing)-->
+      {% else %}
+        <h3>{% trans 'Are You Sure You Want to Delete ' %}{{items.name}}?</h3>
+          <form action = "" method = 'post'>
+            {% csrf_token %}
+            <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Item' %}</button>
+          </form>
+        <a href = "/restaurant_admin/{{items.menu.id}}/edit_menu">{% trans 'Cancel' %}</a>
+
+      {% endif %}
+
+    </div>
+  </div>
+</div>

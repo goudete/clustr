@@ -4,6 +4,7 @@ from .models import Restaurant, Menu, MenuItem
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from django.contrib.auth.forms import UserCreationForm
+
 #this form is to register a new user
 class UserForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -29,9 +30,38 @@ class UserForm(UserCreationForm):
             'password1': None,
             'password2': None,
         }
-        
+
 #form for creating new restaurant
 class RestaurantForm(forms.ModelForm):
     class Meta:
         model = Restaurant
         fields = ('name',)
+
+#form for creating new menu
+class MenuForm(forms.ModelForm):
+    class Meta:
+        model = Menu
+        fields = ('name',)
+
+# #form for creating menuphoto
+# class MenuCoverPhotoForm(forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#         super(MenuCoverPhotoForm, self).__init__(*args, **kwargs)
+#         self.fields['photo'].required = False
+#
+#     class Meta:
+#         model = MenuCoverPhoto
+#         fields = ('photo',)
+
+#form for creating new menu item
+class MenuItemForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(MenuItemForm, self).__init__(*args, **kwargs)
+        self.fields['name'].required = True
+        self.fields['description'].required = True
+        self.fields['course'].required = True
+        self.fields['price'].required = True
+
+    class Meta:
+        model = MenuItem
+        fields = ('name', 'description', 'course', 'price')
