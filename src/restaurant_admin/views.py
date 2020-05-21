@@ -88,7 +88,7 @@ def add_menu(request):
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
             doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
             file_storage.save(doc_path, doc)
-            new_menu.photo_path = files_dir
+            new_menu.photo_path = doc_path
             new_menu.save()
         #if they didnt upload a file
         elif menu.is_valid():
@@ -123,6 +123,7 @@ def edit_menu(request, menu_id):
         mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
         doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
+        curr_menu.photo_path = doc_path
     #if method is a get, then the user is looking at the menu
     if request.method == 'GET':
         items = MenuItem.objects.filter(menu = curr_menu)
@@ -155,7 +156,7 @@ def add_item(request, menu_id):
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
             doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
             file_storage.save(doc_path, doc)
-            item.photo_path = files_dir
+            item.photo_path = doc_path
             item.save()
         #redirect back to edit menu page
         return redirect('/restaurant_admin/{num}/edit_menu'.format(num = menu_id))
@@ -195,7 +196,7 @@ def edit_item(request, menu_id, item_id):
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
             doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
             file_storage.save(doc_path, doc)
-            item.photo_path = files_dir
+            item.photo_path = doc_path
             print(item.photo_path)
             item.save()
         #redirect

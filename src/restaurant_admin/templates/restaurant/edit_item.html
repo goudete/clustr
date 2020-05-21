@@ -43,7 +43,7 @@
         <div class="row justify-content-center">
           <div class="col-8">
             <label for = 'photo'>{% trans 'Current Photo' %}</label>
-            <img src = "{% static '{{item.photo_path}}' %}">
+            <img src = "{% static item.photo_path %}" border=3 height=80 width=80>
           </div>
         </div>
         {% endif %}

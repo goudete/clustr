@@ -5,6 +5,14 @@
   <a href = '/restaurant_admin/my_menus'>{% trans "Back to My Menus" %}</a>
   <div class = 'card'>
     <div class = 'card-body'>
+      {% if menu.photo_path is not none %}
+      <div class="row justify-content-center">
+        <div class="col-8">
+          <label for = 'photo'>{% trans 'Current Photo' %}</label>
+          <img src = "{% static menu.photo_path %}" border=3 height=80 width=80>
+        </div>
+      </div>
+      {% endif %}
       <form action = '' method = 'post' enctype="multipart/form-data">
         {% csrf_token %}
         <label for = 'name'>{% trans 'Name' %}</label>
@@ -31,7 +39,7 @@
                 <td scope = 'col'><a href = '/restaurant_admin/{{item.menu.id}}/{{item.id}}/edit_item'>{% trans 'Edit Item' %}</a>
                 <td scope = 'col'><a style = "color:red;" href = '/restaurant_admin/{{item.menu.id}}/{{item.id}}/remove_item'>{% trans 'Delete' %}</a></td>
                 {% if item.photo_path is not None %}
-                  <td scope = 'col'><img src = "{% static 'R{{item.menu.restaurant.user.id}}/photos/menu{{item.menu.id}}/item{{item.id}}' %}" border=3 height=80 width=80></td>
+                  <td scope = 'col'><img src = "{% static item.photo_path %}" border=3 height=80 width=80></td>
                 {% endif %}
               </tr>
             {% endfor %}
