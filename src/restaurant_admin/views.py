@@ -6,7 +6,6 @@ from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from .forms import UserForm, RestaurantForm
-from django.conf import settings
 from django.contrib import messages
 #  your views here.
 
