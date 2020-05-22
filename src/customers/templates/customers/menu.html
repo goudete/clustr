@@ -1,77 +1,107 @@
 {% extends 'customers/base.html'%}
 
 {% block content %}
+<!-- logo -->
 <div class="jumbotron">
   <div class="container text-center">
-    <h1>Local Tres</h1>
-    <p>Cafe de Especialidad, Masa Madre, Huevo Organico</p>
+    <h1>{{ restaurant.name }}</h1>
+    <p>{{ restaurant.info }}</p>
+    <!-- <img src="..." class="img-fluid" alt="Responsive image"> -->
   </div>
 </div>
+<!-- end logo -->
 
 <div class="container-fluid">
+  <!-- Menu and About Buttons -->
   <div class="row justify-content-center pt-4 pb-3">
     <div class="col">
       <div class="d-flex justify-content-end">
-        <!-- <button type="button" class="btn btn-dark">Menu </button> -->
-        <a href="#" class="btn btn-dark active" role="button" aria-pressed="true">Menu</a>
-
+        <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">Menu</a>
       </div>
     </div>
     <div class="col">
-      <!-- <button type="button" class="btn btn-dark">About</button> -->
-      <a href="#" class="btn btn-dark active" role="button" aria-pressed="true">About</a>
-
+      <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">About</a>
     </div>
   </div>
+  <!-- End Menu and About buttons -->
 
-
+  <!-- Restaurant Name and info -->
   <div class="row ml-1">
-    <h5>Local Tres Parque la Mexicana</h5>
+    <h5>{{ restaurant.name }}</h5>
   </div>
   <div class="row ml-1">
-    <h6>Info</h6>
+    <h6>{{ restaurant.info }}</h6>
   </div>
+  <!-- End  -->
 
   <hr>
 
+  <!-- Menu Items -->
   <ul class="list-unstyled">
-  <li class="media">
-    <div class="media-body">
-      <h6 class="mt-0 mb-1">Hamburger</h6>
-      Description <br>
-      $
+    {% if items|length == 0 %}
+    <div class="row justify-content-center mt-5">
+      <h4>No Items on Menu!</h4>
     </div>
-    <img src="..." class="ml-3" alt="...">
-  </li>
-  <hr>
-  <li class="media my-4">
-    <div class="media-body">
-      <h6 class="mt-0 mb-1">Pan Ricotta</h6>
-      Description <br>
-      $
-    </div>
-    <img src="..." class="ml-3" alt="...">
-  </li>
-  <hr>
-  <li class="media">
-    <div class="media-body">
-      <h6 class="mt-0 mb-1">Ensalada</h6>
-      Description <br>
-      $
-    </div>
-    <img src="..." class="ml-3" alt="...">
-  </li>
-  <hr>
-  <li class="media">
-    <div class="media-body">
-      <h6 class="mt-0 mb-1">Waffle con Platano</h6>
-      Description <br>
-      $
-    </div>
-    <img src="..." class="ml-3" alt="...">
-  </li>
-</ul>
+    {% else %}
+      {% for item in items %}
+      <li class="media">
+        <div class="media-body">
+          <h6 class="mt-0 mb-1">{{ item.name }}</h6>
+          {{ item.description }} <br>
+          ${{ item.price}}
+        </div>
+        <img src="..." class="ml-3" alt="...">
+      </li>
+      <hr>
+      {% endfor %}
+    {% endif %}
+    <!-- <li class="media">
+      <div class="media-body">
+        <h6 class="mt-0 mb-1">Hamburger</h6>
+        Description <br>
+        $
+      </div>
+      <img src="..." class="ml-3" alt="...">
+    </li>
+    <hr>
+    <li class="media my-4">
+      <div class="media-body">
+        <h6 class="mt-0 mb-1">Pan Ricotta</h6>
+        Description <br>
+        $
+      </div>
+      <img src="..." class="ml-3" alt="...">
+    </li>
+    <hr>
+    <li class="media">
+      <div class="media-body">
+        <h6 class="mt-0 mb-1">Ensalada</h6>
+        Description <br>
+        $
+      </div>
+      <img src="..." class="ml-3" alt="...">
+    </li>
+    <hr>
+    <li class="media">
+      <div class="media-body">
+        <h6 class="mt-0 mb-1">Waffle con Platano</h6>
+        Description <br>
+        $
+      </div>
+      <img src="..." class="ml-3" alt="...">
+    </li> -->
+  </ul>
+  <!-- Menu Items Ends -->
 
+  <!-- View Cart Button -->
+  <div class="fixed-bottom">
+    <div class="row justify-content-center mb-3">
+      <!-- <div class="col-12"> -->
+        <a href="#" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart $</a>
+      <!-- </div> -->
+    </div>
+  </div>
+  <!-- Cart Button ends -->
 </div>
 
 {% endblock %}

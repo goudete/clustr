@@ -81,6 +81,8 @@ def add_menu(request):
             new_menu = menu.save(commit = False)
             new_menu.restaurant = Restaurant.objects.get(user = request.user)
             new_menu.save()
+            print('userid', request.user.id)
+            print('menu id', new_menu.id)
             #save photo to AWS
             doc = request.FILES['photo'] #get file
             files_dir = '{user}/photos/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
@@ -93,6 +95,7 @@ def add_menu(request):
         #if they didnt upload a file
         elif menu.is_valid():
             new_menu = menu.save()
+
         #redirect to the edit menu so they can add new stuff to it
         return redirect('{menu}/edit_menu'.format(menu = new_menu.id))
 

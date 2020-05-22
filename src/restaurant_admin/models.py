@@ -5,7 +5,9 @@ from django.utils.translation import gettext_lazy as _
 
 class Restaurant(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
-    name = models.CharField(_('Name'), default = '', max_length = 200)
+    name = models.CharField(_('Restaurant Name'), default = '', max_length = 200)
+    info = models.CharField(max_length = 255) #restaurant info
+    photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
