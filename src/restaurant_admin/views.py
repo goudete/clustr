@@ -134,7 +134,7 @@ def edit_menu(request, menu_id):
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
-        return redirect('/restaurant_admin/{num}/edit_menu'.format(num = menu_id)) #redirect back to the same page
+        return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id)) #redirect back to the same page
 
 
 def add_item(request, menu_id):
@@ -162,7 +162,7 @@ def add_item(request, menu_id):
             item.photo_path = doc_path
             item.save()
         #redirect back to edit menu page
-        return redirect('/restaurant_admin/{num}/edit_menu'.format(num = menu_id))
+        return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id))
 
 def remove_item(request, menu_id, item_id):
     curr_menu = Menu.objects.filter(id = menu_id).first()
@@ -174,7 +174,7 @@ def remove_item(request, menu_id, item_id):
     #else delete the item
     else:
         curr_item.delete()
-        return redirect('/restaurant_admin/{menu}/edit_menu'.format(menu = menu_id))
+        return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
 def edit_item(request, menu_id, item_id):
     item = MenuItem.objects.filter(id = item_id).first()
@@ -203,7 +203,7 @@ def edit_item(request, menu_id, item_id):
             print(item.photo_path)
             item.save()
         #redirect
-        return redirect('/restaurant_admin/{menu}/edit_menu'.format(menu = menu_id))
+        return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
 def view_item(request):
     return HttpResponse('filler')

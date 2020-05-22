@@ -36,8 +36,8 @@
             {% for item in items %}
               <tr>
                 <td scope = 'col'>{{ item.name }}</td>
-                <td scope = 'col'><a href = '/restaurant_admin/{{item.menu.id}}/{{item.id}}/edit_item'>{% trans 'Edit Item' %}</a>
-                <td scope = 'col'><a style = "color:red;" href = '/restaurant_admin/{{item.menu.id}}/{{item.id}}/remove_item'>{% trans 'Delete' %}</a></td>
+                <td scope = 'col'><a href = '/restaurant_admin/edit_item/{{item.menu.id}}/{{item.id}}'>{% trans 'Edit Item' %}</a>
+                <td scope = 'col'><a style = "color:red;" href = '/restaurant_admin/remove_item/{{item.menu.id}}/{{item.id}}'>{% trans 'Delete' %}</a></td>
                 {% if item.photo_path is not None %}
                   <td scope = 'col'><img src = "{% static item.photo_path %}" border=3 height=80 width=80></td>
                 {% endif %}
@@ -45,7 +45,7 @@
             {% endfor %}
           {% endif %}
           <tr>
-            <td><a href = "add_item">{% trans 'Add New Item Here!' %}</a></td>
+            <td><a href = "/restaurant_admin/add_item/{{menu.id}}">{% trans 'Add New Item Here!' %}</a></td>
           </tr>
         </tbody>
     </div>

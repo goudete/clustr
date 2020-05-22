@@ -43,7 +43,7 @@
             {% csrf_token %}
             <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Item' %}</button>
           </form>
-        <a href = "/restaurant_admin/{{items.menu.id}}/edit_menu">{% trans 'Cancel' %}</a>
+        <a href = "/restaurant_admin/edit_menu/{{ items.menu.id }}">{% trans 'Cancel' %}</a>
 
       {% endif %}
 

@@ -16,8 +16,8 @@
             {% else %}
               <th scope = 'col'><h5>{% trans 'No Photo' %}</h5></th>
             {% endif %}
-            <th scope = 'col'><a href = '/restaurant_admin/{{menu.id}}/edit_menu'>{% trans 'Edit Menu' %}</a>
-            <th scope = 'col'><a style = "color:red;" href = '/restaurant_admin/{{menu.id}}/remove_menu'>{% trans 'Delete' %}</a>
+            <th scope = 'col'><a href = '/restaurant_admin/edit_menu/{{menu.id}}'>{% trans 'Edit Menu' %}</a>
+            <th scope = 'col'><a style = "color:red;" href = '/restaurant_admin/remove_menu/{{menu.id}}'>{% trans 'Delete' %}</a>
           </tr>
         {% endfor %}
       </table>

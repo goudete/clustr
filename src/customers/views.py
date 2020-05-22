@@ -4,30 +4,21 @@ from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart
 
 # Create your views here.
-def create_cart(request):
+def create_cart(request, restaurant_id, menu_id):
     cart = Cart()
     cart.save()
     #redirect to view menu page
-    return redirect('/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
-
-def view_menu(request, restaurant_id, menu_id):
-    # curr_cart = Cart.objects.get(id = cart_id)
-    curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-    curr_menu = Menu.objects.filter(id = menu_id).first()
-
-    if request.method == 'GET':
-        items = MenuItem.objects.filter(menu = curr_menu)
-        return render(request, 'customers/menu.html', {'items': items, 'restaurant': curr_rest})
+    return redirect('/customers/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
 
 def view_menu(request, cart_id, restaurant_id, menu_id):
-    # if request.method == 'GET':
-    #     curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-    #     curr_menu = Menu.objects.filter(id = menu_id).first()
-    #     menu_items = MenuItem.objects.filter(menu = curr_menu)
-    #     return render(request, 'customers/menu.html', {'restaurant': rest, 'menu': curr_menu. 'items': menu_items})
-    # #if method is a post, just redirect to this page as a get
-    # else:
-    #     return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+    if request.method == 'GET':
+        curr_cart = Cart.objects.get(id = cart_id)
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        items = MenuItem.objects.filter(menu = curr_menu)
+        return render(request, 'customers/menu.html', {'items': items, 'restaurant': curr_rest})
+    else:
+        return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 def view_item(request, cart_id, restaurant_id, menu_id, item_id):
     if request.method == 'GET':
@@ -48,6 +39,9 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
     else:
         #redirect to menu
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+
+def remove_item(request, cart_id, restaurant_id, menu_id, item_id):
+    return HttpResponse('remove this shitc')
 
 def view_cart(request, cart_id):
     if request.method == 'GET':
