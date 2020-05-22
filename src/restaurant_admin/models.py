@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator
 # Create your models here.
 
 class Restaurant(models.Model):
@@ -19,5 +20,5 @@ class MenuItem(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
     description = models.TextField(_('Description'), default = '')
     course = models.CharField(_('Course'), default = '', max_length = 200) #this is to help organize the menu, somethting like appetizer, entree, dessert, etc..
-    price = models.PositiveIntegerField(_('Price'), default = 0)
+    price = models.DecimalField(_('Price'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
     photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage
