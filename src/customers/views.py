@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter
+from .forms import CustomOrderForm
 
 # Create your views here.
 
@@ -40,12 +41,21 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
 send the item and specified quantity to the add_item url"""
 def view_item(request, cart_id, restaurant_id, menu_id, item_id):
     if request.method == 'GET':
+        form = CustomOrderForm()
         item = MenuItem.objects.filter(id = item_id).first()
-        return redirect(request, 'customers/view_item.html', {'item': item})
+        curr_cart = Cart.objects.get(id = cart_id)
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        return render(request, 'customers/view_item.html', {'item': item, 'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form':form})
     else:
         #if method is a post, then just redirect to this page as a get
         return redirect('/customers/view_item/{c_id}/{r_id}/{m_id}/{i_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id, i_id = item_id))
 
+
+""" Created form that contains custom order and quantity
+    Form references ModelItemCounter model
+    View_item template
+    """
 
 """ this method will add a new item to a cart if the cart didnt already contain the item,
 otherwise it will increase/decrease the quantity of an item in a cart
@@ -54,15 +64,30 @@ it also changes the total price of a cart accordingly"""
 def add_item(request, cart_id, restaurant_id, menu_id, item_id):
     if request.method == 'POST':
         curr_cart = Cart.objects.filter(id = cart_id).first()
-        item_counters = MenuItemCounter.objects.filter(cart = curr_cart).filter(item = MenuItem.objects.filter(id = item_id).first())
+        curr_item = MenuItem.objects.filter(id = item_id).first()
+        # if request.POST['custom_instructions'] == '':
+        #     request.POST['custom_instructions'] = None
+        item_counters = MenuItemCounter.objects.filter(cart = curr_cart).filter(item = MenuItem.objects.filter(id = item_id).first()) #.filter(custom_instructions = request.POST['custom_instructions'])
         #check if the item is in the cart or not
         if len(item_counters) == 0:
+            form = CustomOrderForm(request.POST)
+            order = form.save(commit = False)
+            order.cart = curr_cart
+            order.item = curr_item
+            order.save()
             #if the length of the query set is 0, then create a new MenuItemCounter
-            item_counter = MenuItemCounter(MenuItem.objects.filter(id = item_id).first(), request.POST['quantity'], curr_cart)
-            item_counter.save()
-            curr_cart.total += (item_counter.item.price*item_counter.quantity)
+            # item_counter = MenuItemCounter(MenuItem.objects.filter(id = item_id).first(), request.POST['quantity'], curr_cart)
+            # item_counter.save()
+            curr_cart.total += (order.item.price * order.quantity)
+            curr_cart.save()
+            return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
         #else update current itemcounter
         else:
+            # form = CustomOrderForm(request.POST)
+            # order = form.save(commit = False)
+            # order.cart = curr_cart
+            # order.item = curr_item
+            # order.save()
             item_counter = item_counters.first()
             #get the old total price of the cart - total price of item
             old_total = curr_cart.total - (item_counter.item.price*item_counter.quantity)
@@ -70,14 +95,17 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
             item_counter.quantity = request.POST['quantity']
             item_counter.save()
             #update cart total price
-            curr_cart.total = old_total + (item_counter.item.price*item_counter.quantity)
+            curr_cart.total = float(old_total) + (float(item_counter.item.price) * float(item_counter.quantity))
             curr_cart.save()
         #redirect to menu
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
     #if method isn't a post, just redirect to menu
     else:
         #redirect to menu
-        return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+        form = CustomOrderForm()
+        # context = {'form': form}
+        return render(request, 'customers/view_item.html', context)
+        # return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 
 """this method gets an item, and totally removes it from a cart, and changes the price of the cart accordingly
@@ -105,10 +133,10 @@ def remove_item(request, cart_id, restaurant_id, menu_id, item_id):
 def view_cart(request, cart_id):
     if request.method == 'GET':
         curr_cart = Cart.objects.filter(id = cart_id).first()
-        items = MenuItemCounter.objects.filter(cart = curr_cart)
+        items = MenuItemCounter.objects.filter(cart = curr_cart).all()
         #the objects inside items are MenuItemCounters, to reference the actual MenuItem associated with a MenuItemCounter
         #in jinja, do {{MenuItemCounter.item}}
-        return render(request, 'customers/view_cart.html', {'cart': cart, 'items': items})
+        return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items})
     else:
         #if method is post, just redirect back to page
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
@@ -129,7 +157,7 @@ def payment(request, cart_id):
     else:
         #stripe API stuff here
         #if method is a get, then they're inputting payment info
-        return render('customers/payment.html')
+        return render(request, 'customers/payment.html')
 
 
 #this method displays the total order before the customer pays

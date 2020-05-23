@@ -1,6 +1,49 @@
 {% extends 'customers/base.html'%}
-
+{% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
-<h1>Hello, world!</h1>
+<div class="container-fluid">
+  <!-- Item image -->
+  <div class="row">
+    <img src="{% static item.photo_path %}" class="img-fluid" alt="Responsive image">
+  </div>
+  <!-- End item image -->
+
+  <!-- Restaurant Name and info -->
+  <div class="row ml-1 pt-3">
+    <h5>{{ item.name }}</h5>
+  </div>
+  <div class="row ml-1">
+    <h6>{{ item.description }}</h6>
+  </div>
+  <!-- End  -->
+
+<!-- Custom Order Form -->
+  <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" >
+    {% csrf_token %}
+
+    <div class="row justify-content-center">
+      {{ form.custom_instructions|as_crispy_field }}
+    </div>
+
+    <div class="row justify-content-center">
+      {{ form.quantity|as_crispy_field }}
+    </div>
+
+    <div class="row justify-content-center mb-5">
+      <div class="btn-group">
+          <button type="submit" class="btn btn-secondary">Submit</button>
+      </div>
+    </div>
+  </form>
+<!-- Form Ends -->
+
+  <hr>
+
+
+
+</div>
+
+
 {% endblock %}

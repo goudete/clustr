@@ -1,6 +1,101 @@
 {% extends 'customers/base.html'%}
 
-
 {% block content %}
-<h1>Hello, world!</h1>
+<!-- Title -->
+  <div class="row justify-content-center pt-4 pb-4">
+    <!-- <h5>Cart </h5> -->
+    <svg class="bi bi-cart2" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+    </svg>
+  </div>
+  <!-- End title -->
+
+<!-- Card Begins -->
+  <div class="container">
+    <div class="card shadow p-3 bg-white rounded">
+      <div class="card-body">
+        <div class="row pl-3">
+          <h5 class="cart-title">Your Order</h5>
+        </div>
+        <hr>
+        {% if items|length == 0 %}
+        <div class="row justify-content-center mt-5">
+          <h4>Your Cart is Empty!</h4>
+        </div>
+        {% else %}
+        {% for item in items %}
+        <div class="row pl-4 mt-4 mb-4">
+          <div class="col-2">
+            {{ item.quantity }}
+          </div>
+          <div class="col-7">
+            <h6>{{ item.item.name }}</h6>
+          </div>
+          <div class="col-3">
+            <h6>$120</h6>
+          </div>
+        </div>
+        <hr>
+        {% endfor %}
+        {% endif %}
+
+        {% if items|length == 0 %}
+
+        {% else %}
+        <!-- Tip Section Begins -->
+        <div class="row pl-3 pt-3">
+          <h5>Tip</h5>
+        </div>
+
+        <div class="row pt-2">
+          <div class="col">
+            <button type="button" class="btn btn-secondary">
+              10%
+            </button>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-secondary">
+              15%
+            </button>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-secondary">
+              20%
+            </button>
+          </div>
+          <!-- <div class="col">
+            <button type="button" class="btn btn-secondary">
+              Custom
+            </button>
+          </div> -->
+        </div>
+        <div class="row pl-3 pt-3">
+          <h6>Subtotal</h6>
+        </div>
+        <div class="row pl-3 pt-1">
+          <h6>Tip</h6>
+        </div>
+        <div class="row pl-3 pt-1">
+          <h5>Total</h5>
+        </div>
+        <!-- Tip Section Ends -->
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Footer -->
+<footer class="page-footer pt-4">
+    <div class="row justify-content-center mb-3">
+      <!-- <div class="col-12"> -->
+      {% if items|length == 0 %}
+      {% else%}
+        <a href="/customers/payment/{{ cart.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a>
+      {% endif %}
+      <!-- </div> -->
+    </div>
+</footer>
+<!-- Footer -->
+
+  </div>
+<!-- Card Ends -->
 {% endblock %}

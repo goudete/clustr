@@ -11,8 +11,10 @@ class Cart(models.Model):
 
 
 """ this model acts as a way to keep track of how many of a MenuItem are in a cart
-it has a MenuItem, quantity of that MenuItem, and an associated Cart"""
+it has a MenuItem, quantity of that MenuItem, custom instructions for order
+and an associated Cart"""
 class MenuItemCounter(models.Model):
     item = models.ForeignKey(MenuItem, on_delete = models.CASCADE)
     quantity = models.PositiveIntegerField(default = 1)
     cart = models.ForeignKey(Cart, on_delete = models.CASCADE)
+    custom_instructions = models.CharField(null = True, blank= True, max_length = 255)
