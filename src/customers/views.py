@@ -16,7 +16,7 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
         items = MenuItem.objects.filter(menu = curr_menu)
-        return render(request, 'customers/menu.html', {'items': items, 'restaurant': curr_rest})
+        return render(request, 'customers/menu.html', {'items': items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu})
     else:
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 

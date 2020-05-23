@@ -1,4 +1,5 @@
 {% extends 'customers/base.html'%}
+{% load static %}
 
 {% block content %}
 <!-- logo -->
@@ -44,52 +45,21 @@
     </div>
     {% else %}
       {% for item in items %}
-      <li class="media">
-        <div class="media-body">
-          <h6 class="mt-0 mb-1">{{ item.name }}</h6>
-          {{ item.description }} <br>
-          ${{ item.price}}
-        </div>
-        <img src="..." class="ml-3" alt="...">
-      </li>
+        <li class="media">
+          <div class="media-body">
+            <h6 class="mt-0 mb-1">{{ item.name }}</h6>
+            {{ item.description }} <br>
+            ${{ item.price}}
+          </div>
+          {% if item.photo_path is not None %}
+          <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="ml-3" alt="...">
+          {% endif %}
+        </li>
+        <a href="customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" class="stretched-link"></a>
+
       <hr>
       {% endfor %}
     {% endif %}
-    <!-- <li class="media">
-      <div class="media-body">
-        <h6 class="mt-0 mb-1">Hamburger</h6>
-        Description <br>
-        $
-      </div>
-      <img src="..." class="ml-3" alt="...">
-    </li>
-    <hr>
-    <li class="media my-4">
-      <div class="media-body">
-        <h6 class="mt-0 mb-1">Pan Ricotta</h6>
-        Description <br>
-        $
-      </div>
-      <img src="..." class="ml-3" alt="...">
-    </li>
-    <hr>
-    <li class="media">
-      <div class="media-body">
-        <h6 class="mt-0 mb-1">Ensalada</h6>
-        Description <br>
-        $
-      </div>
-      <img src="..." class="ml-3" alt="...">
-    </li>
-    <hr>
-    <li class="media">
-      <div class="media-body">
-        <h6 class="mt-0 mb-1">Waffle con Platano</h6>
-        Description <br>
-        $
-      </div>
-      <img src="..." class="ml-3" alt="...">
-    </li> -->
   </ul>
   <!-- Menu Items Ends -->
 

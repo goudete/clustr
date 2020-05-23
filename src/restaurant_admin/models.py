@@ -8,6 +8,7 @@ class Restaurant(models.Model):
     name = models.CharField(_('Restaurant Name'), default = '', max_length = 200)
     info = models.CharField(max_length = 255) #restaurant info
     photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
+    about = models.CharField(max_length = 255)
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
