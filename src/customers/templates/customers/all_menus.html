@@ -1,0 +1,21 @@
+<div class = 'container'>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <div class = 'card'>
+    <div class = 'card-body'>
+      <table class = 'table'>
+        {% for menu in menus %}
+          <tr>
+            <th scope = 'col'>{{menu.name}}</th>
+            <th>
+              <!-- empty form -->
+              <form action = '/customers/{{menu.restaurant.id}}/{{menu.id}}' method = 'post'>
+                {% csrf_token %}
+                <button type = 'submit' class = 'button-link'>view</button>
+              </form>
+            </th>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>

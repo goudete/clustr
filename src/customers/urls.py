@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.show_all_menus), #this one is for showing all menus in your db
     path('<int:restaurant_id>/<int:menu_id>', views.create_cart),
     path('view_menu/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.view_menu),
     path('view_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.view_item),
