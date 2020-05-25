@@ -1,11 +1,13 @@
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter
 from .forms import CustomOrderForm
 import stripe
-# Create your views here.
+import os
 
+# Create your views here.
 
 #this method is only for development, it shows all the menus you have on your local db
 def show_all_menus(request):
@@ -177,20 +179,29 @@ def payment(request, cart_id):
         cart = Cart.objects.filter(id = cart_id).first()
         cart.is_paid = True
         cart.save()
+        # stripe.api_key = settings.STRIPE_SECRET_KEY
+        # intent = stripe.PaymentIntent.create(
+        #   amount=cart.total,
+        #   currency='usd',
+        #    # Verify your integration in this guide by including this parameter
+        #   metadata={'integration_check': 'accept_a_payment'},
+        # )
         #print cart items to kitchen printer
         return HttpResponse('Thank you for your business!')
     else:
         cart = Cart.objects.filter(id = cart_id).first()
         #stripe API stuff here
-        strip.api_key = env('STRIPE_SECRET_KEY')
+        print(cart.total)
+        stripe.api_key = settings.STRIPE_SECRET_KEY
         intent = stripe.PaymentIntent.create(
-          amount=cart.total,
+          amount=int((cart.total*100)),
           currency='usd',
-          # Verify your integration in this guide by including this parameter
+           # Verify your integration in this guide by including this parameter
           metadata={'integration_check': 'accept_a_payment'},
         )
         #if method is a get, then they're inputting payment info
-        return render('customers/payment.html', {'client_secret':intent.client_secret})
+        return render(request, 'customers/payment.html', {'client_secret':intent.client_secret})
+        # return render(request, 'customers/payment.html')
 
 
 #this method displays the total order before the customer pays

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'stripe',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +132,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+#Stripe Settings
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_API_KEY')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
 
 # Static files (CSS, JavaScript, Images)
