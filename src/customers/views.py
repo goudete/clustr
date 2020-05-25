@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter
 from .forms import CustomOrderForm
-import stripe
+#import stripe
 # Create your views here.
 
 
