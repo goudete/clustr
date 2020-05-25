@@ -99,8 +99,14 @@ def add_menu(request):
         #redirect to the edit menu so they can add new stuff to it
         return redirect('edit_menu/{menu}'.format(menu = new_menu.id))
 
-def view_menu(request):
-    return HttpResponse('filler')
+def view_menu(request, menu_id):
+    if request.method == 'GET':
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        curr_rest = curr_menu.restaurant
+        items = MenuItem.objects.filter(menu = curr_menu)
+        return render(request, 'restaurant/menu.html', {'items': items, 'restaurant': curr_rest, 'menu': curr_menu})
+    else:
+        return redirect('/restaurant_admin/view_menu/{m_id}'.format(m_id = menu_id))
 
 def remove_menu(request, menu_id):
     curr_menu = Menu.objects.filter(id = menu_id).first()
@@ -205,5 +211,12 @@ def edit_item(request, menu_id, item_id):
         #redirect
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
-def view_item(request):
-    return HttpResponse('filler')
+def view_item(request, menu_id, item_id):
+    if request.method == 'GET':
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        curr_rest = curr_menu.restaurant
+        item = MenuItem.objects.filter(id = item_id).first()
+        return render(request, 'restaurant/view_item.html', {'item': item, 'restaurant': curr_rest, 'menu': curr_menu})
+    else:
+        #if method is a post, then just redirect to this page as a get
+        return redirect('/restaurant_admin/view_item/{m_id}/{i_id}'.format(m_id = menu_id, i_id = item_id))

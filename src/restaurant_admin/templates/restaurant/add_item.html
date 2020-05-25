@@ -1,58 +1,48 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
-
 <div class = 'container'>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <div class="row justify-content-center mt-5">
-    <div class="col-md-8">
+    <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 25rem;">
+      <div class="card-body">
+      <h5 class="card-title">{% trans "Create New Item" %}</h5>
+        <form action= "" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
 
-      <form method="post" action= "" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        {% for message in messages %}
-          <p id="messages">{{message}}</p>
-        {% endfor %}
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.name|as_crispy_field }}
+          <div class="row justify-content-center mt-2 mb-2">
+              {{ form.name|as_crispy_field }}
           </div>
+
+          <div class="row justify-content-center mt-2 mb-2">
+              {{ form.description|as_crispy_field }}
+          </div>
+
+          <div class="row justify-content-center mt-2 mb-2">
+              {{ form.course|as_crispy_field }}
+          </div>
+
+          <div class="row justify-content-center mt-2 mb-2">
+              {{ form.price|as_crispy_field }}
+          </div>
+
+          <div class="row justify-content-center mt-5 mb-5">
+              <label for = 'photo'>{% trans 'Item Photo(Optional)' %}</label>
+              <input type = 'file' accept="image/*" id = 'photo' name = "photo">
+          </div>
+
+          <!-- Buttons -->
+          <div class="row justify-content-center mt-5 mb-5">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-secondary">{% trans "Create" %}</button>
+            </div>
+          </div>
+
+        </form>
+        <div class = 'row justify-content-center'>
+          <a style = 'color:red;' href = "/restaurant_admin/edit_menu/{{id}}">{% trans 'Cancel' %}</a>
         </div>
 
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.description|as_crispy_field }}
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.course|as_crispy_field }}
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.price|as_crispy_field }}
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            <label for = 'photo'>{% trans 'Item Photo(Optional)' %}</label>
-            <input type = 'file' accept="image/*" id = 'photo' name = "photo">
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="row justify-content-center mb-5">
-          <div class="btn-group">
-              <button type="submit" class="btn btn-secondary">{% trans "Create" %}</button>
-          </div>
-        </div>
-
-      </form>
-      <a href = "/restaurant_admin/edit_menu/{{id}}">{% trans 'Cancel' %}</a>
-
+      </div>
     </div>
   </div>
 </div>

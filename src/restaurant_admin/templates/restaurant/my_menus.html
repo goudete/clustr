@@ -1,29 +1,75 @@
 {% load i18n %}
 {% load static %}
-<div class="container">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <div class = 'card'>
-    <div class = 'card-body'>
-      {% if menus|length == 0 %}
-        <h5>{% trans 'No Menus Yet' %}</h5>
-      {% else %}
-      <table class = 'table'>
-        {% for menu in menus %}
-          <tr>
-            <th scope = "col">{{ menu.name }}</th>
-            {% if menu.photo_path is not none %}
-              <th scope = "col"><img src = "{% static menu.photo_path %}" border=3 height=80 width=80></th>
+<html>
+
+  <head>
+    <style>
+      #menu_container {
+        overflow-y: scroll;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <div class = 'card bg-light mt-5 mb-5' id ='big_card_container'>
+          <div class = 'card-body'>
+
+            <div class = 'row justify-content-end'>
+              <a style = 'color:red;' href = '/restaurant_admin/logout'>{% trans 'Logout' %}</a>
+            </div>
+
+            {% if menus|length == 0 %}
+              <h5>{% trans 'No Menus Yet' %}</h5>
             {% else %}
-              <th scope = 'col'><h5>{% trans 'No Photo' %}</h5></th>
+            <div class = 'row justify-content-center mb-2'>
+              <h5><b>{% trans "Your Menus" %}</b></h5>
+            </div>
+
+            <div id = 'menu_container' class = 'row justify-content-center'>
+
+                {% for menu in menus %}
+                <div class = 'card mr-2 mt-2'>
+                  <div class = 'card-body'>
+
+                    <div class = 'row justify-content-center mb-2'>
+                        <b style = 'color:black;'>{{ menu.name }}</b>
+                    </div>
+
+                    <div class = 'row justify-content-center'>
+                        {% if menu.photo_path is not none %}
+                          <img src = "{% static menu.photo_path %}" border=3 height=300 width=300>
+                        {% else %}
+                          <h5>{% trans 'No Photo' %}</h5>
+                        {% endif %}
+                    </div>
+
+                    <div class = 'row justify-content-center mt-2'>
+                      <div class = 'col-4 mr-1'>
+                        <a type = 'button' class = 'btn btn-secondary' href = '/restaurant_admin/view_menu/{{menu.id}}'>{% trans 'View' %}</a>
+                      </div>
+
+                      <div class = 'col-4'>
+                        <a type = 'button' class = 'btn btn-secondary' href = '/restaurant_admin/edit_menu/{{menu.id}}'>{% trans 'Edit' %}</a>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                {% endfor %}
+
+            </div>
             {% endif %}
-            <th scope = 'col'><a href = '/restaurant_admin/edit_menu/{{menu.id}}'>{% trans 'Edit Menu' %}</a>
-            <th scope = 'col'><a style = "color:red;" href = '/restaurant_admin/remove_menu/{{menu.id}}'>{% trans 'Delete' %}</a>
-          </tr>
-        {% endfor %}
-      </table>
-      {% endif %}
-      <a href = '/restaurant_admin/add_menu'>{% trans 'Add New Menu Here!' %}</a>
+
+            <div class = 'row justify-content-center mt-2'>
+              <a href = '/restaurant_admin/add_menu'>{% trans 'Add New Menu Here!' %}</a>
+            </div>
+
+          </div>
+        </div>
+
     </div>
-    <a href = '/restaurant_admin/logout'>{% trans 'Logout' %}</a>
-  </div>
-</div>
+  </body>
+
+</html>

@@ -108,12 +108,24 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
         # return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 
-"""this method gets a cart item, and decreases the quantity, it also needs a MenuItemCounter id number from a post request"""
+"""this method gets a cart item, and decreases the quantity by 1, it also needs a MenuItemCounter id number from a post request"""
 def decrease_quantity(request, cart_id):
     if request.method == 'POST':
+        curr_cart = Cart.objects.filter(id = cart_id).first()
         item_counter = MenuItemCounter.objects.filter(id = request.POST['item_counter_id'])
+        #change the item_counter quantity
         item_counter.quantity -= 1
+        #decrease itemcounter price by 1 unit
+        item_counter.price -= item_counter.item.price
+        #decrease the cart_total price by 1 unit
+        curr_cart.total -= item_counter.item.price
+        #save the item_counter
         item_counter.save()
+        #if the quantity of the item_counter is now 0, just delete it
+        if item_counter.quantity == 0:
+            item_counter.delete()
+        #save the cart
+        curr_cart.save()
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
     else:
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
@@ -137,12 +149,10 @@ def remove_item(request, cart_id, restaurant_id, menu_id, item_id):
     if request.method == 'POST':
         curr_cart = Cart.objects.filter(id = cart_id).first()
         item_counter = MenuItemCounter.objects.filter(cart = curr_cart).filter(item = MenuItem.objects.filter(id = item_id).first()).first()
-        #get the total cost from the item getting removed
-        item_counter_price = item_counter.item.price*item_counter.quantity
         #remove the itemcounter
+        curr_cart.total -= item_counter.price
         item_counter.delete()
         #update cart total price
-        curr_cart.total -= item_counter_price
         curr_cart.save()
         #redirect to view cart
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
@@ -158,7 +168,6 @@ def view_cart(request, cart_id):
         items = MenuItemCounter.objects.filter(cart = curr_cart).all()
         #the objects inside items are MenuItemCounters, to reference the actual MenuItem associated with a MenuItemCounter
         #in jinja, do {{MenuItemCounter.item}}
-        print(curr_cart.total)
         return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items})
     else:
         #if method is post, just redirect back to page
