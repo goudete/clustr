@@ -91,6 +91,18 @@
                       </tr>
                   </thead>
                   <tbody>
+                    {% for item_counter in item_counters %}
+                    <tr>
+                        <td class="col-md-9"><em> {{item_counter.item.name}} </em></td>
+                        <td class="col-md-1" style="text-align: center"> {{item_counter.quantity}} </td>
+                        <td class="col-md-1 text-center">{{item_counter.item.price}}</td>
+                        <td class="col-md-1 text-center">{{item_counter.price}}</td>
+                        <td class="col-md-1 text-center">
+                          <button class="plus_item" title="Add" style="margin-right: 0.5cm"><i class="fas fa-plus"></i></button>
+                          <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
                       <tr>
                           <td class="col-md-9"><em>Baked Rodopa Sheep Feta</em></td>
                           <td class="col-md-1" style="text-align: center"> 2 </td>
@@ -145,7 +157,7 @@
                           <td>   </td>
                           <td>   </td>
                           <td class="text-right"><h4><strong>Total: </strong></h4></td>
-                          <td class="text-center text-danger"><h4><strong id="order_total">${{total}}</strong></h4></td>
+                          <td class="text-center text-danger"><h4><strong id="order_total">${{cart.total}}</strong></h4></td>
                       </tr>
                   </tbody>
               </table>

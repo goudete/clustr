@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .forms import SubmitOrderCode
-from customers.models import Cart
+from customers.models import Cart, MenuItemCounter
 # Create your views here.
 def baseView(request):
     return render(request,'base.html')
@@ -11,9 +11,9 @@ def cashPaymentView(request):
         if form.is_valid():
             cd = form.cleaned_data
             order_code = cd['order_code']
-            cart = Cart.objects.filter(cash_code=order_code).first()
-            print(cart.total)
-            context = {'total':cart.total}
+            curr_cart = Cart.objects.filter(cash_code=order_code).first()
+            item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
+            context = {'cart':curr_cart,'item_counters':item_counters}
             return render(request,'review_order2.html',context)
         else:
             print("here")
