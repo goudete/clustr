@@ -10,23 +10,35 @@
     </style>
   </head>
 
-  <body>
+  <body style="background-image: url('{% static 'imgs/menu_home.jpg' %}'); background-size:cover; background-color: rgba(255,255,255,0.3); background-blend-mode: lighten;">
     <div class="container">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <div class = 'card bg-light mt-5 mb-5' id ='big_card_container'>
-          <div class = 'card-body'>
+        <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'>
 
-            <div class = 'row justify-content-end'>
-              <a style = 'color:red;' href = '/restaurant_admin/logout'>{% trans 'Logout' %}</a>
-            </div>
+          <div class ='card-header'>
 
-            {% if menus|length == 0 %}
-              <h5>{% trans 'No Menus Yet' %}</h5>
-            {% else %}
             <div class = 'row justify-content-center mb-2'>
-              <h5><b>{% trans "Your Menus" %}</b></h5>
+              <h2><b>{% trans "Your Menus" %}</b></h2>
             </div>
 
+            <div class = 'row justify-content-between'>
+              <div class = 'col-2'>
+                <a type = 'button' class = 'btn btn-primary' href = '/restaurant_admin/add_menu'>+ {% trans 'Add New Menu' %}</a>
+              </div>
+
+              <div class = 'col-1 mr-2'>
+                <a type = 'button' class = 'btn btn-danger' href = '/restaurant_admin/logout'>{% trans 'Logout' %}</a>
+              </div>
+            </div>
+
+          </div>
+
+          <div class = 'card-body'>
+            {% if menus|length == 0 %}
+            <div class = 'row justify-content-center'>
+              <h3>{% trans 'No Menus Yet' %}</h3>
+            </div>
+            {% else %}
             <div id = 'menu_container' class = 'row justify-content-center'>
 
                 {% for menu in menus %}
@@ -61,11 +73,6 @@
 
             </div>
             {% endif %}
-
-            <div class = 'row justify-content-center mt-2'>
-              <a href = '/restaurant_admin/add_menu'>{% trans 'Add New Menu Here!' %}</a>
-            </div>
-
           </div>
         </div>
 

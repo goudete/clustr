@@ -1,50 +1,52 @@
 {% load i18n %}
+{% load static %}
+<body style="background-image: url('{% static 'imgs/delete_background.jpg' %}'); background-size:cover; background-color: rgba(255,255,255,0.3); background-blend-mode: lighten; background-position: center;">
+  <div class = 'container'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <div class = 'card mt-5 mb-5'>
+      <div class = 'card-body'>
 
-<div class = 'container'>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <div class = 'card'>
-    <div class = 'card-body'>
-
-      <!-- if menu isnt null, then this is about deleting a menu -->
-      {% if menu %}
-        <h3>{% trans 'Are You Sure You Want to Delete ' %}{{menu.name}}?</h3>
-        <form action = "" method = 'post'>
-          {% csrf_token %}
-          <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Menu' %}</button>
-        </form>
-        <a href = "/restaurant_admin/my_menus"><h5>{% trans 'Cancel' %}</h5></a>
-        <table class = 'table'>
-          <thead>
-            <tr>
-              <th scope = 'col' style='color:red;'>{% trans 'All These Items Will Be Deleted as Well' %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if items|length == 0 %}
-              <tr>
-                <td scope = 'col'><h5>{% trans 'No Items' %}</h5></td>
-              </tr>
-            {% else %}
-              {% for item in items %}
-                <tr>
-                  <td scope = 'col'>{{ item.name }}</td>
-                </tr>
-              {% endfor %}
-            {% endif %}
-          </tbody>
-        </table>
-
-      <!-- if menu is null then this is about deleting an item (its called items but its only one thing)-->
-      {% else %}
-        <h3>{% trans 'Are You Sure You Want to Delete ' %}{{items.name}}?</h3>
+        <!-- if menu isnt null, then this is about deleting a menu -->
+        {% if menu %}
+          <h3>{% trans 'Are You Sure You Want to Delete ' %}{{menu.name}}?</h3>
           <form action = "" method = 'post'>
             {% csrf_token %}
-            <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Item' %}</button>
+            <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Menu' %}</button>
           </form>
-        <a href = "/restaurant_admin/edit_menu/{{ items.menu.id }}">{% trans 'Cancel' %}</a>
+          <a href = "/restaurant_admin/my_menus"><h5>{% trans 'Cancel' %}</h5></a>
+          <table class = 'table'>
+            <thead>
+              <tr>
+                <th scope = 'col' style='color:red;'>{% trans 'All These Items Will Be Deleted as Well' %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if items|length == 0 %}
+                <tr>
+                  <td scope = 'col'><h5>{% trans 'No Items' %}</h5></td>
+                </tr>
+              {% else %}
+                {% for item in items %}
+                  <tr>
+                    <td scope = 'col'>{{ item.name }}</td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
 
-      {% endif %}
+        <!-- if menu is null then this is about deleting an item (its called items but its only one thing)-->
+        {% else %}
+          <h3>{% trans 'Are You Sure You Want to Delete ' %}{{items.name}}?</h3>
+            <form action = "" method = 'post'>
+              {% csrf_token %}
+              <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Item' %}</button>
+            </form>
+          <a href = "/restaurant_admin/edit_menu/{{ items.menu.id }}">{% trans 'Cancel' %}</a>
 
+        {% endif %}
+
+      </div>
     </div>
   </div>
-</div>
+</body>
