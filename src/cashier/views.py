@@ -14,7 +14,7 @@ def cashPaymentView(request):
             cart = Cart.objects.filter(cash_code=order_code).first()
             print(cart.total)
             context = {'total':cart.total}
-            return render(request,'receipt.html',context)
+            return render(request,'review_order2.html',context)
         else:
             print("here")
             return render(request,'cash_payment.html',{'form':form})

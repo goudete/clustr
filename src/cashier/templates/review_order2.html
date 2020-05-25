@@ -1,4 +1,5 @@
 {% load static %}
+<!-- layout stuff -->
 <style>
   body{background:#f9f9f9;}
   #wrapper{padding:15px 15px;}
@@ -17,6 +18,7 @@
   }
   .animate{-webkit-transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;-ms-transition:all .2s ease-in-out;transition:all .2s ease-in-out}
 </style>
+<!-- button stuff -->
 <style>
     .btn-squared-default
     {
@@ -85,28 +87,42 @@
                           <th>#</th>
                           <th class="text-center">Price</th>
                           <th class="text-center">Total</th>
+                          <th class="text-center">Actions</th>
                       </tr>
                   </thead>
                   <tbody>
                       <tr>
                           <td class="col-md-9"><em>Baked Rodopa Sheep Feta</em></td>
                           <td class="col-md-1" style="text-align: center"> 2 </td>
-                          <td class="col-md-1 text-center">$13</td>
+                          <td class="col-md-1 text-center">$13.8</td>
                           <td class="col-md-1 text-center">$26</td>
+                          <td class="col-md-1 text-center">
+                            <button class="plus_item" title="Add" style="margin-right: 0.5cm"><i class="fas fa-plus"></i></button>
+                            <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
+                          </td>
                       </tr>
                       <tr>
                           <td class="col-md-9"><em>Lebanese Cabbage Salad</em></td>
                           <td class="col-md-1" style="text-align: center"> 1 </td>
                           <td class="col-md-1 text-center">$8</td>
                           <td class="col-md-1 text-center">$8</td>
+                          <td class="col-md-1 text-center">
+                            <button class="plus_item" title="Add" style="margin-right: 0.5cm"><i class="fas fa-plus"></i></button>
+                            <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
+                          </td>
                       </tr>
                       <tr>
                           <td class="col-md-9"><em>Baked Tart with Thyme and Garlic</em></td>
                           <td class="col-md-1" style="text-align: center"> 3 </td>
                           <td class="col-md-1 text-center">$16</td>
                           <td class="col-md-1 text-center">$48</td>
+                          <td class="col-md-1 text-center">
+                            <button class="plus_item" title="Add" style="margin-right: 0.5cm"><i class="fas fa-plus"></i></button>
+                            <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
+                          </td>
                       </tr>
                       <tr>
+                          <td>   </td>
                           <td>   </td>
                           <td>   </td>
                           <td class="text-right">
@@ -127,23 +143,30 @@
                       <tr>
                           <td>   </td>
                           <td>   </td>
+                          <td>   </td>
                           <td class="text-right"><h4><strong>Total: </strong></h4></td>
-                          <td class="text-center text-danger"><h4><strong>$31{{total}}</strong></h4></td>
+                          <td class="text-center text-danger"><h4><strong id="order_total">${{total}}</strong></h4></td>
                       </tr>
                   </tbody>
               </table>
+              <button type="button" class="btn btn-success btn-lg btn-block">
+                  Confirm Payment <span class="glyphicon glyphicon-chevron-right"></span>
+              </button>
+              <button type="button" class="btn btn-danger btn-lg btn-block">
+                  Cancel <span class="glyphicon glyphicon-chevron-right"></span>
+              </button>
             </div>
           </div>
         </div>
         <div class="col">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title" style = "text-align: center">Options</h5>
-              <a href="#" class="btn btn-squared-default btn-success" >
+              <h5 class="card-title" style = "text-align: center">Add Menu Items</h5>
+              <a href="#" class="btn btn-squared-default btn-success" style="margin-left: 1cm;">
                 <br>
-                   <i class="fas fa-plus fa-10x"></i>
+                   <i class="fas fa-utensils fa-10x"></i>
                </a>
-               <a href="#" class="btn btn-squared-default btn-success" style="margin-left: 2cm;">
+               <a href="#" class="btn btn-squared-default btn-success" style="margin-left: 1cm;">
                  <br>
                     <i class="fas fa-coffee fa-10x"></i>
                </a>
@@ -154,6 +177,76 @@
     </div>
   </div>
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
-  <script>
-
+  <!-- table JS -->
+  <script type="text/javascript">
+  $(document).ready(function(){
+  	var actions = $("table td:last-child").html();
+  	// Append table with add row form on add new button click
+      $(".add-new").click(function(){
+  		$(this).attr("disabled", "disabled");
+  		var index = $("table tbody tr:last-child").index();
+          var row = '<tr>' +
+              '<td><input type="text" class="form-control" name="name" id="name"></td>' +
+              '<td><input type="text" class="form-control" name="department" id="department"></td>' +
+              '<td><input type="text" class="form-control" name="phone" id="phone"></td>' +
+  			'<td>' + actions + '</td>' +
+          '</tr>';
+      	$("table").append(row);
+  		$("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+          $('[data-toggle="tooltip"]').tooltip();
+      });
+  	// Add row on add button click
+  	$(document).on("click", ".add", function(){
+  		var empty = false;
+  		var input = $(this).parents("tr").find('input[type="text"]');
+          input.each(function(){
+  			if(!$(this).val()){
+  				$(this).addClass("error");
+  				empty = true;
+  			} else{
+                  $(this).removeClass("error");
+              }
+  		});
+  		$(this).parents("tr").find(".error").first().focus();
+  		if(!empty){
+  			input.each(function(){
+  				$(this).parent("td").html($(this).val());
+  			});
+  			$(this).parents("tr").find(".add, .edit").toggle();
+  			$(".add-new").removeAttr("disabled");
+  		}
+      });
+  	// Edit row on edit button click
+  	$(document).on("click", ".edit", function(){
+          $(this).parents("tr").find("td:not(:last-child)").each(function(){
+  			$(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
+  		});
+  		$(this).parents("tr").find(".add, .edit").toggle();
+  		$(".add-new").attr("disabled", "disabled");
+      });
+  	// Increase item number button
+  	$(document).on("click", ".plus_item", function(){
+          var number_items = parseInt($(this).closest("tr").children("td")[1].innerHTML);
+          var item_price = parseFloat($(this).closest("tr").children("td")[2].innerHTML.substr(1));
+          var current_item_total = parseFloat($(this).closest("tr").children("td")[3].innerHTML.substr(1));
+          $(this).closest("tr").children("td")[3].innerHTML ="$".concat(String((current_item_total + item_price).toFixed(2))); //update total for item (2 decimal places)
+          $(this).closest("tr").children("td")[1].innerHTML = number_items + 1; //update product count
+          var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
+          $('#order_total')[0].innerHTML = "$".concat(String((current_order_total + item_price).toFixed(2))); //update order total
+      });
+      // Decrease item number button
+    	$(document).on("click", ".minus_item", function(){
+            console.log("here");
+            var number_items = parseInt($(this).closest("tr").children("td")[1].innerHTML);
+            if (number_items == 1){ //if item count currently at 1, taking one away deletes the row in the table
+              $(this).closest("tr").remove()
+            }
+            var item_price = parseFloat($(this).closest("tr").children("td")[2].innerHTML.substr(1));
+            var current_item_total = parseFloat($(this).closest("tr").children("td")[3].innerHTML.substr(1));
+            $(this).closest("tr").children("td")[3].innerHTML ="$".concat(String((current_item_total - item_price).toFixed(2))); //update total for item (2 decimal places)
+            $(this).closest("tr").children("td")[1].innerHTML = number_items - 1; //update product count
+            var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
+            $('#order_total')[0].innerHTML = "$".concat(String((current_order_total - item_price).toFixed(2))); //update order total
+        });
+  });
   </script>
