@@ -8,10 +8,15 @@
       <!-- if menu isnt null, then this is about deleting a menu -->
       {% if menu %}
         <h3>{% trans 'Are You Sure You Want to Delete ' %}{{menu.name}}?</h3>
+        <form action = "" method = 'post'>
+          {% csrf_token %}
+          <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Menu' %}</button>
+        </form>
+        <a href = "/restaurant_admin/my_menus"><h5>{% trans 'Cancel' %}</h5></a>
         <table class = 'table'>
           <thead>
             <tr>
-              <th scope = 'col'>{% trans 'All These Items Will Be Deleted as Well' %}</th>
+              <th scope = 'col' style='color:red;'>{% trans 'All These Items Will Be Deleted as Well' %}</th>
             </tr>
           </thead>
           <tbody>
@@ -26,13 +31,6 @@
                 </tr>
               {% endfor %}
             {% endif %}
-            <tr>
-              <form action = "" method = 'post'>
-                {% csrf_token %}
-                <button type = submit class = 'button-url'>{% trans 'Yes, Delete This Menu' %}</button>
-              </form>
-              <a href = "/restaurant_admin/my_menus">{% trans 'Cancel' %}</a>
-            </tr>
           </tbody>
         </table>
 

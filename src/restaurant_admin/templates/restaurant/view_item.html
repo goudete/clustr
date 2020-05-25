@@ -1,0 +1,30 @@
+
+{% extends 'customers/base.html'%}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Item image -->
+  <div class="row">
+    <img src="{% static item.photo_path %}" class="img-fluid" alt="Responsive image">
+  </div>
+  <!-- End item image -->
+
+  <!-- Restaurant Name and info -->
+  <div class="row ml-1 pt-3">
+    <h5>{{ item.name }}</h5>
+  </div>
+  <div class="row ml-1">
+    <h6>{{ item.description }}</h6>
+  </div>
+  <!-- End  -->
+
+
+  <hr>
+
+
+
+</div>
+
+
+{% endblock %}

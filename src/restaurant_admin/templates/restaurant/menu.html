@@ -1,0 +1,88 @@
+
+{% extends 'customers/base.html'%}
+{% load static %}
+
+{% block content %}
+<!-- logo -->
+<div class="jumbotron">
+  <div class="container text-center">
+    <h1>{{ restaurant.name }}</h1>
+    <p>{{ restaurant.info }}</p>
+    <!-- <img src="..." class="img-fluid" alt="Responsive image"> -->
+  </div>
+</div>
+<!-- end logo -->
+
+<div class="container-fluid">
+  <!-- Menu and About Buttons -->
+  <div class="row justify-content-center pt-4 pb-3">
+    <div class="col">
+      <div class="d-flex justify-content-end">
+        <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">Menu</a>
+      </div>
+    </div>
+    <div class="col">
+      <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">About</a>
+    </div>
+  </div>
+  <!-- End Menu and About buttons -->
+
+  <!-- Restaurant Name and info -->
+  <div class="row ml-1">
+    <h5>{{ restaurant.name }}</h5>
+  </div>
+  <div class="row ml-1">
+    <h6>{{ restaurant.info }}</h6>
+  </div>
+  <!-- End  -->
+
+  <!-- <hr> -->
+
+  <!-- Menu Items -->
+  <ul class="list-unstyled">
+    {% if items|length == 0 %}
+    <div class="row justify-content-center mt-5">
+      <h4>No Items on Menu!</h4>
+    </div>
+    {% else %}
+      {% for item in items %}
+      <div class="">
+        <a href="/restaurant_admin/view_item/{{ menu.id }}/{{ item.id }}">
+        <div class="media">
+          <div class="media-body">
+            <h6 class="mt-0 mb-1">{{ item.name }}</h6>
+            {{ item.description }} <br>
+            ${{ item.price}} <br>
+            {{ item.id }}
+          </div>
+          <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
+        </div>
+        </a>
+        <hr>
+      </div>
+
+      <!-- <hr> -->
+      {% endfor %}
+    {% endif %}
+  </ul>
+  <!-- Menu Items Ends -->
+
+  <!-- View Cart Button -->
+  <div class="fixed-bottom">
+    <div class="row justify-content-center mb-3">
+      <!-- <div class="col-12"> -->
+        <a href="/customers/view_cart/{{ cart.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart $</a>
+      <!-- </div> -->
+    </div>
+  </div>
+  <!-- Cart Button ends -->
+  <footer class="page-footer pt-4">
+      <div class="row justify-content-center mb-5">
+        <!-- <div class="col-12"> -->
+          <!-- <a href="/customers/payment/{{ cart.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a> -->
+        <!-- </div> -->
+      </div>
+  </footer>
+</div>
+
+{% endblock %}
