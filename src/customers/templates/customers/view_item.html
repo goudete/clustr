@@ -11,7 +11,7 @@
   <!-- End item image -->
 
   <!-- Restaurant Name and info -->
-  <div class="row ml-1 pt-3">
+  <div class="row ml-1 pt-4">
     <h5>{{ item.name }}</h5>
   </div>
   <div class="row ml-1">
@@ -20,6 +20,7 @@
   <!-- End  -->
 
 <!-- Custom Order Form -->
+<div class="row justify-content-center mt-4 mb-3">
   <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" >
     {% csrf_token %}
 
@@ -31,16 +32,29 @@
       {{ form.quantity|as_crispy_field }}
     </div>
 
-    <div class="row justify-content-center mb-5">
-      <div class="btn-group">
-          <button type="submit" class="btn btn-secondary">Submit</button>
-      </div>
+    <div class="row justify-content-center mb-4 mt-4">
+          <button type="submit" class="btn btn-dark btn-lg">Add to Cart $</button>
     </div>
   </form>
+</div>
 <!-- Form Ends -->
 
-  <hr>
-
+<!-- View Cart Button -->
+<div class="fixed-bottom">
+  <div class="row justify-content-center mb-3">
+    <!-- <div class="col-12"> -->
+      <a href="/customers/view_cart/{{ cart.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart $</a>
+    <!-- </div> -->
+  </div>
+</div>
+<!-- Cart Button ends -->
+<footer class="page-footer pt-4">
+    <div class="row justify-content-center mb-5">
+      <!-- <div class="col-12"> -->
+        <!-- <a href="/customers/payment/{{ cart.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a> -->
+      <!-- </div> -->
+    </div>
+</footer>
 
 
 </div>

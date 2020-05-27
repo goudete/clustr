@@ -14,7 +14,7 @@
 
 <div class="container-fluid">
   <!-- Menu and About Buttons -->
-  <div class="row justify-content-center pt-4 pb-3">
+  <div class="row justify-content-center pt-4 pb-4">
     <div class="col">
       <div class="d-flex justify-content-end">
         <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">Menu</a>
@@ -30,12 +30,12 @@
   <div class="row ml-1">
     <h5>{{ restaurant.name }}</h5>
   </div>
-  <div class="row ml-1">
+  <div class="row ml-1 mb-4">
     <h6>{{ restaurant.info }}</h6>
   </div>
   <!-- End  -->
 
-  <!-- <hr> -->
+  <hr>
 
   <!-- Menu Items -->
   <ul class="list-unstyled">
@@ -46,13 +46,12 @@
     {% else %}
       {% for item in items %}
       <div class="">
-        <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}">
+        <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" style="text-decoration:none; color:#000000">
         <div class="media">
           <div class="media-body">
             <h6 class="mt-0 mb-1">{{ item.name }}</h6>
-            {{ item.description }} <br>
-            ${{ item.price}} <br>
-            {{ item.id }}
+            <p>{{ item.description }}<br>
+            ${{ item.price}}</p> <br>
           </div>
           <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
         </div>

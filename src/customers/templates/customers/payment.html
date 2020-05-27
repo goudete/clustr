@@ -1,18 +1,216 @@
 {% extends 'customers/base.html'%}
-{% load static %}
+<!-- {% load static %} -->
 
 {% block content %}
-<form id="payment-form">
-  {% csrf_token %}
-    <div id="card-element"><!--Stripe.js injects the Card Element--></div>
-    <button id="submit">
-      <div class="spinner hidden" id="spinner"></div>
-      <span id="button-text">Pay</span>
-    </button>
-    <p id="card-errors" role="alert"></p>
-    <p class="result-message hidden">
-      Payment succeeded, see the result in your
-      <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
-    </p>
-</form>
+<!-- <script src="https://js.stripe.com/v3/"></script> -->
+
+<style>
+  .StripeElement {
+    /* box-sizing: border-box; */
+
+    height: 40px;
+
+    padding: 10px 12px;
+
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: white;
+
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+  }
+
+  .StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+  }
+
+  .StripeElement--invalid {
+    border-color: #fa755a;
+  }
+
+  .StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+  }
+  .button {
+    /* default for <button>, but useful for <a> */
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    width:100%;
+    /* create a small space when buttons wrap on 2 lines */
+    /* margin: 2px 0; */
+
+    /* invisible border (will be colored on hover/focus) */
+    border: solid 1px transparent;
+    border-radius: 4px;
+
+    /* size comes from text & padding (no width/height) */
+    padding: 0.5em 1em;
+
+    /* make sure colors have enough contrast! */
+    color: #ffffff;
+    background-color: #5870cf;
+  }
+
+</style>
+
+<div class="container-fluid">
+  <div class="row justify-content-center mt-4 mb-3">
+    <!-- <div class="col-6 mr-auto"> -->
+      <svg class="bi bi-receipt-cutoff" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v13h-1V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51L2 2.118V15H1V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zM0 15.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+        <path fill-rule="evenodd" d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-8a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
+      </svg>
+    <!-- </div> -->
+    <!-- <div class="col-6"> -->
+      <h5> Payment</h5>
+    <!-- </div> -->
+  </div>
+
+<!-- Credit Card Card -->
+  <div class="card shadow p-3 bg-white rounded mb-4">
+    <div class="card-body">
+      <div class="row pb-2">
+        <div class="col-2">
+          <svg class="bi bi-credit-card" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M14 3H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
+            <rect width="3" height="3" x="2" y="9" rx="1"/>
+            <path d="M1 5h14v2H1z"/>
+          </svg>
+        </div>
+        <div class="col-10">
+          <h5 class="cart-title pb-2">Credit or Debit Card</h5>
+        </div>
+      </div>
+
+      <form action="/customers/payment/{{ cart.id }}" method="post" id="payment-form" class="w-100">
+        {% csrf_token %}
+          <div id="card-element" class="form-control">
+               <!-- A Stripe Element will be inserted here. -->
+          </div>
+
+          <!-- Used to display form errors. -->
+          <div id="card-errors" role="alert">
+
+          </div>
+
+          <button class="button" id="submit" data-secret="{{ client_secret }}" cart="{{ cart_id }}">
+            Submit Payment
+          </button>
+      </form>
+
+    </div>
+  </div>
+  <!-- Credit Card Card ends -->
+
+  <!-- Cash Card -->
+  <div class="card shadow p-3 bg-white rounded mb-4">
+    <div class="card-body">
+      <div class="row pb-2">
+        <div class="col-2">
+          <svg class="bi bi-aspect-ratio" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5v-9zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
+            <path fill-rule="evenodd" d="M2 4.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H3v2.5a.5.5 0 0 1-1 0v-3zm12 7a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H13V8.5a.5.5 0 0 1 1 0v3z"/>
+          </svg>
+        </div>
+        <div class="col-10">
+          <h4 class="cart-title pb-2">Cash</h4>
+        </div>
+      </div>
+      <div class="row pl-2">
+        <h6>Please show the cashier this number:</h6>
+      </div>
+      <div class="row justify-content-center mt-4 w-100">
+        <div class="card bg-light mb-3" style="max-width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-text">CASH_ID</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Cash Card Ends -->
+
+  <div class="card shadow p-3 bg-white rounded mb-4">
+    <div class="card-body">
+      <div class="row pl-2">
+        <h5 class="cart-title pb-2">Email Receipt</h5>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Stripe Javascript begins -->
+<script>
+  var stripe = Stripe('pk_test_Qx7WrULtPr3uWHfJaQveYTfS00pzFRZbt7');
+  var elements = stripe.elements();
+
+  var style = {
+    base: {
+      color: '#32325d',
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+        color: '#aab7c4'
+      }
+    },
+    invalid: {
+      color: '#fa755a',
+      iconColor: '#fa755a'
+    }
+  };
+
+  var card = elements.create("card", { style: style });
+  card.mount("#card-element");
+
+  card.on('change', function(event) {
+    var displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+
+  var form = document.getElementById('payment-form');
+  var clientSecret = document.getElementById('submit').getAttribute('data-secret')
+  var cart_id = document.getElementById('submit').getAttribute('cart');
+
+  form.addEventListener('submit', function(ev) {
+    ev.preventDefault();
+
+    stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: card,
+        billing_details: {
+          name: 'Jenny Rosen'
+        }
+      }
+    }).then(function(result) {
+      if (result.error) {
+        // Show error to your customer (e.g., insufficient funds)
+        console.log(result.error.message);
+      } else {
+        // The payment has been processed!
+        if (result.paymentIntent.status === 'succeeded') {
+          // Show a success message to your customer
+          // There's a risk of the customer closing the window before callback
+          // execution. Set up a webhook or plugin to listen for the
+          // payment_intent.succeeded event that handles any business critical
+          // post-payment actions.
+          //***send paymentIntent id to views here*** Probs with AJAX
+          console.log('payment success');
+          console.log(cart_id)
+          location.href="/customers/order_confirmation/" + cart_id;
+
+        }
+      }
+    });
+  });
+</script>
+<!-- Stripe JavaScript ends -->
 {% endblock %}

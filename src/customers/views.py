@@ -174,55 +174,54 @@ def view_cart(request, cart_id):
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
 
 
-""" this method handles the stripe API process,
-if the method recieves a GET, then it displays the page to put in payment info
-otherwise the payment info has been sent to stripe, so the status of the cart gets updated
-to paid"""
+""" This method creates a PaymentIntent (Stripe API), saves the paymentintent id to the cart model and renders
+    payment.html. All Stripe stuff is handled in the JS scripts in the payment template. If the cart is
+    already paid, it redirects to order_confirmation
+"""
 def payment(request, cart_id):
     #1st check if this bill has already been paid, someone could accidentally come here and pay something that they're not meant to
     cart = Cart.objects.filter(id = cart_id).first()
     if cart.is_paid == True:
-        return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+        ''' If payed, just redirect to order confirmation'''
+        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     #this needs to be a post!!! cannot risk someone accidentally getting here from a get request
     if request.method == 'POST':
-        cart = Cart.objects.filter(id = cart_id).first()
-        cart.is_paid = True
-        cart.save()
-        # stripe.api_key = settings.STRIPE_SECRET_KEY
-        # intent = stripe.PaymentIntent.create(
-        #   amount=cart.total,
-        #   currency='usd',
-        #    # Verify your integration in this guide by including this parameter
-        #   metadata={'integration_check': 'accept_a_payment'},
-        # )
+        """
+        It never makes it here, after the stripe form gets submitted, the redirect has to happen in Javascript
+        The following commented out code will be handled in order_confirmation
+        """
+        # cart = Cart.objects.filter(id = cart_id).first()
+        # cart.is_paid = True
+        # cart.save()
         #print cart items to kitchen printer
-        return HttpResponse('Thank you for your business!')
+        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:
         cart = Cart.objects.filter(id = cart_id).first()
         #stripe API stuff here
-        print(cart.total)
         stripe.api_key = settings.STRIPE_SECRET_KEY
         intent = stripe.PaymentIntent.create(
           amount=int((cart.total*100)),
-          currency='usd',
+          currency='mxn',
            # Verify your integration in this guide by including this parameter
           metadata={'integration_check': 'accept_a_payment'},
         )
+        cart.stripe_order_id = intent.id
+        cart.save()
         #if method is a get, then they're inputting payment info
-        return render(request, 'customers/payment.html', {'client_secret':intent.client_secret})
-        # return render(request, 'customers/payment.html')
+        return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart_id': cart_id})
 
 
-#this method displays the total order before the customer pays
+'''This method sends order to kitchen, changes cart.is_paid to true and renders the confirmation page
+    TODO: send order to kitchen'''
 def order_confirmation(request, cart_id):
     #if this method is a get, then theyre seeing the confirmation page
+    '''Send order to kitchen to print'''
     if request.method == 'GET':
         cart = Cart.objects.filter(id = cart_id).first()
-        items = MenuItemCounter.objects.filter(cart = curr_cart)
-        #the objects inside items are MenuItemCounters, to reference the actual MenuItem associated with a MenuItemCounter
-        #in jinja, do {{MenuItemCounter.item}}
+        cart.is_paid = True
+        cart.save()
+        items = MenuItemCounter.objects.filter(cart = cart_id)
         return render(request, 'customers/order_confirmation.html', {'cart': cart, 'items': items})
-        # return render(request, 'customers/order_confirmation.html')
     else:
         #if this is a post, just send back to the view cart page
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))

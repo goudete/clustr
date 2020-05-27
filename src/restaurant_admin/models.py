@@ -10,11 +10,13 @@ class Restaurant(models.Model):
     info = models.CharField(max_length = 255) #restaurant info
     photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
     about = models.CharField(max_length = 255)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
     restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE) #this connects menu to restaurant
     photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class MenuItem(models.Model):
     menu = models.ForeignKey(Menu, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
@@ -23,3 +25,4 @@ class MenuItem(models.Model):
     course = models.CharField(_('Course'), default = '', max_length = 200) #this is to help organize the menu, somethting like appetizer, entree, dessert, etc..
     price = models.DecimalField(_('Price'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
     photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage
+    created_at = models.DateTimeField(auto_now_add=True)
