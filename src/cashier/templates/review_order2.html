@@ -142,14 +142,14 @@
                               <strong>Subtotal: </strong>
                           </p>
                           <p>
-                              <strong>Tax: </strong>
+                              <strong>Tip: </strong>
                           </p></td>
                           <td class="text-center">
                           <p>
-                              <strong>$6.94</strong>
+                              <strong id="order_subtotal">${{cart.total}}</strong>
                           </p>
                           <p>
-                              <strong>$6.94</strong>
+                              <strong>${{tip_amount}}</strong>
                           </p></td>
                       </tr>
                       <tr>
@@ -157,7 +157,7 @@
                           <td>   </td>
                           <td>   </td>
                           <td class="text-right"><h4><strong>Total: </strong></h4></td>
-                          <td class="text-center text-danger"><h4><strong id="order_total">${{cart.total}}</strong></h4></td>
+                          <td class="text-center text-danger"><h4><strong id="order_total">${{grand_total}}</strong></h4></td>
                       </tr>
                   </tbody>
               </table>
@@ -201,6 +201,8 @@
           $(this).closest("tr").children("td")[1].innerHTML = number_items + 1; //update product count
           var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
           $('#order_total')[0].innerHTML = "$".concat(String((current_order_total + item_price).toFixed(2))); //update order total
+          var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
+          $('#order_subtotal')[0].innerHTML = "$".concat(String((current_order_subtotal + item_price).toFixed(2))); //update order subttotal
       });
       // Decrease item number button
     	$(document).on("click", ".minus_item", function(){
@@ -215,6 +217,8 @@
             $(this).closest("tr").children("td")[1].innerHTML = number_items - 1; //update product count
             var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
             $('#order_total')[0].innerHTML = "$".concat(String((current_order_total - item_price).toFixed(2))); //update order total
+            var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
+            $('#order_subtotal')[0].innerHTML = "$".concat(String((current_order_subtotal - item_price).toFixed(2))); //update order subttotal
         });
   });
   </script>
