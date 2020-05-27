@@ -3,7 +3,7 @@ from .forms import SubmitOrderCode
 from customers.models import Cart, MenuItemCounter
 # Create your views here.
 def baseView(request):
-    return render(request,'base.html')
+    return render(request,'base2.html')
 
 def cashPaymentView(request):
     if request.method == "POST":
