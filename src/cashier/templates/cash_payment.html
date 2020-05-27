@@ -175,6 +175,11 @@ text-transform: uppercase;
 padding-top:40px;
 font-size: 40px;
 }
+.errormsg{
+  text-align: center;
+  color: red;
+  font-size: 20px;
+}
 </style>
 {% load widget_tweaks %}
 <div class="container">
@@ -187,5 +192,19 @@ font-size: 40px;
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
     </fieldset>
     <button name="submit" type="button" onclick="history.back();" id="contact-submit" data-submit="...Sending">Back</button>
+    {% if form.errors %}
+      {% for field in form %}
+          {% for error in field.errors %}
+              <div class="errormsg">
+                  <strong>{{ error|escape }}</strong>
+              </div>
+          {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+          <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+          </div>
+      {% endfor %}
+  {% endif %}
   </form>
 </div>

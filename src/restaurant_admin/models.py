@@ -7,10 +7,11 @@ from django.core.validators import MinValueValidator
 class Restaurant(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
     name = models.CharField(_('Restaurant Name'), default = '', max_length = 200)
-    info = models.CharField(max_length = 255) #restaurant info
+    info = models.TextField(_('Additional Info'), null = True, max_length = 255) #restaurant info
     photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
-    about = models.CharField(max_length = 255)
+    about = models.TextField(_("Your Restaurant's Vision"), null = True, max_length = 255)
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)

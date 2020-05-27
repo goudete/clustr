@@ -10,6 +10,12 @@ class UserForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
+        #input sizing
+        self.fields['username'].widget.attrs.update(style='width: 200px;')
+        self.fields['email'].widget.attrs.update(style='width: 200px;')
+        self.fields['password1'].widget.attrs.update(style='width: 200px;')
+        self.fields['password2'].widget.attrs.update(style='width: 200px;')
+
 
     def clean_email(self):
         email_passed = self.cleaned_data.get('email')
@@ -33,9 +39,19 @@ class UserForm(UserCreationForm):
 
 #form for creating new restaurant
 class RestaurantForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(RestaurantForm, self).__init__(*args, **kwargs)
+        self.fields['name'].required = True
+        self.fields['info'].required = False
+        self.fields['about'].required = False
+        #stuff about input sizes
+        self.fields['name'].widget.attrs.update(style='width: 200px;')
+        self.fields['info'].widget.attrs.update(style='width: 200px; height: 80px;')
+        self.fields['about'].widget.attrs.update(style='width: 200px; height: 80px;')
+
     class Meta:
         model = Restaurant
-        fields = ('name',)
+        fields = ('name', 'info', 'about')
 
 #form for creating new menu
 class MenuForm(forms.ModelForm):
@@ -61,6 +77,11 @@ class MenuItemForm(forms.ModelForm):
         self.fields['description'].required = True
         self.fields['course'].required = True
         self.fields['price'].required = True
+        #sizing stuff
+        self.fields['name'].widget.attrs.update(style='width: 200px;')
+        self.fields['description'].widget.attrs.update(style='width: 200px;')
+        self.fields['course'].widget.attrs.update(style='width: 200px;')
+        self.fields['price'].widget.attrs.update(style='width: 200px;')
 
     class Meta:
         model = MenuItem

@@ -1,64 +1,97 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
+{% load static %}
 
-<div class="container">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <div class="row justify-content-center mt-5 pl-5">
-    <div class="col-md-8">
-      <h3>{% trans "Create your X account" %}</h3>
-      <h6>{% trans "Already have an account?" %} <a href="/restaurant_admin">{% trans "Sign in" %}</a></h6>
+<html>
+
+
+  <head>
+    <style>
+      body {
+        background-image: url("{% static 'imgs/register_background_photo.jpg'}");
+      }
+    </style>
+  </head>
+
+  <body style="background-image: url('{% static 'imgs/register_background_photo.jpg' %}'); background-size:cover;">
+    <div class="container">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+      <div class = 'row justify-content-center mb-5'>
+        <div class="card shadow mt-5" style="width: 30rem;">
+
+          <div class = 'card-header'>
+            <div class="row justify-content-center mt-5">
+                <h3>{% trans "Create your X account" %}</h3>
+            </div>
+
+            <div class = 'row justify-content-center mt-2'>
+              <h6>{% trans "Already have an account?" %} <a href="/restaurant_admin">{% trans "Sign in" %}</a></h6>
+            </div>
+          </div>
+
+          <div class = 'card-body'>
+            <form method="post" action= "/restaurant_admin/register">
+              {% csrf_token %}
+
+              {% for message in messages %}
+                <p id="messages">{{message}}</p>
+              {% endfor %}
+
+              <div class = 'row justify-content-center mt-3'>
+                <h5><b>{% trans 'Account Info' %}</b></h5>
+              </div>
+
+              <div class="row justify-content-center mt-3">
+                {{ form.username|as_crispy_field }}
+              </div>
+
+              <div class="row justify-content-center mt-3">
+                {{ form.email|as_crispy_field }}
+              </div>
+
+              <div class="row justify-content-center mt-3">
+                <div class = 'col-6'>
+                  {{ form.password1|as_crispy_field }}
+                </div>
+              </div>
+
+              <div class="row justify-content-center mt-3">
+                <div class = 'col-6'>
+                  {{ form.password2|as_crispy_field }}
+                </div>
+              </div>
+
+              <div class ='row justify-content-center mt-5'>
+                <h5><b>{% trans 'Restaurant Info' %}</b></h5>
+              </div>
+
+              <div class="row justify-content-center mt-3">
+                {{ rest_form.name|as_crispy_field }}
+              </div>
+
+              <div class="row justify-content-center mt-3">
+                {{ rest_form.info|as_crispy_field }}
+              </div>
+
+              <div class="row justify-content-center mt-3">
+                {{ rest_form.about|as_crispy_field }}
+              </div>
+
+              <!-- Buttons -->
+              <div class="row justify-content-center mt-5 mb-5">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">{% trans "Register" %}</button>
+                </div>
+              </div>
+
+            </form>
+
+            <!-- {{form.errors}} -->
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </body>
 
-  <div class="row justify-content-center mt-5">
-    <div class="col-md-8">
-      <form method="post" action= "/restaurant_admin/register">
-        {% csrf_token %}
-
-        {% for message in messages %}
-          <p id="messages">{{message}}</p>
-        {% endfor %}
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ rest_form.name|as_crispy_field }}
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.username|as_crispy_field }}
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.email|as_crispy_field }}
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.password1|as_crispy_field }}
-          </div>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-8">
-            {{ form.password2|as_crispy_field }}
-          </div>
-        </div>
-
-
-        <!-- Buttons -->
-        <div class="row justify-content-center mb-5">
-          <div class="btn-group">
-              <button type="submit" class="btn btn-secondary">{% trans "Register" %}</button>
-          </div>
-        </div>
-      </form>
-
-      <!-- {{form.errors}} -->
-    </div>
-  </div>
-</div>
+</html>
