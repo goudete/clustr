@@ -3,6 +3,14 @@
 {% load static %}
 
 {% block content %}
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+  <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+    <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h6.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
+  </svg>
+  </a>
+</nav>
 <div class="container-fluid">
   <!-- Item image -->
   <div class="row">
@@ -19,22 +27,29 @@
   </div>
   <!-- End  -->
 
+  <hr>
 <!-- Custom Order Form -->
 <div class="row justify-content-center mt-4 mb-3">
   <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" >
     {% csrf_token %}
 
-    <div class="row justify-content-center">
-      {{ form.custom_instructions|as_crispy_field }}
+    <div class="row justify-content-center mb-2">
+      <!-- {{ form.custom_instructions|as_crispy_field }} -->
+      <!-- <label for="custom_instructions">Custom Instructions:</label> -->
+      <!-- <input class="form-control" type="text" name="custom_instructions" placeholder="Custom Instructions..."> -->
+      <textarea class="form-control" name="custom_instructions" placeholder="Custom Instructions..." rows="3"></textarea>
+
     </div>
 
     <div class="row justify-content-center">
-      {{ form.quantity|as_crispy_field }}
+      <!-- {{ form.quantity|as_crispy_field }} -->
+      <!-- <label for="quantity">Quantity:</label> -->
+      <input class="form-control" type="number" name="quantity" min="1" value="1" placeholder="Quantity">
     </div>
 
-    <div class="row justify-content-center mb-4 mt-4">
-          <button type="submit" class="btn btn-dark btn-lg">Add to Cart $</button>
-    </div>
+      <div class="row justify-content-center mb-4 mt-4">
+        <button type="submit" class="btn btn-dark btn-circle btn-xl">Add to Cart $</button>
+      </div>
   </form>
 </div>
 <!-- Form Ends -->
@@ -43,17 +58,15 @@
 <div class="fixed-bottom">
   <div class="row justify-content-center mb-3">
     <!-- <div class="col-12"> -->
-      <a href="/customers/view_cart/{{ cart.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart $</a>
+      <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart $</a>
     <!-- </div> -->
   </div>
 </div>
 <!-- Cart Button ends -->
 <footer class="page-footer pt-4">
-    <div class="row justify-content-center mb-5">
-      <!-- <div class="col-12"> -->
-        <!-- <a href="/customers/payment/{{ cart.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a> -->
-      <!-- </div> -->
-    </div>
+    <div class="row justify-content-center mb-3">
+
+     </div>
 </footer>
 
 

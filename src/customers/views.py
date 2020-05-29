@@ -6,6 +6,7 @@ from .models import Cart, MenuItemCounter
 from .forms import CustomOrderForm
 import stripe
 import os
+from decimal import Decimal
 
 # Create your views here.
 
@@ -21,6 +22,7 @@ def create_cart(request, restaurant_id, menu_id):
     if request.method == 'POST':
         cart = Cart()
         cart.total = 0
+        cart.total_with_tip = 0
         cart.save()
         #redirect to view menu page
         return redirect('/customers/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
@@ -69,6 +71,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_item = MenuItem.objects.filter(id = item_id).first()
         print('instructions: ', request.POST['custom_instructions'])
+        print('quantity:', request.POST['quantity'])
         if request.POST['custom_instructions'] == '':
             item_counters = MenuItemCounter.objects.filter(cart = curr_cart).filter(item = MenuItem.objects.filter(id = item_id).first()).filter(custom_instructions = None)
         else:
@@ -109,7 +112,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
 
 
 """this method gets a cart item, and decreases the quantity by 1, it also needs a MenuItemCounter id number from a post request"""
-def decrease_quantity(request, cart_id):
+def decrease_quantity(request, cart_id, restaurant_id, menu_id):
     if request.method == 'POST':
         curr_cart = Cart.objects.filter(id = cart_id).first()
         item_counter = MenuItemCounter.objects.filter(id = request.POST['item_counter_id'])
@@ -126,20 +129,20 @@ def decrease_quantity(request, cart_id):
             item_counter.delete()
         #save the cart
         curr_cart.save()
-        return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
     else:
-        return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 
 """this method gets a menuitemcounter, and changes the instructions, it NEEDS A NEW SET OF INSTRUCTIONS FROM A POST REQUEST AND A MENUITEMCOUNTER ID"""
-def change_instructions(request, cart_id):
+def change_instructions(request, cart_id, restaurant_id, menu_id):
     if request.method == 'POST':
         item_counter = MenuItemCounter.objects.filter(id = request.POST['item_counter_id'])
         item_counter.instructions = request.POST['custom_instructions']
         item_counter.save()
-        return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
     else:
-        return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 
 """this method gets an item, and totally removes it from a cart, and changes the price of the cart accordingly
@@ -155,30 +158,47 @@ def remove_item(request, cart_id, restaurant_id, menu_id, item_id):
         #update cart total price
         curr_cart.save()
         #redirect to view cart
-        return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
     #if this is a get, they're accidentally here so just redirect to viewing cart
     else:
-        return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 
 #this method displays the overview of a customers cart
-def view_cart(request, cart_id):
+def view_cart(request, cart_id, restaurant_id, menu_id):
     if request.method == 'GET':
         curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
         items = MenuItemCounter.objects.filter(cart = curr_cart).all()
+
         #the objects inside items are MenuItemCounters, to reference the actual MenuItem associated with a MenuItemCounter
         #in jinja, do {{MenuItemCounter.item}}
-        return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items})
+        return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items, 'restaurant': curr_rest, 'menu': curr_menu})
     else:
         #if method is post, just redirect back to page
-        return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
+"""Calculates tip depending on what button is """
+def calculate_tip(request, cart_id, restaurant_id, menu_id, tip):
+    if request.method == 'POST':
+        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+    else:
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        items = MenuItemCounter.objects.filter(cart = curr_cart).all()
+        tip_amount = round(curr_cart.total * Decimal((tip / 100)), 2)
+        curr_cart.tip = tip_amount
+        curr_cart.total_with_tip = curr_cart.total + tip_amount
+        curr_cart.save()
+        return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items, 'restaurant': curr_rest, 'menu': curr_menu, 'tip_amount': tip_amount, 'total_with_tip': curr_cart.total + tip_amount})
 
 """ This method creates a PaymentIntent (Stripe API), saves the paymentintent id to the cart model and renders
     payment.html. All Stripe stuff is handled in the JS scripts in the payment template. If the cart is
     already paid, it redirects to order_confirmation
 """
-def payment(request, cart_id):
+def payment(request, cart_id, restaurant_id, menu_id):
     #1st check if this bill has already been paid, someone could accidentally come here and pay something that they're not meant to
     cart = Cart.objects.filter(id = cart_id).first()
     if cart.is_paid == True:
@@ -197,10 +217,12 @@ def payment(request, cart_id):
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:
         cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
         #stripe API stuff here
         stripe.api_key = settings.STRIPE_SECRET_KEY
         intent = stripe.PaymentIntent.create(
-          amount=int((cart.total*100)),
+          amount=int((cart.total_with_tip*100)),
           currency='mxn',
            # Verify your integration in this guide by including this parameter
           metadata={'integration_check': 'accept_a_payment'},
@@ -208,7 +230,7 @@ def payment(request, cart_id):
         cart.stripe_order_id = intent.id
         cart.save()
         #if method is a get, then they're inputting payment info
-        return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart_id': cart_id})
+        return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu})
 
 
 '''This method sends order to kitchen, changes cart.is_paid to true and renders the confirmation page

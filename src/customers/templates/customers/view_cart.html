@@ -1,6 +1,14 @@
 {% extends 'customers/base.html'%}
 
 {% block content %}
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+  <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+    <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h6.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
+  </svg>
+  </a>
+</nav>
 <!-- Title -->
   <div class="row justify-content-center pt-4 pb-4">
     <!-- <h5>Cart </h5> -->
@@ -24,14 +32,14 @@
         </div>
         {% else %}
         {% for item in items %}
-        <div class="row pl-4 mt-4 mb-4">
+        <div class="row pl-1 mt-4 mb-4">
           <div class="col-2">
             {{ item.quantity }}
           </div>
-          <div class="col-7">
+          <div class="col-6">
             <h6>{{ item.item.name }}</h6>
           </div>
-          <div class="col-3">
+          <div class="col-4">
             <h6>${{ item.price }}</h6>
           </div>
         </div>
@@ -47,36 +55,47 @@
           <h5>Tip</h5>
         </div>
 
-        <div class="row pt-2">
-          <div class="col">
-            <button type="button" class="btn btn-secondary">
-              10%
-            </button>
+        <div class="row pt-2 justify-content-center">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <!-- <button type="button" class="btn btn-secondary">10%</button> -->
+            <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/10" role="button">10%</a>
+            <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/15" role="button">15%</a>
+            <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">20%</a>
+            <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">Custom</a>
+            <!-- <button type="button" class="btn btn-secondary">Custom</button> -->
           </div>
-          <div class="col">
-            <button type="button" class="btn btn-secondary">
-              15%
-            </button>
+        </div>
+        <!-- </div> -->
+        <div class="row pt-3">
+          <div class="col-6">
+            <h6>Subtotal</h6>
           </div>
-          <div class="col">
-            <button type="button" class="btn btn-secondary">
-              20%
-            </button>
+          <div class="col-6 d-flex flex-row-reverse">
+            <h6>${{ cart.total }}</h6>
           </div>
-          <!-- <div class="col">
-            <button type="button" class="btn btn-secondary">
-              Custom
-            </button>
-          </div> -->
         </div>
-        <div class="row pl-3 pt-3">
-          <h6>Subtotal</h6>
+
+        <div class="row pt-1">
+          <div class="col-6">
+            <h6>Tip</h6>
+          </div>
+          {% if tip_amount %}
+          <div class="col-6 d-flex flex-row-reverse">
+            <h6>${{ tip_amount }}</h6>
+          </div>
+          {% else %}
+          <div class="col-6 d-flex flex-row-reverse">
+            <h6>$0.00</h6>
+          </div>
+          {% endif %}
         </div>
-        <div class="row pl-3 pt-1">
-          <h6>Tip</h6>
-        </div>
-        <div class="row pl-3 pt-1">
-          <h5>Total</h5>
+        <div class="row pt-1">
+          <div class="col-6">
+            <h5>Total</h5>
+          </div>
+          <div class="col-6 d-flex flex-row-reverse">
+            ${{ total_with_tip }}
+          </div>
         </div>
         <!-- Tip Section Ends -->
         {% endif %}
@@ -89,7 +108,7 @@
       <!-- <div class="col-12"> -->
       {% if items|length == 0 %}
       {% else%}
-        <a href="/customers/payment/{{ cart.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a>
+        <a href="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a>
       {% endif %}
       <!-- </div> -->
     </div>

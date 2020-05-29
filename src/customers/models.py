@@ -11,6 +11,7 @@ class Cart(models.Model):
     stripe_order_id = models.CharField(null = True, max_length = 255) # The Stripe PaymentIntent API generates an id to reference paymentintent
     created_at = models.DateTimeField(auto_now_add=True)
     tip = models.DecimalField(default = 0.0, decimal_places=2, max_digits=12, validators=[MinValueValidator(0.0),MaxValueValidator(1.0)])
+    total_with_tip = models.DecimalField(decimal_places=2, max_digits=12, validators=[MinValueValidator(0.0)])
 
 
 """ this model acts as a way to keep track of how many of a MenuItem are in a cart
