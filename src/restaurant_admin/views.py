@@ -65,7 +65,8 @@ def register_view(request):
 
 def my_menus(request):
     menus = Menu.objects.filter(restaurant = Restaurant.objects.get(user = request.user)) #query set of all menus belonging to this restaurant
-    return render(request, 'restaurant/my_menus.html', {'menus': menus})
+    form = MenuForm()
+    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form})
 
 def add_menu(request):
     #if request method is a get, then the user is going to this page for the 1st time
@@ -136,7 +137,8 @@ def edit_menu(request, menu_id):
     #if method is a get, then the user is looking at the menu
     if request.method == 'GET':
         items = MenuItem.objects.filter(menu = curr_menu)
-        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items})
+        item_form = MenuItemForm()
+        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -146,8 +148,7 @@ def edit_menu(request, menu_id):
 def add_item(request, menu_id):
     #if method is get, then user is filling out form for new item
     if request.method == 'GET':
-        form = MenuItemForm()
-        return render(request, 'restaurant/add_item.html', {'form': form, 'id': menu_id}) #add menu_id for the canel button
+        return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
     #otherwise the user created a new item, and it must be added to the menu
     else:
         item = MenuItemForm(request.POST).save(commit = False)
@@ -167,6 +168,7 @@ def add_item(request, menu_id):
             file_storage.save(doc_path, doc)
             item.photo_path = doc_path
             item.save()
+        print('redirecting')
         #redirect back to edit menu page
         return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id))
 
@@ -186,10 +188,12 @@ def edit_item(request, menu_id, item_id):
     item = MenuItem.objects.filter(id = item_id).first()
     #if method is get, then user is filling out form to change item
     if request.method == 'GET':
-        return render(request, 'restaurant/edit_item.html', {'item': item})
+        return redirect('/restaruant_admin/edit_menu/{menu}'.format(menu=menu_id))
     else:
         item.name = request.POST['name']
-        item.description = request.POST['description']
+        #check if they put anything for the description
+        if request.POST['description'] != "":
+            item.description = request.POST['description']
         item.course = request.POST['course']
         item.price = request.POST['price']
         item.save()

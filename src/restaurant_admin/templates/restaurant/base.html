@@ -1,0 +1,152 @@
+{% load static %}
+{% load i18n %}
+<!doctype html>
+<html lang="en">
+ <head>
+ <!-- Required meta tags -->
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+ <!-- CoreUI CSS -->
+ <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui@3.0.0-rc.0/dist/css/coreui.min.css" crossorigin="anonymous">
+ <link rel="stylesheet" href="https://unpkg.com/@coreui/icons@1.0.0/css/all.min.css">
+ <title>CLUSTER LLC</title>
+
+ <!-- Loading static files -->
+ <link rel="stylesheet" href="{% static 'css/style.css' %}">
+ <!-- Google Fonts -->
+ <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+<!-- Confirmation page boilerplate starts here -->
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<style>
+  html, body {
+  height: 100%;
+  /* overflow-y: scroll; */
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+  .content {
+    flex: 1 0 auto;
+  }
+  .footer {
+    flex-shrink: 0;
+  }
+
+</style>
+<!-- Confirmation page boilerplate ends here -->
+
+ </head>
+  <body class="c-app">
+    <!-- SideBar Starts -->
+    <div class="c-sidebar c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+      <div class="c-sidebar-brand d-lg-down-none pt-1">
+        <a class="navbar-brand" href="/restaurant_admin/my_menus">
+          Logo Here
+        </a>
+      </div>
+
+      <ul class="c-sidebar-nav">
+        <!-- <li class="c-sidebar-nav-title">Nav Title</li> -->
+        <li class="c-sidebar-nav-item mt-4">
+          <a class="c-sidebar-nav-link" href="/restaurant_admin/my_menus">
+            <i class="c-sidebar-nav-icon cil-home"></i> {% trans "My Menus" %}
+          </a>
+        </li>
+        {% if me.user.profile.is_approved == True and me.user.profile.email_confirmed == True %}
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" href="#">
+            <i class="c-sidebar-nav-icon cil-search"></i> {% trans "My Sales" %}
+            <!-- <span class="badge badge-primary">NEW</span> -->
+          </a>
+        </li>
+        {% endif %}
+
+        {% if me.user.profile.is_approved == True and me.user.profile.email_confirmed == True %}
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" href="#">
+            <i class="c-sidebar-nav-icon cil-history"></i> {% trans "My Other stuff" %}
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" href="#">
+            <i class="c-sidebar-nav-icon cil-industry"></i> {% trans "Other Stuff?" %}
+          </a>
+        </li>
+        <li class="c-sidebar-nav-divider"></li>
+        <li class="c-sidebar-nav-title">{% trans "Help" %}</li>
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" href="#">
+            <i class="c-sidebar-nav-icon cil-envelope-closed"></i> {% trans "Contact Us" %}
+          </a>
+        </li>
+
+      </ul>
+    </div>
+    <!-- Sidebar Ends -->
+
+    <div class="c-wrapper c-fixed-components">
+      <header class="c-header c-header-light c-header-fixed">
+        <!-- Header content here -->
+        <button class="c-header-toggler c-class-toggler d-lg-none mfe-auto" type="button" data-target="#sidebar" data-class="c-sidebar-show">
+          <i class="c-sidebar-nav-icon cil-menu"></i>
+        </button>
+        <button class="c-header-toggler c-class-toggler mfs-3 d-md-down-none" type="button" data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
+          <i class="c-sidebar-nav-icon cil-menu"></i>
+        </button>
+
+        <ul class="c-header-nav ml-auto mr-4">
+          <!-- <li class="c-header-nav-item mx-2"><a class="c-header-nav-link" href="/trucker/notifications">
+              {% if num_notifications > 0 %}
+              <svg class="bi bi-exclamation-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="red" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
+                <path d="M7.002 11a1 1 0 112 0 1 1 0 01-2 0zM7.1 4.995a.905.905 0 111.8 0l-.35 3.507a.552.552 0 01-1.1 0L7.1 4.995z"/>
+              </svg>
+              {% else %}
+              <i class="c-sidebar-nav-icon cil-bell"></i>
+              {% endif %}
+          </li> -->
+          <li class="c-header-nav-item dropdown"><a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            <div class="cil-user"></div>
+          </a>
+            <div class="dropdown-menu dropdown-menu-right pt-0">
+              <div class="dropdown-header bg-light py-2"><strong>{{ request.user.user_name }}</strong></div>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">
+              <i class="c-sidebar-nav-icon cil-file mr-2 mb-2"></i> {% trans "Bank Info" %}</a>
+              <a class="dropdown-item" href="#">
+              <i class="c-sidebar-nav-icon cil-contact mr-2 mb-2"></i> {% trans "Profile" %}</a>
+              <a class="dropdown-item" href="/restaurant_admin/logout">
+              <i class="c-sidebar-nav-icon cil-account-logout mr-2 mb-2"></i> {% trans "Logout" %}</a>
+            </div>
+          </li>
+        </ul>
+      </header>
+
+      <div class="c-body">
+        <main class="c-main">
+          <!-- Main content here -->
+          {% block content%}
+          {% endblock %}
+        </main>
+      </div>
+
+      <footer class="c-footer">
+        <!-- Footer Content -->
+        <div>Cluster LLC &copy; 2020</div>
+        <div class="ml-auto"><i class="c-sidebar-nav-icon cif-es"></i> <i class="c-sidebar-nav-icon cif-mx"></i> <i class="c-sidebar-nav-icon cif-us"></i></div>
+        <!-- <div class = 'ml-auto'></div> -->
+        <!-- <div class="ml-auto">{% trans "Disrupting Mexican Logistics" %} </div> -->
+      </footer>
+    </div>
+   <!-- Popper.js first, then CoreUI JS -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha384-L2pyEeut/H3mtgCBaUNw7KWzp5n9&#43;4pDQiExs933/5QfaTh8YStYFFkOzSoXjlTb" crossorigin="anonymous"></script>
+   <script src="https://unpkg.com/@coreui/coreui@3.0.0-rc.0/dist/js/coreui.min.js"></script>
+
+   </body>
+</html>
