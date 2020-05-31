@@ -161,9 +161,14 @@
                       </tr>
                   </tbody>
               </table>
-              <button type="button" class="btn btn-success btn-lg btn-block">
-                  Confirm Payment <span class="glyphicon glyphicon-chevron-right"></span>
-              </button>
+              <!-- hidden field here for the cash code -->
+              <form id="contact" action = "review_order" method="post">-
+                {% csrf_token %}
+                <td class = 'widefield'><input class = 'field' id = 'cash_code' name = 'cash_code' type = 'text' value = {{cash_code}} hidden = 'true' style = "display : none;" readonly></td>
+                <button type="submit" name="confirm_payment" class="btn btn-success btn-lg btn-block">
+                    Confirm Payment <span class="glyphicon glyphicon-chevron-right"></span>
+                </button>
+              </form>
               <button type="button" class="btn btn-danger btn-lg btn-block">
                   Cancel <span class="glyphicon glyphicon-chevron-right"></span>
               </button>
@@ -203,6 +208,21 @@
           $('#order_total')[0].innerHTML = "$".concat(String((current_order_total + item_price).toFixed(2))); //update order total
           var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
           $('#order_subtotal')[0].innerHTML = "$".concat(String((current_order_subtotal + item_price).toFixed(2))); //update order subttotal
+          //previous block handles just the front-end on the table. Now we use ajax to update the
+          //Cart object in the backend.
+          var cash_code = document.getElementById('cash_code').value;
+          console.log("before");
+          $.ajax({
+          url: 'ajax/ajax_increase_order_quantity',
+          data: {
+            'item_name': $(this).closest("tr").children("td").children("em")[0].innerHTML,
+            'cash_code': cash_code
+          },
+          dataType: 'json',
+          success: function (data) {
+            console.log("successfully updated Cart object");
+          }
+        });
       });
       // Decrease item number button
     	$(document).on("click", ".minus_item", function(){
@@ -219,6 +239,22 @@
             $('#order_total')[0].innerHTML = "$".concat(String((current_order_total - item_price).toFixed(2))); //update order total
             var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
             $('#order_subtotal')[0].innerHTML = "$".concat(String((current_order_subtotal - item_price).toFixed(2))); //update order subttotal
+
+            //previous block handles just the front-end on the table. Now we use ajax to update the
+            //Cart object in the backend.
+            var cash_code = document.getElementById('cash_code').value;
+            console.log("before");
+            $.ajax({
+            url: 'ajax/ajax_decrease_order_quantity',
+            data: {
+              'item_name': $(this).closest("tr").children("td").children("em")[0].innerHTML,
+              'cash_code': cash_code
+            },
+            dataType: 'json',
+            success: function (data) {
+              console.log("successfully updated Cart object");
+            }
+          });
         });
   });
   </script>

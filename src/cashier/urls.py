@@ -22,5 +22,7 @@ urlpatterns = [
     path('cash_payment',views.cashPaymentView, name = 'cash_payment'),
     path('review_order',views.reviewOrderView, name = 'review_order'),
     path('cashier_login',views.loginCashier, name = 'cashier_login'),
-    path('order_history',views.orderHistoryView, name = 'order_history')
+    path('order_history',views.orderHistoryView, name = 'order_history'),
+    path('ajax/ajax_increase_order_quantity', views.ajax_increase_order_quantity, name = 'increase_order_quantity'),
+    path('ajax/ajax_decrease_order_quantity', views.ajax_decrease_order_quantity, name = 'decrease_order_quantity'),
 ]
