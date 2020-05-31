@@ -12,6 +12,10 @@ class Restaurant(models.Model):
     photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
     about = models.TextField(_("Your Restaurant's Vision"), null = True, max_length = 255)
     created_at = models.DateTimeField(auto_now_add=True)
+    #boolean field, if they answered whether or not they want us to handle payments (a popup is there if not)
+    answered_pay_question = models.BooleanField(default = False)
+    #boolean field if they want us to handle their payments or not, can be null b/c before they answer its neither
+    handle_payment = models.BooleanField(null = True)
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)

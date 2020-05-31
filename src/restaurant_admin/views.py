@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm
 from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem
@@ -15,6 +15,7 @@ import magic
 from .file_storage import FileStorage
 from django.core.files import File
 import os
+from cashier.models import CashierProfile
 #  your views here.
 
 def login_view(request):
@@ -227,3 +228,28 @@ def view_item(request, menu_id, item_id):
 
 
 """this method is to create a new Cashier"""
+def register_cashier(request):
+    #if method is a post, then the user submitted a registration from
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        cashier_form = CashierForm(request.POST)
+        if form.is_valid() and cashier_form.is_valid():
+            new_user = form.save()
+            cashier = cashier_form.save(commit=False)
+            cashier.user = new_user
+            cashier.restaurant = Restaurant.objects.filter(user = request.user).first()
+            cashier.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            email = form.cleaned_data.get('email')
+            new_user = authenticate(request, username=username, password=password)
+            if new_user is not None:
+                print('success')
+            return redirect('/restaurant_admin/cashiers')
+    #if method is get, then user is filling out form
+    else:
+        form = CashierForm()
+        user_form = UserForm()
+        cashiers = CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
+        context = {'form' : form, 'user_form' : user_form, 'cashiers': cashiers}
+        return render(request, 'restaurant/cashiers.html', context)
