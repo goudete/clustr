@@ -30,6 +30,9 @@ def cashPaymentView(request):
 def reviewOrderView(request):
     return render(request,'review_order2.html')
 
+def orderHistoryView(request):
+    return render(request,'order_history.html')
+
 def loginCashier(request):
     form = CashierLoginForm
     if request.method == "POST":
