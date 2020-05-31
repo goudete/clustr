@@ -11,3 +11,4 @@ class CashierProfile(models.Model):
     can have the same login number, instead there will be a check to make sure that two cashiers that
     work at the same restaurant dont have the same login_number in the restaurant_admin.views"""
     login_number = models.PositiveIntegerField(default = 0)
+    name = models.CharField(null = True, max_length = 255) 

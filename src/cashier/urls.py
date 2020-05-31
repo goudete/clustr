@@ -20,5 +20,6 @@ from . import views
 urlpatterns = [
     path('base',views.baseView),
     path('cash_payment',views.cashPaymentView, name = 'cash_payment'),
-    path('review_order',views.reviewOrderView, name = 'review_order')
+    path('review_order',views.reviewOrderView, name = 'review_order'),
+    path('cashier_login',views.loginCashier, name = 'cashier_login')
 ]
