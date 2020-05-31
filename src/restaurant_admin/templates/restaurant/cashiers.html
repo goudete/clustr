@@ -1,0 +1,133 @@
+{% extends 'restaurant/base.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<html>
+
+  <!-- <head>
+    <style>
+
+    </style>
+  </head> -->
+
+  <body>
+    <div class="container">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
+
+          <!-- <div class ='card-header'> -->
+
+            <div class = 'row justify-content-center mb-2'>
+              <h2>
+                <b>
+                  {% trans "Your Cashiers" %}
+                </b>
+                <a onclick = 'cashierForm()' style = 'cursor: pointer;'>
+                  <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
+                  </svg>
+                </a>
+              </h2>
+            </div>
+
+            <div class = 'row justify-content-center'>
+              <div class = 'card mt-5 mb-5' id = 'cashier_form' style = 'display:none; width:20rem;' >
+
+                <div class ='card-header'>
+                  <div class = 'row justify-content-center'>
+                    <h3>{% trans 'Register New Cashier' %}<h3>
+                  </div>
+                </div>
+
+                <div class = 'card-body'>
+                  <form method = 'post' action = '/restaurant_admin/cashiers'>
+                    {% csrf_token %}
+
+                    <div class = 'row justify-content-center mt-2'>
+                      <div class = 'col'>
+                        {{user_form.username|as_crispy_field}}
+                      </div>
+                    </div>
+
+                    <div class = 'row justify-content-center mt-2'>
+                      <div class = 'col'>
+                        {{user_form.email|as_crispy_field}}
+                      </div>
+                    </div>
+
+                    <div class = 'row justify-content-center mt-2'>
+                      <div class = 'col'>
+                        {{user_form.password1|as_crispy_field}}
+                      </div>
+                    </div>
+
+                    <div class = 'row justify-content-center mt-2'>
+                      <div class = 'col'>
+                        {{user_form.password2|as_crispy_field}}
+                      </div>
+                    </div>
+
+                    <div class = 'row justify-content-center mt-2'>
+                      <div class = 'col'>
+                        {{form.name|as_crispy_field}}
+                      </div>
+                    </div>
+
+                    <div class = 'row justify-content-center mt-2'>
+                      <div class = 'col'>
+                        {{form.login_number|as_crispy_field}}
+                      </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="row justify-content-center mt-5 mb-5">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+                        </div>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+            </div>
+          <!-- </div> -->
+
+          <!-- <div class = 'card-body'> -->
+            {% if cashiers|length == 0 %}
+            <div class = 'row justify-content-center mt-5'>
+              <h3>{% trans 'No Cashiers Yet' %}</h3>
+            </div>
+            {% else %}
+            <div id = 'cashier_container' class = 'row justify-content-center mt-5'>
+
+              <table class = 'table table-hover'>
+                <thead>
+                  <tr>
+                    <th scope = 'col'>{% trans 'Name' %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for cash in cashiers %}
+                  <tr>
+                      <td><b style = 'color:black;'>{{ cash.name }}</b></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+            {% endif %}
+          <!-- </div> -->
+        <!-- </div> -->
+
+    </div>
+  </body>
+  <script>
+    function cashierForm(){
+      if(document.getElementById('cashier_form').style.display == 'block') document.getElementById('cashier_form').style.display = 'none'
+      else document.getElementById('cashier_form').style.display = 'block'
+    }
+  </script>
+</html>
+{% endblock %}

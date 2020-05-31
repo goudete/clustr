@@ -56,26 +56,17 @@
             <i class="c-sidebar-nav-icon cil-home"></i> {% trans "My Menus" %}
           </a>
         </li>
-        {% if me.user.profile.is_approved == True and me.user.profile.email_confirmed == True %}
+
         <li class="c-sidebar-nav-item">
           <a class="c-sidebar-nav-link" href="#">
             <i class="c-sidebar-nav-icon cil-search"></i> {% trans "My Sales" %}
             <!-- <span class="badge badge-primary">NEW</span> -->
           </a>
         </li>
-        {% endif %}
-
-        {% if me.user.profile.is_approved == True and me.user.profile.email_confirmed == True %}
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" href="#">
-            <i class="c-sidebar-nav-icon cil-history"></i> {% trans "My Other stuff" %}
-          </a>
-        </li>
-        {% endif %}
 
         <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" href="#">
-            <i class="c-sidebar-nav-icon cil-industry"></i> {% trans "Other Stuff?" %}
+          <a class="c-sidebar-nav-link" href="/restaurant_admin/cashiers">
+            <i class="c-sidebar-nav-icon cil-industry"></i> {% trans "Cashiers" %}
           </a>
         </li>
         <li class="c-sidebar-nav-divider"></li>
