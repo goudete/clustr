@@ -1,6 +1,8 @@
 {% extends 'customers/base.html'%}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load i18n %}
+
 
 {% block content %}
 <nav class="navbar navbar-light bg-light">
@@ -40,7 +42,7 @@
       <!-- {{ form.custom_instructions|as_crispy_field }} -->
       <!-- <label for="custom_instructions">Custom Instructions:</label> -->
       <!-- <input class="form-control" type="text" name="custom_instructions" placeholder="Custom Instructions..."> -->
-      <textarea class="form-control" name="custom_instructions" placeholder="Custom Instructions..." rows="3"></textarea>
+      <textarea class="form-control" name="custom_instructions" placeholder=" {% trans 'Custom Instructions...' %} " rows="3"></textarea>
 
     </div>
 
@@ -51,7 +53,7 @@
     </div>
 
       <div class="row justify-content-center mb-4 mt-4">
-        <button type="submit" class="btn btn-dark btn-circle btn-xl">Add to Cart</button>
+        <button type="submit" class="btn btn-dark btn-circle btn-xl">{% trans "Add to Cart" %}</button>
       </div>
   </form>
 </div>
@@ -61,9 +63,9 @@
 <div class="fixed-bottom">
   <div class="row justify-content-center mb-3">
     {% if cart.total %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart ${{ cart.total }}</a>
+    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total }}</a>
     {% else %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart</a>
+    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart" %}</a>
     {% endif %}
   </div>
 </div>

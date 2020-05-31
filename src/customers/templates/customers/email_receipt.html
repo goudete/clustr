@@ -1,4 +1,5 @@
 {% extends 'customers/base.html'%}
+{% load i18n %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,7 +10,7 @@
   <div class="card shadow p-3 bg-white rounded mt-5">
     <div class="card-body">
       <div class="row pl-2">
-        <h6 class="cart-title pb-3">Would you like to receive an email receipt?</h6>
+        <h6 class="cart-title pb-3">{% trans "Would you like to receive an email receipt?" %}</h6>
       </div>
 
       <form method = 'post' action = '/customers/email_receipt/{{ cart.id }}'>
@@ -17,7 +18,7 @@
 
         <!-- <div class = 'row justify-content-center'> -->
           <div class="form-group mx-sm-3 mb-2">
-            <label for="email_input">Email address</label>
+            <label for="email_input">{% trans "Email address" %}</label>
             <input type="email" class="form-control" name="email_input" id="email_input" placeholder="name@localtres.com">
           </div>
         <!-- </div> -->
@@ -25,13 +26,13 @@
         <!-- Buttons -->
         <div class="row justify-content-center">
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
             </div>
         </div>
 
       </form>
       <div class="row justify-content-center mt-3">
-        <a href="/customers/order_confirmation/{{ cart.id }}">No thanks</a>
+        <a href="/customers/order_confirmation/{{ cart.id }}">{% trans "No thanks" %}</a>
       </div>
     </div>
   </div>

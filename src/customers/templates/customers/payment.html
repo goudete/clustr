@@ -1,5 +1,5 @@
 {% extends 'customers/base.html'%}
-<!-- {% load static %} -->
+{% load i18n %}
 
 {% block content %}
 <style>
@@ -70,7 +70,7 @@
       </svg>
     <!-- </div> -->
     <!-- <div class="col-6"> -->
-      <h5> Payment</h5>
+      <h5>{% trans "Payment" %}</h5>
     <!-- </div> -->
   </div>
 
@@ -86,7 +86,7 @@
           </svg>
         </div>
         <div class="col-10">
-          <h5 class="cart-title pb-2">Credit or Debit Card</h5>
+          <h5 class="cart-title pb-2">{% trans "Credit or Debit Card" %}</h5>
         </div>
       </div>
 
@@ -102,7 +102,7 @@
           </div>
 
           <button class="button" id="submit" data-secret="{{ client_secret }}" cart="{{ cart.id }}">
-            Submit Payment
+            {% trans "Submit Payment" %}
           </button>
       </form>
 
@@ -121,11 +121,11 @@
           </svg>
         </div>
         <div class="col-10">
-          <h4 class="cart-title pb-2">Cash</h4>
+          <h4 class="cart-title pb-2">{% trans "Cash" %}</h4>
         </div>
       </div>
       <div class="row pl-2">
-        <h6>Please show the cashier this number:</h6>
+        <h6>{% trans "Please show the cashier this number:" %}</h6>
       </div>
       <div class="row justify-content-center mt-4 w-100">
         <div class="card bg-light mb-3" style="max-width: 10rem;">
