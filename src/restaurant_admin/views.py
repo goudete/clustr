@@ -224,3 +224,6 @@ def view_item(request, menu_id, item_id):
     else:
         #if method is a post, then just redirect to this page as a get
         return redirect('/restaurant_admin/view_item/{m_id}/{i_id}'.format(m_id = menu_id, i_id = item_id))
+
+
+"""this method is to create a new Cashier"""
