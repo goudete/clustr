@@ -13,7 +13,6 @@ class Restaurant(models.Model):
     about = models.TextField(_("Your Restaurant's Vision"), null = True, max_length = 255)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
     restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE) #this connects menu to restaurant

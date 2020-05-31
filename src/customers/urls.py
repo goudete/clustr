@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.show_all_menus), #this one is for showing all menus in your db
     path('<int:restaurant_id>/<int:menu_id>', views.create_cart),
     path('view_menu/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.view_menu),
+    path('about/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.about_page),
     path('view_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.view_item),
     path('add_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.add_item), #for adding item to cart
     path('remove_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.remove_item), #for removing item from cart
@@ -14,4 +15,6 @@ urlpatterns = [
     path('payment/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.payment),
     path('order_confirmation/<int:cart_id>', views.order_confirmation),
     path('calculate_tip/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:tip>', views.calculate_tip),
+    path('email_receipt/<int:cart_id>', views.email_receipt),
+    path('feedback/<int:cart_id>', views.feedback),
 ]

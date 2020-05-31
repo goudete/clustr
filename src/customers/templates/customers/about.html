@@ -1,0 +1,44 @@
+{% extends 'customers/base.html'%}
+{% load static %}
+
+{% block content %}
+<!-- logo -->
+<div class="jumbotron">
+  <div class="container text-center">
+    <h1>{{ restaurant.name }}</h1>
+    <p>{{ restaurant.info }}</p>
+    <!-- <img src="..." class="img-fluid" alt="Responsive image"> -->
+  </div>
+</div>
+<!-- end logo -->
+
+<div class="container-fluid">
+  <!-- Menu and About Buttons -->
+  <div class="row justify-content-center pt-4 pb-4">
+    <div class="col">
+      <div class="d-flex justify-content-end">
+        <a href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">Menu</a>
+      </div>
+    </div>
+    <div class="col">
+      <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">About</a>
+    </div>
+  </div>
+  <!-- End Menu and About buttons -->
+
+  <!-- Restaurant Name and info -->
+  <div class="row ml-1">
+    <h5>{{ restaurant.name }}</h5>
+  </div>
+  <div class="row ml-1 mb-4">
+    <h6>{{ restaurant.info }}</h6>
+  </div>
+  <!-- End  -->
+
+  <hr>
+
+  <div class="row ml-2 mt-4">
+    {{ restaurant.about }}
+  </div>
+
+{% endblock %}

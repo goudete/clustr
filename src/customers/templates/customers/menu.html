@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="col">
-      <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">About</a>
+      <a href="/customers/about/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">About</a>
     </div>
   </div>
   <!-- End Menu and About buttons -->
@@ -67,11 +67,15 @@
 
   <!-- View Cart Button -->
   <div class="fixed-bottom">
+    {% if cart.total %}
     <div class="row justify-content-center mb-3">
-      <!-- <div class="col-12"> -->
-        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart $</a>
-      <!-- </div> -->
+        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart ${{ cart.total }}</a>
     </div>
+    {% else %}
+    <div class="row justify-content-center mb-3">
+        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart</a>
+    </div>
+    {% endif %}
   </div>
   <!-- Cart Button ends -->
   <footer class="page-footer pt-4">

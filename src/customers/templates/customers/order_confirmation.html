@@ -8,6 +8,21 @@
   }
 </style>
 
+
+  <!-- Feedback success Message -->
+  {% if messages %}
+  {% for message in messages %}
+  {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+  <div class="row justify-content-center alert alert-primary pt-3 pb-3" role="alert">
+      <!-- <div class="col-md-8"> -->
+        <h5>{{ message }}</h5>
+      <!-- </div> -->
+  </div>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+
+  <!-- End Message -->
 <div class="container-fluid">
   <div class="card text-center text-white p-3 bg-custom-1 mt-5 mb-3">
     <div class="card-body">
@@ -15,9 +30,7 @@
         <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
       </svg>
       <h5 class="card-title pt-3">Payment Confirmed</h5>
-      <p>Order Number: </p>
-      <!-- <p>Payed On: </p> -->
-      <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+      <p>Order Number: <b>{{ cart.cash_code }}</b></p>
     </div>
   </div>
 
@@ -31,27 +44,60 @@
           </svg>
         </div>
         <div class="col-10">
-          <h5 class="cart-title pb-2">Order Details</h5>
+          <h5 class="cart-title pb-1">Order Details</h5>
         </div>
       </div>
-      <div class="card-body w-100">
         {% for item in items %}
-        <div class="row mt-4 mb-4">
+        <div class="row mt-3">
           <div class="col-2">
             {{ item.quantity }}
           </div>
-          <div class="col-7">
+          <div class="col-6">
             <h6>{{ item.item.name }}</h6>
           </div>
-          <div class="col-3">
+          <div class="col-4">
             <h6>${{ item.price }}</h6>
           </div>
         </div>
+        {% if item.custom_instructions %}
+        <div class="row mb-2">
+          <div class="col-2 d-flex flex-row-reverse">
+            <p>.</p>
+          </div>
+          <div class="col-10">
+            <p>{{ item.custom_instructions }}</p>
+          </div>
+        </div>
+        {% endif %}
         <hr>
         {% endfor %}
-      </div>
     </div>
   </div>
+
+  <!-- Feedback Form -->
+  <div class="card shadow p-3 bg-white rounded mb-4">
+    <div class="card-body">
+      <div class="row">
+          <h5 class="cart-title pb-1">Feedback</h5>
+      </div>
+      <form method = 'post' action = '/customers/feedback/{{ cart.id }}'>
+        {% csrf_token %}
+
+        <div class = 'row justify-content-center'>
+          <input class="form-control" type="text" id="feedback" name="feedback" placeholder="Feedback about this app?">
+        </div>
+
+        <!-- Buttons -->
+        <div class="row justify-content-center mt-3 mb-3">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
 
   <footer class="page-footer pt-4">
       <div class="row justify-content-center mb-3">

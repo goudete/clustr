@@ -3,10 +3,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter
-from .forms import CustomOrderForm
+from .forms import CustomOrderForm, CustomTipForm, EmailForm, FeedbackForm
 import stripe
 import os
 from decimal import Decimal
+from django.contrib import messages
 
 # Create your views here.
 
@@ -24,13 +25,15 @@ def create_cart(request, restaurant_id, menu_id):
         cart.total = 0
         cart.total_with_tip = 0
         cart.save()
+        cart.cash_code = 'QR' + str(cart.id)
+        cart.save()
         #redirect to view menu page
         return redirect('/customers/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
     #otherwise it sends you to the page w/ all the menus
     else:
         return redirect('/customers')
 
-
+'''Displays restaurant's menu'''
 def view_menu(request, cart_id, restaurant_id, menu_id):
     if request.method == 'GET':
         curr_cart = Cart.objects.get(id = cart_id)
@@ -40,6 +43,15 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         return render(request, 'customers/menu.html', {'items': items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu})
     else:
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+
+def about_page(request, cart_id, restaurant_id, menu_id):
+    if request.method == 'GET':
+        curr_cart = Cart.objects.get(id = cart_id)
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        return render(request, 'customers/about.html', {'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu})
+    else:
+        return redirect('/customers/about/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 
 """ for this template, make sure the item has a button to add to the cart, with a specified quantity,
@@ -179,9 +191,19 @@ def view_cart(request, cart_id, restaurant_id, menu_id):
         #if method is post, just redirect back to page
         return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
-"""Calculates tip depending on what button is """
+"""Calculates tip depending on what button is pressed. If custom tip, it is passed with POST method in form"""
 def calculate_tip(request, cart_id, restaurant_id, menu_id, tip):
     if request.method == 'POST':
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        # form = CustomTipForm(request.POST, instance=curr_cart)
+        form = CustomTipForm(request.POST)
+
+        if form.is_valid():
+            custom_tip = form.cleaned_data['tip']
+            print("custom_tip", custom_tip)
+            curr_cart.tip = custom_tip
+            curr_cart.total_with_tip = curr_cart.total + custom_tip
+            curr_cart.save()
         return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
     else:
         curr_cart = Cart.objects.filter(id = cart_id).first()
@@ -192,7 +214,7 @@ def calculate_tip(request, cart_id, restaurant_id, menu_id, tip):
         curr_cart.tip = tip_amount
         curr_cart.total_with_tip = curr_cart.total + tip_amount
         curr_cart.save()
-        return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items, 'restaurant': curr_rest, 'menu': curr_menu, 'tip_amount': tip_amount, 'total_with_tip': curr_cart.total + tip_amount})
+        return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items, 'restaurant': curr_rest, 'menu': curr_menu})
 
 """ This method creates a PaymentIntent (Stripe API), saves the paymentintent id to the cart model and renders
     payment.html. All Stripe stuff is handled in the JS scripts in the payment template. If the cart is
@@ -219,6 +241,9 @@ def payment(request, cart_id, restaurant_id, menu_id):
         cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
+        if cart.total_with_tip == 0:
+            cart.total_with_tip = cart.total
+            cart.save()
         #stripe API stuff here
         stripe.api_key = settings.STRIPE_SECRET_KEY
         intent = stripe.PaymentIntent.create(
@@ -232,6 +257,23 @@ def payment(request, cart_id, restaurant_id, menu_id):
         #if method is a get, then they're inputting payment info
         return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu})
 
+
+''' Handles email form after the user pays. This is an intermediary step between payment
+    and order confirmation. For some reason, email not saving **FIX**'''
+def email_receipt(request, cart_id):
+    form = EmailForm()
+    if request.method == 'GET':
+        cart = Cart.objects.filter(id = cart_id).first()
+        return render(request, 'customers/email_receipt.html', {'cart': cart, 'form': form})
+    else:
+        cart = Cart.objects.filter(id = cart_id).first()
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            user_email = form.cleaned_data['email_input']
+            cart.email = user_email
+            cart.save()
+            print('user_email:', cart.email)
+        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
 '''This method sends order to kitchen, changes cart.is_paid to true and renders the confirmation page
     TODO: send order to kitchen'''
@@ -247,3 +289,22 @@ def order_confirmation(request, cart_id):
     else:
         #if this is a post, just send back to the view cart page
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
+
+'''Handles Feedback form in order_confirmation. Me falta escribir lo que pasa en el POST method
+    y poner el form en el template'''
+def feedback(request, cart_id):
+    form = FeedbackForm()
+    if request.method == 'POST':
+        #handle feedback form
+        cart = Cart.objects.filter(id = cart_id).first()
+        form = FeedbackForm(request.POST)
+        feedback = form.save(commit = False)
+        feedback.cart = cart
+        feedback.save()
+        print(feedback.feedback)
+        print(feedback.cart)
+        messages.info(request, "Thank you for your feedback!")
+        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
+    else:
+        cart = Cart.objects.filter(id = cart_id).first()
+        return render(request, 'customers/order_confirmation.html', {'cart': cart, 'form': form})
