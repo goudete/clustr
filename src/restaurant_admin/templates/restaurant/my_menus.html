@@ -18,6 +18,45 @@
 
           <!-- <div class ='card-header'> -->
 
+          <!-- the alert card if they havent picked to handle payments or not -->
+          {% if me.answered_pay_question == False %}
+            <div class = 'row justify-content-center mb-2'>
+              <div class="card text-white bg-warning mb-3" style = 'width: 20rem;'>
+                <div class = 'card-body'>
+                  <div class = 'row justify-content-center'>
+                    <div class = 'col'>
+                      <h5>{% trans 'Would You Like Us to Handle the Payment Process for You?' %}</h5>
+                    </div>
+                  </div>
+                  <div class = 'row justify-content-center mt-2'>
+                    <div class = 'col'>
+                      <form action = '/restaurant_admin/answer_question' method = 'post'>
+                        {% csrf_token %}
+                        <div class = 'row'>
+                          <div class = 'col'>
+                            <input type="radio" id="no" name="answer" value="no">
+                            <label for="no">{% trans 'No' %}</label><br>
+                          </div>
+                          <div class = 'col ml-3'>
+                            <input type="radio" id="yes" name="answer" value="yes">
+                            <label for="yes">{% trans 'Yes' %}</label><br>
+                          </div>
+                        </div>
+
+                        <div class = 'row justify-content-center'>
+                          <div class = 'col'>
+                            <button class = 'rounded' type = 'submit'>{% trans 'Submit' %}</button>
+                          </div>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
             <div class = 'row justify-content-center mb-2'>
               <h2>
                 <b>

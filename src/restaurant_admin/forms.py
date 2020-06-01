@@ -94,6 +94,12 @@ class CashierForm(forms.ModelForm):
         self.fields['name'].required = True
         self.fields['login_number'].required = True
 
+    def clean_login_number(self):
+        login_no = self.cleaned_data.get('login_number')
+        if CashierProfile.objects.filter(login_number = login_number).exists():
+            raise forms.ValidationError("Cashier With that login exists")
+        return login_no
+
     class Meta:
         model = CashierProfile
         fields = ('name', 'login_number')
