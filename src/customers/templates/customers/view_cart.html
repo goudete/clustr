@@ -1,4 +1,5 @@
 {% extends 'customers/base.html'%}
+{% load i18n %}
 
 {% block content %}
   <nav class="navbar navbar-light bg-light">
@@ -23,12 +24,12 @@
     <div class="card shadow p-3 bg-white rounded">
       <div class="card-body">
         <div class="row pl-3">
-          <h5 class="cart-title">Your Order</h5>
+          <h5 class="cart-title">{% trans "Your Order" %}</h5>
         </div>
         <hr>
         {% if items|length == 0 %}
         <div class="row justify-content-center mt-5">
-          <h4>Your Cart is Empty!</h4>
+          <h4>{% trans "Your Cart is Empty!" %}</h4>
         </div>
         {% else %}
         {% for item in items %}
@@ -62,7 +63,7 @@
         {% else %}
         <!-- Tip Section Begins -->
         <div class="row pl-3 pt-3">
-          <h5>Tip</h5>
+          <h5>{% trans "Tip" %}</h5>
         </div>
 
         <div class="row pt-2 justify-content-center">
@@ -71,7 +72,7 @@
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/15" role="button">15%</a>
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">20%</a>
             <!-- <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">Custom</a> -->
-            <a class="btn btn-secondary" onclick = 'Custom_Tip_Form()' style = 'cursor: pointer;'>Custom</a>
+            <a class="btn btn-secondary" onclick = 'Custom_Tip_Form()' style = 'cursor: pointer;'>{% trans "Custom" %}</a>
           </div>
         </div>
 
@@ -82,7 +83,7 @@
 
                 <div class = 'row justify-content-center'>
                   <!-- <div class = 'col'> -->
-                  <label for="custom_tip">Custom Tip $</label>
+                  <label for="custom_tip">{% trans "Custom Tip $" %}</label>
                   <input class="form-control" type="number" step="0.01" value="1.00" id="tip" name="tip" min="1" placeholder="Custom Tip...">
                   <!-- </div> -->
                 </div>
@@ -90,7 +91,7 @@
                 <!-- Buttons -->
                 <div class="row justify-content-center mt-3 mb-3">
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
                     </div>
                 </div>
 
@@ -102,7 +103,7 @@
 
         <div class="row pt-3">
           <div class="col-6">
-            <h6>Subtotal</h6>
+            <h6>{% trans "Subtotal" %}</h6>
           </div>
           <div class="col-6 d-flex flex-row-reverse">
             ${{ cart.total }}
@@ -111,7 +112,7 @@
 
         <div class="row pt-1">
           <div class="col-6">
-            <h6>Tip</h6>
+            <h6>{% trans "Tip" %}</h6>
           </div>
           {% if cart.tip %}
           <div class="col-6 d-flex flex-row-reverse">
@@ -125,7 +126,7 @@
         </div>
         <div class="row pt-1">
           <div class="col-6">
-            <h5>Total</h5>
+            <h5>{% trans "Total" %}</h5>
           </div>
           {% if cart.total_with_tip %}
           <div class="col-6 d-flex flex-row-reverse">
@@ -148,7 +149,7 @@
           <!-- <div class="col-12"> -->
           {% if items|length == 0 %}
           {% else%}
-            <a href="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order</a>
+            <a href="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">{% trans "Place Order" %}</a>
           {% endif %}
           <!-- </div> -->
         </div>
