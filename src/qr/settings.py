@@ -12,10 +12,9 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import environ
-
+import django_heroku
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 #env variables init
 env = environ.Env(
     # set casting, default value
@@ -86,6 +85,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'qr.wsgi.application'
 
+# Activate Django-Heroku.
+django_heroku.settings(locals())
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
