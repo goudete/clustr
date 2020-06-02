@@ -1,1 +1,2 @@
-web: gunicorn qr.wsgi --log-file -   
+web: gunicorn qr.wsgi --log-file -
+release: python manage.py migrate
