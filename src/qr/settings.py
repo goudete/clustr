@@ -93,12 +93,12 @@ django_heroku.settings(locals())
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
           'NAME': env('DB_NAME'),
           'USER': env('DB_USER'),
-          'PASSWORD': env("MYSQL_PASS"),
+          'PASSWORD': env("DB_PASS"),
           'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
-          'PORT': env('DB_PORT'),
+          'PORT': '',
     }
 }
 
