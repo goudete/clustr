@@ -32,6 +32,9 @@
       </svg>
       <h5 class="card-title pt-3">{% trans "Payment Confirmed" %}</h5>
       <p>{% trans "Order Number:" %} <b>{{ cart.cash_code }}</b></p>
+      {% if cart.email %}
+      <p>{% trans "Email Receipt:" %} {{ cart.email }}</p>
+      {% endif %}
     </div>
   </div>
 

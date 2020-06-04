@@ -16,7 +16,7 @@
 <div class="container-fluid">
   <!-- Item image -->
   <div class="row">
-    <img src="{% static item.photo_path %}" class="img-fluid" alt="Responsive image">
+    <img src="{% static item.photo_path %}" class="img-fluid img-thumbnail" alt="Responsive image">
   </div>
   <!-- End item image -->
 
@@ -57,11 +57,11 @@
 <div class="fixed-bottom">
   <div class="row justify-content-center mb-3">
     {% if cart.total_with_tip %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
+    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
     {% elif cart.total %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total }}</a>
+    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total }}</a>
     {% else %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart" %}</a>
+    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
     {% endif %}
   </div>
 </div>

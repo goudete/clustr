@@ -19,11 +19,11 @@
   <div class="row justify-content-center pt-4 pb-4">
     <div class="col">
       <div class="d-flex justify-content-end">
-        <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">{% trans "Menu" %}</a>
+        <a href="#" class="btn btn-dark btn-circle btn-sm" role="button">{% trans "Menu" %}</a>
       </div>
     </div>
     <div class="col">
-      <a href="/customers/about/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm" role="button">{% trans "About" %}</a>
+      <a href="/customers/about/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">{% trans "About" %}</a>
     </div>
   </div>
   <!-- End Menu and About buttons -->
@@ -71,15 +71,15 @@
   <div class="fixed-bottom">
     {% if cart.total_with_tip %}
     <div class="row justify-content-center mb-3">
-        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
+        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
     </div>
     {% elif cart.total %}
     <div class="row justify-content-center mb-3">
-        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total }}</a>
+        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total }}</a>
     </div>
     {% else %}
     <div class="row justify-content-center mb-3">
-        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart" %}</a>
+        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
     </div>
     {% endif %}
   </div>

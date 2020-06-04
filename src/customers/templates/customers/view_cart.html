@@ -2,6 +2,31 @@
 {% load i18n %}
 
 {% block content %}
+
+<style>
+  .minus_item, .plus_item {
+    background-color: transparent; /* Blue background */
+    border: none; /* Remove borders */
+    color: black; /* White text */
+    padding: 3px 5px; /* Some padding */
+    font-size: 20px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+  }
+
+  #item_quantity{
+    font-size: 20px;
+  }
+
+  #custom_btn{
+    color:white;
+  }
+
+  a:active {
+    background-color: yellow;
+  }
+
+
+</style>
   <nav class="navbar navbar-light bg-light">
     <a class="navbar-brand" href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
     <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -65,7 +90,7 @@
             </div> -->
             <div class="col-10">
               <button class="minus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-minus-square fa-lg" style = "margin-left: 0cm;"></i></button>
-                <span class="item_quantity_{{ forloop.counter }}"><b>{{ item.quantity }}</b></span>
+                <span class="item_quantity_{{ forloop.counter }}" id="item_quantity"><b>{{ item.quantity }}</b></span>
               <button class="plus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-plus-square fa-lg"></i></button>
             </div>
           </div>
@@ -89,7 +114,7 @@
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/10" role="button">10%</a>
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/15" role="button">15%</a>
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">20%</a>
-            <a class="btn btn-secondary" onclick = 'Custom_Tip_Form()' style = 'cursor: pointer;'>{% trans "Custom" %}</a>
+            <a class="btn btn-secondary" onclick = 'Custom_Tip_Form()' id="custom_btn" style = 'cursor: pointer;'>{% trans "Custom" %}</a>
           </div>
         </div>
 
