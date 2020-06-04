@@ -92,12 +92,12 @@ WSGI_APPLICATION = 'qr.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-          'NAME': 'qr',
-          'USER': 'root',
-          'PASSWORD': env("MYSQL_PASS"),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': env('DB_NAME'),
+          'USER': env('DB_USER'),
+          'PASSWORD': env("DB_PASS"),
           'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
-          'PORT': '3306',
+          'PORT': '5432',
     }
 }
 
