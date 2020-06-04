@@ -39,16 +39,10 @@
     {% csrf_token %}
 
     <div class="row justify-content-center mb-2">
-      <!-- {{ form.custom_instructions|as_crispy_field }} -->
-      <!-- <label for="custom_instructions">Custom Instructions:</label> -->
-      <!-- <input class="form-control" type="text" name="custom_instructions" placeholder="Custom Instructions..."> -->
       <textarea class="form-control" name="custom_instructions" placeholder=" {% trans 'Custom Instructions...' %} " rows="3"></textarea>
-
     </div>
 
     <div class="row justify-content-center">
-      <!-- {{ form.quantity|as_crispy_field }} -->
-      <!-- <label for="quantity">Quantity:</label> -->
       <input class="form-control" type="number" name="quantity" min="1" value="1" placeholder="Quantity">
     </div>
 
@@ -62,7 +56,9 @@
 <!-- View Cart Button -->
 <div class="fixed-bottom">
   <div class="row justify-content-center mb-3">
-    {% if cart.total %}
+    {% if cart.total_with_tip %}
+    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
+    {% elif cart.total %}
     <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total }}</a>
     {% else %}
     <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart" %}</a>

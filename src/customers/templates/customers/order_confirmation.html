@@ -72,6 +72,45 @@
         {% endif %}
         <hr>
         {% endfor %}
+
+        <div class="row pt-3">
+          <div class="col-6">
+            <h6>{% trans "Subtotal" %}</h6>
+          </div>
+          <div class="col-6 d-flex flex-row-reverse">
+            ${{ cart.total }}
+          </div>
+        </div>
+
+        <div class="row pt-1">
+          <div class="col-6">
+            <h6>{% trans "Tip" %}</h6>
+          </div>
+          {% if cart.tip %}
+          <div class="col-6 d-flex flex-row-reverse">
+            ${{ cart.tip }}
+          </div>
+          {% else %}
+          <div class="col-6 d-flex flex-row-reverse">
+            $0.00
+          </div>
+          {% endif %}
+        </div>
+        <div class="row pt-1">
+          <div class="col-6">
+            <h5>{% trans "Total" %}</h5>
+          </div>
+          {% if cart.total_with_tip %}
+          <div class="col-6 d-flex flex-row-reverse">
+            ${{ cart.total_with_tip }}
+          </div>
+          {% else %}
+          <div class="col-6 d-flex flex-row-reverse">
+            ${{ cart.total }}
+          </div>
+          {% endif %}
+        </div>
+        <!-- Tip Section Ends -->
     </div>
   </div>
 
