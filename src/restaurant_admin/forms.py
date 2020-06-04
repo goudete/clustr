@@ -96,7 +96,7 @@ class CashierForm(forms.ModelForm):
 
     def clean_login_number(self):
         login_no = self.cleaned_data.get('login_number')
-        if CashierProfile.objects.filter(login_number = login_number).exists():
+        if CashierProfile.objects.filter(login_number = login_no).exists():
             raise forms.ValidationError("Cashier With that login exists")
         return login_no
 
