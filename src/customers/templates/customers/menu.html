@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="col">
-      <a href="/customers/about/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">{% trans "About" %}</a>
+      <a href="/customers/about/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm" role="button">{% trans "About" %}</a>
     </div>
   </div>
   <!-- End Menu and About buttons -->
@@ -51,7 +51,7 @@
         <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" style="text-decoration:none; color:#000000">
         <div class="media">
           <div class="media-body">
-            <h6 class="mt-0 mb-1">{{ item.name }}</h6>
+            <h5 class="mt-0 mb-2">{{ item.name }}</h5>
             <p>{{ item.description }}<br>
             ${{ item.price}}</p> <br>
           </div>
@@ -69,7 +69,11 @@
 
   <!-- View Cart Button -->
   <div class="fixed-bottom">
-    {% if cart.total %}
+    {% if cart.total_with_tip %}
+    <div class="row justify-content-center mb-3">
+        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
+    </div>
+    {% elif cart.total %}
     <div class="row justify-content-center mb-3">
         <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">{% trans "View Cart $" %}{{ cart.total }}</a>
     </div>

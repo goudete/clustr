@@ -33,28 +33,46 @@
         </div>
         {% else %}
         {% for item in items %}
-        <div class="row mt-3">
-          <div class="col-2">
-            {{ item.quantity }}
-          </div>
-          <div class="col-6">
-            <h6>{{ item.item.name }}</h6>
-          </div>
-          <div class="col-4">
-            <h6>${{ item.price }}</h6>
-          </div>
+        <div class="col-2" hidden>
+          <span id="item_id_{{ forloop.counter }}"">{{ item.id }}</span>
         </div>
-        {% if item.custom_instructions %}
-        <div class="row mb-2">
-          <div class="col-2 d-flex flex-row-reverse">
-            <p>.</p>
+
+        <div id="item_row_{{ forloop.counter }}">
+          <div class="row mt-3">
+            <div class="col-8">
+              <h6 id="item_name_{{ forloop.counter }}">{{ item.item.name }}</h6>
+            </div>
+            <div class="col-4">
+              <span class="item_price_{{ forloop.counter }}"><h6>${{ item.price }}</h6></span>
+            </div>
           </div>
-          <div class="col-10">
-            <p>{{ item.custom_instructions }}</p>
+          {% if item.custom_instructions %}
+          <div class="row mb-1">
+            <div class="col-1">
+
+            </div>
+            <div class="col-11">
+              <p>{{ item.custom_instructions }}</p>
+            </div>
           </div>
+          {% endif %}
+
+          <!-- Edit Item Code goes here  -->
+          <div class="row mt-2">
+            <!-- Trash icon -->
+            <!-- <div class="col-2">
+              <a href="#" id="remove_item" role="button" aria-pressed="true" style="color:#000000"><i class="far fa-trash-alt fa-md"></i></a>
+            </div> -->
+            <div class="col-10">
+              <button class="minus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-minus-square fa-lg" style = "margin-left: 0cm;"></i></button>
+                <span class="item_quantity_{{ forloop.counter }}"><b>{{ item.quantity }}</b></span>
+              <button class="plus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-plus-square fa-lg"></i></button>
+            </div>
+          </div>
+          <!-- Edit stuff ends here -->
+
+          <hr>
         </div>
-        {% endif %}
-        <hr>
         {% endfor %}
         {% endif %}
 
@@ -71,7 +89,6 @@
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/10" role="button">10%</a>
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/15" role="button">15%</a>
             <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">20%</a>
-            <!-- <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">Custom</a> -->
             <a class="btn btn-secondary" onclick = 'Custom_Tip_Form()' style = 'cursor: pointer;'>{% trans "Custom" %}</a>
           </div>
         </div>
@@ -100,13 +117,12 @@
         </div>
 
 
-
         <div class="row pt-3">
           <div class="col-6">
             <h6>{% trans "Subtotal" %}</h6>
           </div>
           <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.total }}
+            <span class="cart_total">${{ cart.total }}</span>
           </div>
         </div>
 
@@ -116,7 +132,7 @@
           </div>
           {% if cart.tip %}
           <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.tip }}
+            <span class="cart_tip">${{ cart.tip }}</span>
           </div>
           {% else %}
           <div class="col-6 d-flex flex-row-reverse">
@@ -130,11 +146,11 @@
           </div>
           {% if cart.total_with_tip %}
           <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.total_with_tip }}
+            <span class="cart_total_with_tip">${{ cart.total_with_tip }}</span>
           </div>
           {% else %}
           <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.total }}
+            <span class="cart_total">${{ cart.total }}</span>
           </div>
           {% endif %}
         </div>
@@ -157,11 +173,92 @@
   <!-- Footer -->
   </div>
 <!-- Card Ends -->
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
 <script>
   function Custom_Tip_Form(){
     if(document.getElementById('Custom_Tip_Form').style.display == 'block') document.getElementById('Custom_Tip_Form').style.display = 'none'
     else document.getElementById('Custom_Tip_Form').style.display = 'block'
   }
+
+  $(document).ready(function(){
+    var cart_id = {{ cart.id }};
+    console.log("cart_id:" + cart_id)
+
+    // Increase Quantity on cart
+    $(document).on("click", ".plus_item", function(){
+      var index = String(this.value);
+      var item = document.getElementById("item_name_" + index).textContent;
+      console.log('ITEM:' + item)
+
+        $.ajax({
+        type: "GET",
+        url: "{% url 'increase_quantity' %}",
+        data: {
+          'cart_id': cart_id,
+          'menu_item': item,
+        },
+        dataType: 'json',
+        success: function (data) {
+
+          //tip already included
+          if (data.cart_tip != 0){
+            console.log('getting in here')
+            $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>');
+            $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
+            $(".cart_total").html('$' + data.cart_total);
+            $(".cart_tip").html('$' + data.cart_tip);
+            $(".cart_total_with_tip").html('$' + data.cart_total_with_tip)
+          }
+          // tip not included
+          else {
+            $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>')
+            $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
+            $(".cart_total").html('$' + data.cart_total);
+          }
+        }
+      });
+    });
+
+    //Decrease Quantity on cart
+    $(document).on("click", ".minus_item", function(){
+      var index = String(this.value);
+      var item = document.getElementById("item_name_" + index).textContent;
+      console.log('ITEM:' + item)
+        $.ajax({
+        type: "GET",
+        url: "{% url 'decrease_quantity' %}",
+        data: {
+          'cart_id': cart_id,
+          'menu_item': item,
+        },
+        dataType: 'json',
+        success: function (data) {
+          console.log("success");
+          //If data.quantity == 0, call remove_item view and remove div that contains item
+          if (data.quantity == 0) {
+            var item_id = document.getElementById("item_id_" + index).textContent;
+            $.post("/customers/remove_item/{{ cart.id }}/{{ restaurant.id}}/{{ menu.id }}/" + item_id, {'csrfmiddlewaretoken': '{{ csrf_token }}'});
+            $( "#item_row_" + index ).remove();
+          }
+          //tip already included
+          if (data.cart_tip != 0){
+            $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>');
+            $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
+            $(".cart_total").html('$' + data.cart_total);
+            $(".cart_tip").html('$' + data.cart_tip);
+            $(".cart_total_with_tip").html('$' + data.cart_total_with_tip)
+          }
+          // tip not included
+          else {
+            $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>')
+            $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
+            $(".cart_total").html('$' + data.cart_total);
+          }
+        }
+      });
+    });
+  });
+
 </script>
 {% endblock %}
