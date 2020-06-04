@@ -16,7 +16,17 @@ from .file_storage import FileStorage
 from django.core.files import File
 import os
 from cashier.models import CashierProfile
+import stripe
 #  your views here.
+
+"""this function just verifies that you are not trying to edit another restaurant's menu"""
+def validate_id_number(request, menu_id):
+    menu = Menu.objects.get(id = menu_id)
+    if menu.restaurant == Restaurant.objects.filter(user = request.user).first():
+        return True
+    else:
+        return False
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -64,10 +74,72 @@ def register_view(request):
     context = {'form' : form, 'rest_form' : rest_form}
     return render(request, 'restaurant/register.html', context)
 
+
+"""this method determines whether or not the admin wants us to handle their payments, it has to recieve a
+POST request to change anything"""
+
+def payment_question(request):
+    me = Restaurant.objects.get(user = request.user)
+    if request.method == 'POST':
+        answer = request.POST['answer']
+        if answer == 'no':
+            me.answered_pay_question = True
+            me.handle_payment = False
+            me.save()
+            return redirect('/restaurant_admin/my_menus')
+        else:
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            stripe.Account.create(
+              type="custom",
+              email=me.user.email,
+              requested_capabilities=[
+                "card_payments",
+                "transfers",
+              ],
+            )
+            me.answered_pay_question = True
+            me.handle_payment = True
+            me.save()
+            return redirect("https://connect.stripe.com/express/oauth/authorize?client_id=ca_HNkukA8zfrf8R4YkvrwLOayhitwqn2Q1&state={STATE_VALUE}&suggested_capabilities[]=transfers&stripe_user[email]={email}".format(STATE_VALUE = 'OneBeerAndThenBoom!123OunesOfC0ca1n3', email = me.user.email))
+
+
+"""this method recieves a GET request from stripe, and validates the response"""
+
+def stripe_connect(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    print(request.GET)
+    if request.method == 'GET':
+        print('method is a GET')
+        state = request.GET['state']
+        #check that the state is the same
+        if state != 'OneBeerAndThenBoom!123OunesOfC0ca1n3':
+            return HttpResponse('Error, incorrect CSRF')
+        #now check stripe code
+        code = request.GET['code']
+        try:
+            response = stripe.OAuth.token(grant_type="authorization_code", code=code,)
+        except stripe.oauth_error.OAuthError as e:
+            return HttpResponse('invalid code')
+        except Exception as e:
+            return HttpResponse('internal server error')
+        #if everything checks out, save the restaurants stripe account id and redirect to their homepage
+        print('all info good')
+        account_id = response['stripe_user_id']
+        curr_rest = Restaurant.objects.get(user = request.user)
+        curr_rest.stripe_account_id = account_id
+        curr_rest.save()
+        print('redirecting')
+        return redirect('/restaurant_admin/my_menus')
+    else:
+        return redirect('/restaurant_admin/my_menus')
+
+
 def my_menus(request):
     menus = Menu.objects.filter(restaurant = Restaurant.objects.get(user = request.user)) #query set of all menus belonging to this restaurant
     form = MenuForm()
-    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form})
+    me = Restaurant.objects.get(user = request.user)
+    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me})
+
 
 def add_menu(request):
     #if request method is a get, then the user is going to this page for the 1st time
@@ -101,6 +173,7 @@ def add_menu(request):
         #redirect to the edit menu so they can add new stuff to it
         return redirect('edit_menu/{menu}'.format(menu = new_menu.id))
 
+
 def view_menu(request, menu_id):
     if request.method == 'GET':
         curr_menu = Menu.objects.filter(id = menu_id).first()
@@ -109,6 +182,7 @@ def view_menu(request, menu_id):
         return render(request, 'restaurant/menu.html', {'items': items, 'restaurant': curr_rest, 'menu': curr_menu})
     else:
         return redirect('/restaurant_admin/view_menu/{m_id}'.format(m_id = menu_id))
+
 
 def remove_menu(request, menu_id):
     curr_menu = Menu.objects.filter(id = menu_id).first()
@@ -123,6 +197,8 @@ def remove_menu(request, menu_id):
 
 
 def edit_menu(request, menu_id):
+    if not validate_id_number(request, menu_id):
+        return HttpResponse('you are not authorized to view this')
     curr_menu = Menu.objects.filter(id = menu_id).first()
     #check if they uploaded new photo
     photo = request.FILES.get('photo', False)
@@ -147,6 +223,8 @@ def edit_menu(request, menu_id):
 
 
 def add_item(request, menu_id):
+    if not validate_id_number(request, menu_id):
+        return HttpResponse('you are not authorized to view this')
     #if method is get, then user is filling out form for new item
     if request.method == 'GET':
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
@@ -173,7 +251,10 @@ def add_item(request, menu_id):
         #redirect back to edit menu page
         return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id))
 
+
 def remove_item(request, menu_id, item_id):
+    if not validate_id_number(request, menu_id):
+        return HttpResponse('you are not authorized to view this')
     curr_menu = Menu.objects.filter(id = menu_id).first()
     curr_item = MenuItem.objects.filter(id = item_id).first()
     #if the method is a get, then it sends them to a confirmation page making sure they want to delete the item
@@ -185,7 +266,10 @@ def remove_item(request, menu_id, item_id):
         curr_item.delete()
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
+
 def edit_item(request, menu_id, item_id):
+    if not validate_id_number(request, menu_id):
+        return HttpResponse('you are not authorized to view this')
     item = MenuItem.objects.filter(id = item_id).first()
     #if method is get, then user is filling out form to change item
     if request.method == 'GET':
@@ -216,7 +300,10 @@ def edit_item(request, menu_id, item_id):
         #redirect
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
+
 def view_item(request, menu_id, item_id):
+    if not validate_id_number(request, menu_id):
+        return HttpResponse('you are not authorized to view this')
     if request.method == 'GET':
         curr_menu = Menu.objects.filter(id = menu_id).first()
         curr_rest = curr_menu.restaurant
@@ -228,6 +315,7 @@ def view_item(request, menu_id, item_id):
 
 
 """this method is to create a new Cashier"""
+
 def register_cashier(request):
     #if method is a post, then the user submitted a registration from
     if request.method == 'POST':

@@ -16,6 +16,8 @@ class Restaurant(models.Model):
     answered_pay_question = models.BooleanField(default = False)
     #boolean field if they want us to handle their payments or not, can be null b/c before they answer its neither
     handle_payment = models.BooleanField(null = True)
+    #stripe account id
+    stripe_account_id = models.CharField(null = True, default = '', max_length = 255)
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
