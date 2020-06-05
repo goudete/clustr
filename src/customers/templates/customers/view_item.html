@@ -5,6 +5,24 @@
 
 
 {% block content %}
+<style>
+  .thumbnail{
+    display: block;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  #thumb{
+    float: right;
+    max-height: 300px;
+
+  }
+
+  #item_img{
+    max-height: 250px;
+  }
+
+</style>
 <nav class="navbar navbar-light bg-light">
   <a class="navbar-brand" href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
   <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -15,8 +33,10 @@
 </nav>
 <div class="container-fluid">
   <!-- Item image -->
-  <div class="row">
-    <img src="{% static item.photo_path %}" class="img-fluid img-thumbnail" alt="Responsive image">
+  <div class="row justify-content-center">
+    <div class="thumbnail thumb">
+      <img src="{% static item.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+    </div>
   </div>
   <!-- End item image -->
 
