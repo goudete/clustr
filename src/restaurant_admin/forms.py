@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from django.contrib.auth.forms import UserCreationForm
 from cashier.models import CashierProfile
+from kitchen.models import Kitchen
 
 #this form is to register a new user
 class UserForm(UserCreationForm):
@@ -103,3 +104,18 @@ class CashierForm(forms.ModelForm):
     class Meta:
         model = CashierProfile
         fields = ('name', 'login_number')
+
+class KitchenForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(KitchenForm, self).__init__(*args, **kwargs)
+        self.fields['login_number'].required = True
+
+    def clean_login_number(self):
+        login_no = self.cleaned_data.get('login_number')
+        if Kitchen.objects.filter(login_number = login_no).exists():
+            raise forms.ValidationError("Kitchen With that login exists")
+        return login_no
+
+    class Meta:
+        model = Kitchen
+        fields = ('login_number',)

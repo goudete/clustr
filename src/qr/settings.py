@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'stripe',
     'django_extensions',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -92,17 +93,17 @@ django_heroku.settings(locals())
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 #
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#           'NAME': env('DB_NAME'),
-#           'USER': env('DB_USER'),
-#           'PASSWORD': env("DB_PASS"),
-#           'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
-#           'PORT': '',
-#     }
-# }
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': env('DB_NAME'),
+          'USER': env('DB_USER'),
+          'PASSWORD': env("DB_PASS"),
+          'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
+          'PORT': '',
+    }
+}
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -140,6 +141,9 @@ USE_TZ = True
 STRIPE_PUBLISHABLE_KEY = env('STRIPE_API_KEY')
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
+#twilio settings
+TWILIO_SID = env('TWILIO_SID')
+TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

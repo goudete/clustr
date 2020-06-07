@@ -13,7 +13,7 @@
         <h6 class="cart-title pb-3">{% trans "Would you like to receive an email receipt?" %}</h6>
       </div>
 
-      <form method = 'post' action = '/customers/email_receipt/{{ cart.id }}'>
+      <form method = 'post' action = ''>
         {% csrf_token %}
 
         <!-- <div class = 'row justify-content-center'> -->
@@ -22,6 +22,11 @@
             <input type="email" class="form-control" name="email_input" id="email_input" placeholder="name@localtres.com">
           </div>
         <!-- </div> -->
+
+        <div class="form-group mx-sm-3 mb-2">
+          <label for="phone_input">{% trans "Receive Message When Order is Ready?" %}</label>
+          <input type="tel" class="form-control" name="phone_input" id="phone_input" placeholder="eg: +10000000000">
+        </div>
 
         <!-- Buttons -->
         <div class="row justify-content-center">

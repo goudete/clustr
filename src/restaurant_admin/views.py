@@ -5,10 +5,10 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm
 from django.conf import settings
 from django.contrib import messages
-from .models import Restaurant, Menu, MenuItem
+from .models import Restaurant, Menu, MenuItem, SelectOption
 from urllib.parse import urljoin
 import boto3
 import magic
@@ -179,7 +179,8 @@ def view_menu(request, menu_id):
         curr_menu = Menu.objects.filter(id = menu_id).first()
         curr_rest = curr_menu.restaurant
         items = MenuItem.objects.filter(menu = curr_menu)
-        return render(request, 'restaurant/menu.html', {'items': items, 'restaurant': curr_rest, 'menu': curr_menu})
+        select_options = SelectOption.objects.filter(restaurant = curr_rest) #options for what an item can be classified as
+        return render(request, 'restaurant/menu.html', {'items': items, 'restaurant': curr_rest, 'menu': curr_menu, 'selct_options':select_options})
     else:
         return redirect('/restaurant_admin/view_menu/{m_id}'.format(m_id = menu_id))
 
@@ -215,12 +216,23 @@ def edit_menu(request, menu_id):
     if request.method == 'GET':
         items = MenuItem.objects.filter(menu = curr_menu)
         item_form = MenuItemForm()
-        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form})
+        selct_options = SelectOption.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
+        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form, 'selct_options': selct_options})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
         return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id)) #redirect back to the same page
 
+
+
+#helper method for adding/editing an item
+def new_category(request, category):
+    curr_rest = Restaurant.objects.filter(user = request.user).first()
+    select_options = SelectOption.objects.filter(restaurant = curr_rest) #options for what an item can be classified as
+    for option in select_options:
+        if option.name == category:
+            return False
+    return True
 
 def add_item(request, menu_id):
     if not validate_id_number(request, menu_id):
@@ -233,6 +245,10 @@ def add_item(request, menu_id):
         item = MenuItemForm(request.POST).save(commit = False)
         item.menu = Menu.objects.filter(id = menu_id).first()
         item.save()
+        #check for new category
+        if new_category(request, item.course):
+            new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat.save()
         #check if they uploaded new photo
         photo = request.FILES.get('photo', False)
         if photo:
@@ -279,7 +295,9 @@ def edit_item(request, menu_id, item_id):
         #check if they put anything for the description
         if request.POST['description'] != "":
             item.description = request.POST['description']
-        item.course = request.POST['course']
+        #check if they put anything for category
+        if request.POST['course'] != "":
+            item.course = request.POST['course']
         item.price = request.POST['price']
         item.save()
         #check if they uploaded new photo
@@ -341,3 +359,31 @@ def register_cashier(request):
         cashiers = CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
         context = {'form' : form, 'user_form' : user_form, 'cashiers': cashiers}
         return render(request, 'restaurant/cashiers.html', context)
+
+
+
+"""for registering a kitchen """
+def register_kitchen(request):
+    #if method is a post, then the user submitted a registration from
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        kitchen_form = KitchenForm(request.POST)
+        if form.is_valid() and kitchen_form.is_valid():
+            new_user = form.save()
+            kitchen = kitchen_form.save(commit=False)
+            kitchen.user = new_user
+            kitchen.restaurant = Restaurant.objects.filter(user = request.user).first()
+            kitchen.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            email = form.cleaned_data.get('email')
+            new_user = authenticate(request, username=username, password=password)
+            if new_user is not None:
+                print('success')
+            return redirect('/restaurant_admin/kitchen')
+    #if method is get, then user is filling out form
+    else:
+        form = KitchenForm()
+        user_form = UserForm()
+        context = {'form' : form, 'user_form' : user_form}
+        return render(request, 'restaurant/kitchen.html', context)

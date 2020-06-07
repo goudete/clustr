@@ -33,3 +33,7 @@ class MenuItem(models.Model):
     price = models.DecimalField(_('Price'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
     photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage
     created_at = models.DateTimeField(auto_now_add=True)
+
+class SelectOption(models.Model):
+    name = models.CharField(default = '', max_length = 200)
+    restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE)
