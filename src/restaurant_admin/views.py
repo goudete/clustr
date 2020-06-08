@@ -59,6 +59,7 @@ def register_view(request):
             user = form.save()
             restaurant = rest_form.save(commit=False)
             restaurant.user = user
+            restaurant.kitchen_login_no = 'QLSTR-'+str(user.id)
             restaurant.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
@@ -362,28 +363,18 @@ def register_cashier(request):
 
 
 
-"""for registering a kitchen """
-def register_kitchen(request):
+"""for seeing/changing kitchen login"""
+def kitchen_no(request):
     #if method is a post, then the user submitted a registration from
     if request.method == 'POST':
-        form = UserForm(request.POST)
-        kitchen_form = KitchenForm(request.POST)
-        if form.is_valid() and kitchen_form.is_valid():
-            new_user = form.save()
-            kitchen = kitchen_form.save(commit=False)
-            kitchen.user = new_user
-            kitchen.restaurant = Restaurant.objects.filter(user = request.user).first()
-            kitchen.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            email = form.cleaned_data.get('email')
-            new_user = authenticate(request, username=username, password=password)
-            if new_user is not None:
-                print('success')
-            return redirect('/restaurant_admin/kitchen')
+        curr_rest = Restaurant.objects.filter(user = request.user).first()
+        if Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).exists():
+            messages.info(request, _('Login Not Available'))
+        else:
+            curr_rest.kitchen_login_no = request.POST['login_no']
+            curr_rest.save()
+        return redirect('/restaurant_admin/kitchen')
     #if method is get, then user is filling out form
     else:
-        form = KitchenForm()
-        user_form = UserForm()
-        context = {'form' : form, 'user_form' : user_form}
-        return render(request, 'restaurant/kitchen.html', context)
+        curr_rest = Restaurant.objects.filter(user = request.user).first()
+        return render(request, 'restaurant/kitchen.html', {'restaurant':curr_rest})

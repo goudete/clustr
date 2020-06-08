@@ -10,18 +10,14 @@ from django.contrib.auth import login, authenticate
 # Create your views here.
 
 def kitchen_login(request):
-    form = KitchenLoginForm
     if request.method == "POST":
-        form = KitchenLoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            kitchen_code = cd['kitchen_code']
-            backend = PasswordlessAuthBackend()
-            kitchen = backend.authenticate(request,login_number=kitchen_code)
-            login(request,kitchen.user,backend='kitchen.auth_backend.PasswordlessAuthBackend')
-            id_no = kitchen.restaurant.id
-            return redirect('/kitchen/{rest_id}'.format(rest_id = id_no))
-    return render(request,'kitchen/kitchen_login.html',{'form':form})
+        if Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).exists():
+            restaurant = Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).first()
+            return redirect('/kitchen/{rest_id}'.format(rest_id = restaurant.id))
+        else:
+            return redirect('/kitchen')
+    return render(request,'kitchen/kitchen_login.html')
+
 
 #helper function for a query
 def cart_query(restaurant_id):
