@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('restaurant_admin/', include('restaurant_admin.urls')),
     path('customers/', include('customers.urls')),
-    path('cashier/',include('cashier.urls'))
+    path('cashier/',include('cashier.urls')),
+    path('kitchen/', include('kitchen.urls')),
 ]

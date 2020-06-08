@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'stripe',
     'django_extensions',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,9 @@ USE_TZ = True
 STRIPE_PUBLISHABLE_KEY = env('STRIPE_API_KEY')
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
+#twilio settings
+TWILIO_SID = env('TWILIO_SID')
+TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

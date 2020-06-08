@@ -18,6 +18,85 @@
   }
   .animate{-webkit-transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;-ms-transition:all .2s ease-in-out;transition:all .2s ease-in-out}
 </style>
+<!-- modal number input -->
+<style>
+  input[type="number"] {
+  -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+          appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+.number-input {
+  /* margin: 3rem; */
+}
+.number-input button {
+  -webkit-appearance: none;
+  background-color: transparent;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0;
+  position: relative;
+}
+.number-input button:before,
+.number-input button:after {
+  display: inline-block;
+  position: absolute;
+  content: '';
+  height: 2px;
+  transform: translate(-50%, -50%);
+}
+.number-input button.plus:after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.number-input input[type=number] {
+  text-align: center;
+}
+
+
+.md-number-input.number-input {
+  border: 2px solid #ddd;
+  width: 11.8rem;
+}
+.md-number-input.number-input button {
+  outline: none;
+  width: 3rem;
+  height: 2rem;
+  padding-top: .8rem;
+}
+.md-number-input.number-input button.minus {
+  /* padding-left: 8px; */
+}
+.md-number-input.number-input button.plus {
+  /* padding-left: 2px; */
+}
+.md-number-input.number-input button:before,
+.md-number-input.number-input button:after {
+  width: 1rem;
+  background-color: #212121;
+}
+.md-number-input.number-input input[type=number] {
+  max-width: 5rem;
+  /* padding: .5rem; */
+  border: solid #ddd;
+  border-width: 0 2px;
+  font-size: 2rem;
+  height: 3rem;
+  font-weight: bold;
+  outline: none;
+}
+@media not all and (min-resolution:.001dpcm)
+{ @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+  .number-input.md-number-input.safari_only button:before,
+  .number-input.md-number-input.safari_only button:after {
+    margin-top: -.6rem;
+  }
+}}
+</style>
 <!-- button stuff -->
 <style>
     .btn-squared-default
@@ -80,7 +159,7 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Order Details</h5>
-              <table class="table table-hover">
+              <table id = "order_table" class="table table-hover">
                   <thead>
                       <tr>
                           <th>Product</th>
@@ -93,8 +172,8 @@
                   <tbody>
                     {% for item_counter in item_counters %}
                     <tr>
-                        <td class="col-md-9"><em> {{item_counter.item.name}} </em></td>
-                        <td class="col-md-1" style="text-align: center"> {{item_counter.quantity}} </td>
+                        <td class="col-md-9"><em>{{item_counter.item.name}}</em></td>
+                        <td class="col-md-1" style="text-align: center">{{item_counter.quantity}}</td>
                         <td class="col-md-1 text-center">${{item_counter.item.price}}</td>
                         <td class="col-md-1 text-center">${{item_counter.price}}</td>
                         <td class="col-md-1 text-center">
@@ -103,36 +182,6 @@
                         </td>
                     </tr>
                     {% endfor %}
-                      <tr>
-                          <td class="col-md-9"><em>Baked Rodopa Sheep Feta</em></td>
-                          <td class="col-md-1" style="text-align: center"> 2 </td>
-                          <td class="col-md-1 text-center">$13.8</td>
-                          <td class="col-md-1 text-center">$26</td>
-                          <td class="col-md-1 text-center">
-                            <button class="plus_item" title="Add" style="margin-right: 0.5cm"><i class="fas fa-plus"></i></button>
-                            <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
-                          </td>
-                      </tr>
-                      <tr>
-                          <td class="col-md-9"><em>Lebanese Cabbage Salad</em></td>
-                          <td class="col-md-1" style="text-align: center"> 1 </td>
-                          <td class="col-md-1 text-center">$8</td>
-                          <td class="col-md-1 text-center">$8</td>
-                          <td class="col-md-1 text-center">
-                            <button class="plus_item" title="Add" style="margin-right: 0.5cm"><i class="fas fa-plus"></i></button>
-                            <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
-                          </td>
-                      </tr>
-                      <tr>
-                          <td class="col-md-9"><em>Baked Tart with Thyme and Garlic</em></td>
-                          <td class="col-md-1" style="text-align: center"> 3 </td>
-                          <td class="col-md-1 text-center">$16</td>
-                          <td class="col-md-1 text-center">$48</td>
-                          <td class="col-md-1 text-center">
-                            <button class="plus_item" title="Add" style="margin-right: 0.5cm"><i class="fas fa-plus"></i></button>
-                            <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
-                          </td>
-                      </tr>
                       <tr>
                           <td>   </td>
                           <td>   </td>
@@ -149,7 +198,7 @@
                               <strong id="order_subtotal">${{cart.total}}</strong>
                           </p>
                           <p>
-                              <strong>${{tip_amount}}</strong>
+                              <strong id="tip_amount">${{tip_amount}}</strong>
                           </p></td>
                       </tr>
                       <tr>
@@ -177,7 +226,7 @@
         </div>
         <div class="col">
           <div class="card">
-            <div class="card-body">
+            <div class="card-body text-center">
               <h5 class="card-title" style = "text-align: center">Add Menu Items</h5>
               <!-- <a href="#" class="btn btn-squared-default btn-success" style="margin-left: 1cm;">
                 <br>
@@ -187,44 +236,115 @@
                  <br>
                     <i class="fas fa-coffee fa-10x"></i>
                </a> -->
-               <a href="#" class="btn btn-squared-default btn-success" style="text-align: center;">
-                 <br>
-                    <i class="fas fa-plus fa-10x"></i>
-               </a>
+               <div style="padding: 10px 15px 15px 15px;"
+                 <button type="button" class="btn btn-squared-default btn-success" data-toggle="modal" data-target="#exampleModal">
+                   <br>
+                      <i class="fas fa-plus fa-10x"></i>
+                 </button>
+               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Items to Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="text-center" >Price</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                  <td class="col-md-3" style = "width: 30%"><em> {{item.name}} </em></td>
+                  <td class="col-md-4 text-center" style = "width: 30%">${{item.price}}</td>
+                  <td class="col-md-4 text-center" style = "width: 40%">
+                    <div class="row">
+                    <div class="number-input md-number-input">
+                      <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus"></button>
+                      <input class="quantity" min="1" name="quantity" value="1" type="number">
+                      <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus"></button>
+                    </div>
+                      <button name="add_item" type="button" class="btn btn-success" style="margin-left: 0.6cm">Add</button>
+                    </div>
+                  </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <! -- shit for modal -->
+<script>
+  $('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').trigger('focus')
+  console.log("here");
+})
+</script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js">
+</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js">
+</script>
+<script>
+  $(document).ready(function() {
+    $("#myModal").modal();
+  });
+</script>
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
   <!-- table JS -->
   <script type="text/javascript">
   $(document).ready(function(){
   	// Increase item number button
   	$(document).on("click", ".plus_item", function(){
+          var button_elem = $(this);
           var number_items = parseInt($(this).closest("tr").children("td")[1].innerHTML);
           var item_price = parseFloat($(this).closest("tr").children("td")[2].innerHTML.substr(1));
           var current_item_total = parseFloat($(this).closest("tr").children("td")[3].innerHTML.substr(1));
-          $(this).closest("tr").children("td")[3].innerHTML ="$".concat(String((current_item_total + item_price).toFixed(2))); //update total for item (2 decimal places)
-          $(this).closest("tr").children("td")[1].innerHTML = number_items + 1; //update product count
           var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
-          $('#order_total')[0].innerHTML = "$".concat(String((current_order_total + item_price).toFixed(2))); //update order total
           var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
-          $('#order_subtotal')[0].innerHTML = "$".concat(String((current_order_subtotal + item_price).toFixed(2))); //update order subttotal
           //previous block handles just the front-end on the table. Now we use ajax to update the
           //Cart object in the backend.
           var cash_code = document.getElementById('cash_code').value;
+          var indicator = '1'
           console.log("before");
           $.ajax({
-          url: 'ajax/ajax_increase_order_quantity',
+          url: 'ajax/ajax_change_order_quantity',
           data: {
             'item_name': $(this).closest("tr").children("td").children("em")[0].innerHTML,
-            'cash_code': cash_code
+            'cash_code': cash_code,
+            'indicator': indicator
           },
           dataType: 'json',
           success: function (data) {
             console.log("successfully updated Cart object");
+            console.log($(this));
+            button_elem.closest("tr").children("td")[1].innerHTML = data.new_quantity; //update product count
+            button_elem.closest("tr").children("td")[3].innerHTML ="$".concat(String(data.new_price)); //update total for item
+            $('#order_subtotal')[0].innerHTML = "$".concat(String(data.new_total)); //update order subttotal
+            $('#order_total')[0].innerHTML = "$".concat(String(data.new_total_with_tip)); //update order total
+            $('#tip_amount')[0].innerHTML = "$".concat(String(data.tip_amount)); //update order total
           }
         });
       });
@@ -238,7 +358,6 @@
             var item_price = parseFloat($(this).closest("tr").children("td")[2].innerHTML.substr(1));
             var current_item_total = parseFloat($(this).closest("tr").children("td")[3].innerHTML.substr(1));
             $(this).closest("tr").children("td")[3].innerHTML ="$".concat(String((current_item_total - item_price).toFixed(2))); //update total for item (2 decimal places)
-            $(this).closest("tr").children("td")[1].innerHTML = number_items - 1; //update product count
             var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
             $('#order_total')[0].innerHTML = "$".concat(String((current_order_total - item_price).toFixed(2))); //update order total
             var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
@@ -247,18 +366,56 @@
             //previous block handles just the front-end on the table. Now we use ajax to update the
             //Cart object in the backend.
             var cash_code = document.getElementById('cash_code').value;
+            var indicator = '0'
             console.log("before");
             $.ajax({
-            url: 'ajax/ajax_decrease_order_quantity',
+            url: 'ajax/ajax_change_order_quantity',
             data: {
               'item_name': $(this).closest("tr").children("td").children("em")[0].innerHTML,
-              'cash_code': cash_code
+              'cash_code': cash_code,
+              'indicator': indicator
             },
             dataType: 'json',
             success: function (data) {
               console.log("successfully updated Cart object");
+              $(this).closest("tr").children("td")[1].innerHTML = number_items - 1; //update product count
             }
           });
         });
+        // function to add new item to cart
+        $(document).on("click", 'button[name$="add_item"]', function(){
+              console.log("here");
+              var number_items = $(this).closest(".row").find("input[name=quantity]")[0].value
+              var item_name = $(this).closest("tr").children("td").children("em")[0].innerHTML
+              var cash_code = document.getElementById('cash_code').value;
+
+              $.ajax({
+              url: 'ajax/ajax_add_item',
+              data: {
+                'item_name': item_name,
+                'cash_code': cash_code,
+                'number_items': number_items
+              },
+              dataType: 'json',
+              success: function (data) {
+                console.log("successfully updated Cart object");
+                var tableRef = document.getElementById('order_table').getElementsByTagName('tbody')[0];
+                var newRow   = tableRef.insertRow(tableRef.rows.length-2);
+                var newCell  = newRow.insertCell(0); newCell.appendChild(document.createTextNode(data.item_name));
+                var newCell2  = newRow.insertCell(1); newCell2.appendChild(document.createTextNode(data.number_items));
+                var newCell3  = newRow.insertCell(2); newCell3.appendChild(document.createTextNode("$".concat(data.price)));
+                var newCell4  = newRow.insertCell(3); newCell4.appendChild(document.createTextNode("$".concat(data.total)));
+
+                var html_string = "<button class='plus_item' title='Add' style='margin-right: 0.5cm'><i class='fas fa-plus'></i></button><button class='minus_item' title='Add' style='margin-right: 0cm'><i class='fas fa-minus' style = 'margin-left: 0cm;'></i></button>";
+                var newCell5  = newRow.insertCell(4);
+                newCell5.innerHTML = html_string;
+
+                //var newCell5  = newRow.insertCell(4); newCell.appendChild("");
+
+                // Append a text node to the cell
+                $("#exampleModal").modal("hide");
+              }
+            });
+          });
   });
   </script>

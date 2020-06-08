@@ -3,12 +3,14 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter
+from restaurant_admin.models import Restaurant
 from .forms import CustomOrderForm, CustomTipForm, EmailForm, FeedbackForm
 import stripe
 import os
 from decimal import Decimal
 from django.contrib import messages
 from django.core import serializers
+from kitchen.models import OrderTracker
 
 
 #this method is only for development, it shows all the menus you have on your local db
@@ -22,6 +24,7 @@ def show_all_menus(request):
 def create_cart(request, restaurant_id, menu_id):
     if request.method == 'POST':
         cart = Cart()
+        cart.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
         cart.total = 0
         cart.total_with_tip = 0
         cart.save()
@@ -401,16 +404,24 @@ def payment(request, cart_id, restaurant_id, menu_id):
 def email_receipt(request, cart_id):
     form = EmailForm()
     if request.method == 'GET':
-        cart = Cart.objects.filter(id = cart_id).first()
-        return render(request, 'customers/email_receipt.html', {'cart': cart, 'form': form})
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        #create new order tracker if one DNE
+        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
+            tracker.save()
+        return render(request, 'customers/email_receipt.html', {'cart': curr_cart, 'form': form})
     else:
-        cart = Cart.objects.filter(id = cart_id).first()
+        curr_cart = Cart.objects.filter(id = cart_id).first()
         form = EmailForm(request.POST)
         if form.is_valid():
-            user_email = form.cleaned_data['email_input']
-            cart.email = user_email
-            cart.save()
-            print('user_email:', cart.email)
+            curr_user_email = form.cleaned_data['email_input']
+            curr_cart.email = curr_user_email
+            curr_cart.save()
+            print('user_email:', curr_cart.email)
+        if request.POST['phone_input'] != "":
+            tracker = OrderTracker.objects.filter(cart = curr_cart).first()
+            tracker.phone_number = request.POST['phone_input']
+            tracker.save()
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
 '''This method sends order to kitchen, changes cart.is_paid to true and renders the confirmation page
