@@ -159,20 +159,13 @@
 
   var passprnt_uri;
 
-  // function createURI() {
   passprnt_uri = "starpassprnt://v1/print/nopreview?";
-
   passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
-
-  passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent("<html><head></head><body><<h1>Rowfag is a bitch HRRRRR</h1></body></html>");
-
-  // var target = document.getElementById("print");
-  // target.href = passprnt_uri;
+  passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent("<html><head></head><body><<h1>PAJARITOOOOO</h1></body></html>");
 
   document.getElementById("print").onclick = function () {
       location.href = passprnt_uri;
   };
-  //}
 </script>
 
 {% endblock %}
