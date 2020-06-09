@@ -13,7 +13,7 @@
         <h6 class="cart-title pb-3">{% trans "Email receipt and Order notifications" %}</h6>
       </div>
 
-      <form method = 'post' action = ''>
+      <form method = 'post' action = '/customers/cash_email_receipt/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}'>
         {% csrf_token %}
 
         <!-- <div class = 'row justify-content-center'> -->
@@ -37,7 +37,7 @@
 
       </form>
       <div class="row justify-content-center mt-3">
-        <a href="/customers/cash_code/{{ cart.id }}">{% trans "No thanks" %}</a>
+        <a href="/customers/cash_code/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">{% trans "No thanks" %}</a>
       </div>
     </div>
   </div>

@@ -102,7 +102,7 @@
 
           </div>
 
-          <button class="button" id="submit" data-secret="{{ client_secret }}" cart="{{ cart.id }}">
+          <button class="button" id="submit" data-secret="{{ client_secret }}" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
             {% trans "Submit Payment" %}
           </button>
       </form>
@@ -180,6 +180,8 @@
   var form = document.getElementById('payment-form');
   var clientSecret = document.getElementById('submit').getAttribute('data-secret')
   var cart_id = document.getElementById('submit').getAttribute('cart');
+  var rest_id = document.getElementById('submit').getAttribute('rest');
+  var menu_id = document.getElementById('submit').getAttribute('menu');
   // var cash_payment = document.getElementById('submit_cash');
 
   form.addEventListener('submit', function(ev) {
@@ -207,7 +209,7 @@
           //***send paymentIntent id to views here*** Probs with AJAX
           console.log('payment success');
           console.log(cart_id)
-          location.href="/customers/card_email_receipt/" + cart_id;
+          location.href="/customers/card_email_receipt/" + cart_id+ "/" + rest_id + "/" + menu_id;
 
         }
       }
@@ -215,7 +217,7 @@
   });
 
   $( "#submit_cash" ).click(function() {
-    location.href="/customers/cash_email_receipt/" + cart_id;
+    location.href="/customers/cash_email_receipt/" + cart_id + "/" + rest_id + "/" + menu_id;
   });
 
 </script>

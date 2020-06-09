@@ -88,6 +88,12 @@
   <div class="row ml-1 mb-4 justify-content-center">
     <h6>{{ restaurant.info }}</h6>
   </div>
+
+  <!-- Print Test Button -->
+  <div class="row justify-content-center">
+    <a href="#" id="print">PRINT</a>
+  </div>
+  <!-- Print test button ends -->
   <!-- End  -->
 
   <hr>
@@ -150,6 +156,19 @@
   $(window).on('load',function(){
     $('#myModal').modal('show');
   });
+
+  var passprnt_uri;
+
+  function createURI() {
+        passprnt_uri = "starpassprnt://v1/print/nopreview?";
+
+        passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+
+        passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent("<html><head></head><body><p>Hello, World</p></body></html>");
+
+        var target = document.getElementById("print");
+        target.href = passprnt_uri;
+  }
 </script>
 
 {% endblock %}
