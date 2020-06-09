@@ -162,10 +162,11 @@
   function createURI() {
         passprnt_uri = "starpassprnt://v1/print/nopreview?";
 
-        passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+        // passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
 
         passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent("<html><head></head><body><p>Hello, World</p></body></html>");
-
+        // passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent("<html><head></head><body><p>Hello, World</p></body></html>");
+        
         var target = document.getElementById("print");
         target.href = passprnt_uri;
   }
