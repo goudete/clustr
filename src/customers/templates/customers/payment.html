@@ -30,6 +30,7 @@
   .StripeElement--webkit-autofill {
     background-color: #fefde5 !important;
   }
+
   .button {
     /* default for <button>, but useful for <a> */
     display: inline-block;
@@ -124,7 +125,7 @@
           <h4 class="cart-title pb-2">{% trans "Cash" %}</h4>
         </div>
       </div>
-      <div class="row pl-2">
+      <!-- <div class="row pl-2">
         <h6>{% trans "Please show the cashier this number:" %}</h6>
       </div>
       <div class="row justify-content-center mt-4 w-100">
@@ -133,7 +134,10 @@
             <h5 class="card-text">{{ cart.cash_code }}</h5>
           </div>
         </div>
-      </div>
+      </div> -->
+      <button class="button" cart="{{ cart.id }}" id="submit_cash">
+        {% trans "Pay Cash" %}
+      </button>
     </div>
   </div>
   <!-- Cash Card Ends -->
@@ -176,6 +180,7 @@
   var form = document.getElementById('payment-form');
   var clientSecret = document.getElementById('submit').getAttribute('data-secret')
   var cart_id = document.getElementById('submit').getAttribute('cart');
+  // var cash_payment = document.getElementById('submit_cash');
 
   form.addEventListener('submit', function(ev) {
     ev.preventDefault();
@@ -202,12 +207,17 @@
           //***send paymentIntent id to views here*** Probs with AJAX
           console.log('payment success');
           console.log(cart_id)
-          location.href="/customers/email_receipt/" + cart_id;
+          location.href="/customers/card_email_receipt/" + cart_id;
 
         }
       }
     });
   });
+
+  $( "#submit_cash" ).click(function() {
+    location.href="/customers/cash_email_receipt/" + cart_id;
+  });
+
 </script>
 <!-- Stripe JavaScript ends -->
 {% endblock %}

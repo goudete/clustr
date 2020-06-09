@@ -24,6 +24,7 @@ def cashPaymentView(request):
         if form.is_valid():
             cd = form.cleaned_data
             order_code = cd['order_code']
+            print('order_code')
             curr_cart = Cart.objects.filter(cash_code=order_code).first()
             item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
             tip_amount = round(curr_cart.tip*curr_cart.total,2)
@@ -55,6 +56,7 @@ def reviewOrderView(request):
         curr_cart = Cart.objects.filter(cash_code=cash_code).first()
         curr_cart.is_paid = True
         curr_cart.save()
+        print('is_paid = TRUE')
         print("marked true")
         return HttpResponseRedirect('cashier/base')
     return render(request,'review_order2.html')

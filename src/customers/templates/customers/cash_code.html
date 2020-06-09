@@ -1,0 +1,52 @@
+{% extends 'customers/base.html'%}
+{% load i18n %}
+
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mt-5 mb-5">
+
+  </div>
+
+  <div class="card shadow p-3 bg-white rounded mb-4">
+    <div class="card-body">
+      <div class="row pl-2">
+        <h6>{% trans "Please show the cashier this code:" %}</h6>
+      </div>
+      <div class="row justify-content-center mt-4 w-100">
+        <div class="card bg-light mb-3" style="max-width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-text">{{ cart.cash_code }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(){
+    var cart_id = {{ cart.id }};
+    // Call function every 5 seconds
+    window.setInterval(function(){
+      $.ajax({
+      type: "GET",
+      url: "{% url 'confirm_cash_payment' %}",
+      data: {
+        'cart_id': cart_id,
+      },
+      dataType: 'json',
+      success: function (data) {
+        if (data.is_paid === true){
+          console.log('Paid with cash!!!')
+          location.href="/customers/order_confirmation/" + cart_id;
+        }
+        else {
+          console.log('Has not been paid yet')
+        }
+      }
+      });
+    }, 5000);
+  });
+</script>
+{% endblock %}
