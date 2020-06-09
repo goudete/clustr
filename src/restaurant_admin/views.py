@@ -353,7 +353,9 @@ def register_cashier(request):
             new_user = authenticate(request, username=username, password=password)
             if new_user is not None:
                 print('success')
-            return redirect('/restaurant_admin/cashiers')
+        else:
+            messages.error(request, _('error in form, please try again'))
+        return redirect('/restaurant_admin/cashiers')
     #if method is get, then user is filling out form
     else:
         form = CashierForm()

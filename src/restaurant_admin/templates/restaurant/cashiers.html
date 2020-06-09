@@ -32,6 +32,14 @@
             </div>
 
             <div class = 'row justify-content-center'>
+              {% if messages %}
+                  {% for message in messages %}
+                      <div style = 'color:red;' class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}"><b>{{ message|safe }}</b></div>
+                  {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class = 'row justify-content-center'>
               <div class = 'card mt-5 mb-5' id = 'cashier_form' style = 'display:none; width:20rem;' >
 
                 <div class ='card-header'>
