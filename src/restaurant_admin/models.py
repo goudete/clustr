@@ -28,6 +28,7 @@ class Menu(models.Model):
 
 class MenuItem(models.Model):
     menu = models.ForeignKey(Menu, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
+    restaurant = models.ForeignKey(Restaurant, null=True, on_delete = models.CASCADE)
     name = models.CharField(_('Name'), default = '', max_length = 200)
     description = models.TextField(_('Description'), default = '')
     course = models.CharField(_('Course'), default = '', max_length = 200) #this is to help organize the menu, somethting like appetizer, entree, dessert, etc..
