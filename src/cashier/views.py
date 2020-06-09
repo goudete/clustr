@@ -4,7 +4,7 @@ from restaurant_admin.models import Menu, MenuItem, Restaurant
 from .models import CashierProfile
 from customers.models import Cart, MenuItemCounter
 from .auth_backend import PasswordlessAuthBackend
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse, HttpResponseRedirect
 import json
 from django.shortcuts import redirect
@@ -24,6 +24,7 @@ def cashPaymentView(request):
         if form.is_valid():
             cd = form.cleaned_data
             order_code = cd['order_code']
+            print('order_code')
             curr_cart = Cart.objects.filter(cash_code=order_code).first()
             item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
             tip_amount = round(curr_cart.tip*curr_cart.total,2)
@@ -55,12 +56,14 @@ def reviewOrderView(request):
         curr_cart = Cart.objects.filter(cash_code=cash_code).first()
         curr_cart.is_paid = True
         curr_cart.save()
+        print('is_paid = TRUE')
         print("marked true")
         return HttpResponseRedirect('cashier/base')
     return render(request,'review_order2.html')
 
 def orderHistoryView(request):
-    return render(request,'order_history.html')
+    carts = Cart.objects.filter(restaurant = request.user.cashierprofile.restaurant)
+    return render(request,'order_history.html',{'carts':cart})
 
 def loginCashier(request):
     form = CashierLoginForm
@@ -126,3 +129,7 @@ def ajax_add_item(request):
     data = {'item_name':item_name,'number_items':number_items,'price':menu_item.price,
             'total':menu_item.price*number_items}
     return JsonResponse(data)
+
+def cashier_logout(request):
+    logout(request)
+    return redirect('/cashier/cashier_login') #return to login page

@@ -399,17 +399,18 @@ def payment(request, cart_id, restaurant_id, menu_id):
         return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu})
 
 
-''' Handles email form after the user pays. This is an intermediary step between payment
-    and order confirmation. For some reason, email not saving **FIX**'''
-def email_receipt(request, cart_id):
+''' This is an intermediary step between payment and order confirmation. Email and Phone form'''
+def card_email_receipt(request, cart_id, restaurant_id, menu_id):
     form = EmailForm()
     if request.method == 'GET':
         curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
         #create new order tracker if one DNE
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
             tracker.save()
-        return render(request, 'customers/email_receipt.html', {'cart': curr_cart, 'form': form})
+        return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form})
     else:
         curr_cart = Cart.objects.filter(id = cart_id).first()
         form = EmailForm(request.POST)
@@ -424,8 +425,53 @@ def email_receipt(request, cart_id):
             tracker.save()
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
-'''This method sends order to kitchen, changes cart.is_paid to true and renders the confirmation page
-    TODO: send order to kitchen'''
+def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
+    '''Notify cashier that customer is paying cash'''
+    form = EmailForm()
+    if request.method == 'GET':
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        #create new order tracker if one DNE
+        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
+            tracker.save()
+        return render(request, 'customers/cash_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form})
+    else:
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            curr_user_email = form.cleaned_data['email_input']
+            curr_cart.email = curr_user_email
+            curr_cart.save()
+            print('user_email:', curr_cart.email)
+        if request.POST['phone_input'] != "":
+            tracker = OrderTracker.objects.filter(cart = curr_cart).first()
+            tracker.phone_number = request.POST['phone_input']
+            tracker.save()
+        return redirect('/customers/cash_code/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+
+''' This view handles showing their cash code to the user if paying cash'''
+def cash_payment_code(request, cart_id, restaurant_id, menu_id):
+    if request.method == 'GET':
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+
+        return render(request, 'customers/cash_code.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu})
+
+def ajax_confirm_cash_payment(request):
+    cart_id = request.GET.get('cart_id', None)
+    curr_cart = Cart.objects.filter(id = cart_id).first()
+    is_paid = curr_cart.is_paid
+
+    data = {
+        'is_paid': is_paid
+    }
+
+    return JsonResponse(data)
+
+'''This method sends order to kitchen, changes cart.is_paid to true and renders the confirmation page'''
 def order_confirmation(request, cart_id):
     #if this method is a get, then theyre seeing the confirmation page
     '''Send order to kitchen to print'''

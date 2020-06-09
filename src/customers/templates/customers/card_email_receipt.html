@@ -1,0 +1,45 @@
+{% extends 'customers/base.html'%}
+{% load i18n %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mt-5">
+
+  </div>
+  <!-- Email Receipt Form -->
+  <div class="card shadow p-3 bg-white rounded mt-5">
+    <div class="card-body">
+      <div class="row pl-2">
+        <h6 class="cart-title pb-3">{% trans "Email receipt and Order notifications" %}</h6>
+      </div>
+
+      <form method = 'post' action = '/customers/card_email_receipt/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}'>
+        {% csrf_token %}
+
+        <!-- <div class = 'row justify-content-center'> -->
+          <div class="form-group mx-sm-3 mb-2">
+            <label for="email_input">{% trans "Email address" %}</label>
+            <input type="email" class="form-control" name="email_input" id="email_input" placeholder="name@localtres.com">
+          </div>
+        <!-- </div> -->
+
+        <div class="form-group mx-sm-3 mb-2 mt-4">
+          <label for="phone_input">{% trans "Receive Text Message When Order is Ready?" %}</label>
+          <input type="tel" class="form-control" name="phone_input" id="phone_input" placeholder="eg: +10000000000">
+        </div>
+
+        <!-- Buttons -->
+        <div class="row justify-content-center">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+            </div>
+        </div>
+
+      </form>
+      <div class="row justify-content-center mt-3">
+        <a href="/customers/order_confirmation/{{ cart.id }}">{% trans "No thanks" %}</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
