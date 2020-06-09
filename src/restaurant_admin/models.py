@@ -27,7 +27,7 @@ class Menu(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class MenuItem(models.Model):
-    menu = models.ForeignKey(Menu, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
+    menu = models.ForeignKey(Menu, null=True, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
     restaurant = models.ForeignKey(Restaurant, null=True, on_delete = models.CASCADE)
     name = models.CharField(_('Name'), default = '', max_length = 200)
     description = models.TextField(_('Description'), default = '')
