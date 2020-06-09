@@ -4,7 +4,7 @@ from restaurant_admin.models import Menu, MenuItem, Restaurant
 from .models import CashierProfile
 from customers.models import Cart, MenuItemCounter
 from .auth_backend import PasswordlessAuthBackend
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse, HttpResponseRedirect
 import json
 from django.shortcuts import redirect
@@ -62,7 +62,8 @@ def reviewOrderView(request):
     return render(request,'review_order2.html')
 
 def orderHistoryView(request):
-    return render(request,'order_history.html')
+    carts = Cart.objects.filter(restaurant = request.user.cashierprofile.restaurant)
+    return render(request,'order_history.html',{'carts':cart})
 
 def loginCashier(request):
     form = CashierLoginForm
@@ -128,3 +129,7 @@ def ajax_add_item(request):
     data = {'item_name':item_name,'number_items':number_items,'price':menu_item.price,
             'total':menu_item.price*number_items}
     return JsonResponse(data)
+
+def cashier_logout(request):
+    logout(request)
+    return redirect('/cashier/cashier_login') #return to login page

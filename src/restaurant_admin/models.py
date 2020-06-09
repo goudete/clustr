@@ -12,6 +12,7 @@ class Restaurant(models.Model):
     photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
     about = models.TextField(_("Your Restaurant's Vision"), null = True, max_length = 255)
     created_at = models.DateTimeField(auto_now_add=True)
+    kitchen_login_no = models.CharField(default = '', max_length = 100, unique = True)
     #boolean field, if they answered whether or not they want us to handle payments (a popup is there if not)
     answered_pay_question = models.BooleanField(default = False)
     #boolean field if they want us to handle their payments or not, can be null b/c before they answer its neither
@@ -26,7 +27,8 @@ class Menu(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class MenuItem(models.Model):
-    menu = models.ForeignKey(Menu, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
+    menu = models.ForeignKey(Menu, null=True, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
+    restaurant = models.ForeignKey(Restaurant, null=True, on_delete = models.CASCADE)
     name = models.CharField(_('Name'), default = '', max_length = 200)
     description = models.TextField(_('Description'), default = '')
     course = models.CharField(_('Course'), default = '', max_length = 200) #this is to help organize the menu, somethting like appetizer, entree, dessert, etc..

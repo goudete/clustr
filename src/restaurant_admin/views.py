@@ -59,6 +59,7 @@ def register_view(request):
             user = form.save()
             restaurant = rest_form.save(commit=False)
             restaurant.user = user
+            restaurant.kitchen_login_no = 'QLSTR-'+str(user.id)
             restaurant.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
@@ -244,6 +245,7 @@ def add_item(request, menu_id):
     else:
         item = MenuItemForm(request.POST).save(commit = False)
         item.menu = Menu.objects.filter(id = menu_id).first()
+        item.restaurant = request.user.restaurant
         item.save()
         #check for new category
         if new_category(request, item.course):
@@ -362,28 +364,58 @@ def register_cashier(request):
 
 
 
-"""for registering a kitchen """
-def register_kitchen(request):
+"""for seeing/changing kitchen login"""
+def kitchen_no(request):
     #if method is a post, then the user submitted a registration from
     if request.method == 'POST':
-        form = UserForm(request.POST)
-        kitchen_form = KitchenForm(request.POST)
-        if form.is_valid() and kitchen_form.is_valid():
-            new_user = form.save()
-            kitchen = kitchen_form.save(commit=False)
-            kitchen.user = new_user
-            kitchen.restaurant = Restaurant.objects.filter(user = request.user).first()
-            kitchen.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            email = form.cleaned_data.get('email')
-            new_user = authenticate(request, username=username, password=password)
-            if new_user is not None:
-                print('success')
-            return redirect('/restaurant_admin/kitchen')
+        curr_rest = Restaurant.objects.filter(user = request.user).first()
+        if Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).exists():
+            messages.info(request, _('Login Not Available'))
+        else:
+            curr_rest.kitchen_login_no = request.POST['login_no']
+            curr_rest.save()
+        return redirect('/restaurant_admin/kitchen')
     #if method is get, then user is filling out form
     else:
-        form = KitchenForm()
-        user_form = UserForm()
-        context = {'form' : form, 'user_form' : user_form}
-        return render(request, 'restaurant/kitchen.html', context)
+        curr_rest = Restaurant.objects.filter(user = request.user).first()
+        return render(request, 'restaurant/kitchen.html', {'restaurant':curr_rest})
+
+def my_items(request):
+    restaurant = Restaurant.objects.get(user = request.user)
+    items = MenuItem.objects.filter(restaurant=restaurant)
+    alphabetically_sorted = sorted(items, key = lambda x: x.name)
+    form = MenuItemForm()
+    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'items':alphabetically_sorted})
+
+def add_item_no_menu(request):
+    #if method is get, then user is filling out form for new item
+    if request.method == 'GET':
+        return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+    #otherwise the user created a new item, and it must be added to the menu
+    else:
+        item = MenuItemForm(request.POST).save(commit = False)
+        ##------------ADDED BY LUIS
+        item.restaurant = request.user.restaurant
+        # menu = Menu(name="Global Menu",restaurant = request.user.restaurant, photo_path ="N/A", created_at = "2020-06-09 13:11:55.68267+00")
+        # menu.save()
+        # item.menu = menu
+        ##------------
+        #check if they uploaded new photo
+        photo = request.FILES.get('photo', False)
+        if photo:
+            #save photo to AWS
+            doc = request.FILES['photo'] #get file
+            files_dir = '{user}/photos/{menu_num}/{item_number}'.format(user = "R" + str(request.user.id),
+                                                                        menu_num = 'menu'+str(-1),
+                                                                        item_number = 'item'+str(item.id))
+            file_storage = FileStorage()
+            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+            doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+            file_storage.save(doc_path, doc)
+            item.photo_path = doc_path
+            item.save()
+        #item.menu = None
+        item.save()
+        print('redirecting')
+        #redirect back to edit menu page
+        return redirect('/restaurant_admin/my_items')

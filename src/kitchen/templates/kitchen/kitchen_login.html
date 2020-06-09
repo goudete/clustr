@@ -187,24 +187,10 @@ font-size: 40px;
     {% csrf_token %}
     <h3 style = "text-align: center;">Input Kitchen Code</h3>
     <h4>Input your kitchen code to start the session.</h4>
-    {% render_field form.kitchen_code class+="code_input" %}
+    <input type = 'text' name = 'login_no'>
     <fieldset>
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
     </fieldset>
     <button name="submit" type="button" onclick="history.back();" id="contact-submit" data-submit="...Sending">Back</button>
-    {% if form.errors %}
-      {% for field in form %}
-          {% for error in field.errors %}
-              <div class="errormsg">
-                  <strong>{{ error|escape }}</strong>
-              </div>
-          {% endfor %}
-      {% endfor %}
-      {% for error in form.non_field_errors %}
-          <div class="alert alert-danger">
-              <strong>{{ error|escape }}</strong>
-          </div>
-      {% endfor %}
-  {% endif %}
   </form>
 </div>

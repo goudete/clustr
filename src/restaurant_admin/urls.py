@@ -6,7 +6,7 @@ urlpatterns = [
     path('logout', views.logout_view),
     path('register', views.register_view),
     path('my_menus', views.my_menus),
-    path('kitchen', views.register_kitchen),
+    path('kitchen', views.kitchen_no),
     path('cashiers', views.register_cashier),
     path('connect', views.stripe_connect),
     path('answer_question', views.payment_question),
@@ -18,4 +18,6 @@ urlpatterns = [
     path('remove_item/<int:menu_id>/<int:item_id>', views.remove_item),
     path('view_item/<int:menu_id>/<int:item_id>', views.view_item),
     path('edit_item/<int:menu_id>/<int:item_id>', views.edit_item),
+    path('my_items',views.my_items),
+    path('add_item_no_menu', views.add_item_no_menu),
 ]

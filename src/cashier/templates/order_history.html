@@ -74,6 +74,18 @@
             <th>Status</th>
           </thead>
           <tbody>
+            {% for cart in carts %}
+            <tr>
+              <td>{{cart.id}}</td>
+              <td>15</td>
+              <td>{{cart.created_at}}</td>
+              <td>Eat In</td>
+              <td>Quique</td>
+              <td>{{cart.total_with_tip}}</td>
+              <td>0.00</td>
+              <td>{{cart.is_paid}}</td>
+            </tr>
+            {% endfor %}
             <tr>
               <td>1484206969</td>
               <td>15</td>
