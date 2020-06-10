@@ -38,82 +38,84 @@
     </div>
   </div>
 
-  <div class="card shadow p-3 bg-white rounded mb-4">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-2">
-          <svg class="bi bi-receipt" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zm.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51z"/>
-            <path fill-rule="evenodd" d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
-          </svg>
-        </div>
-        <div class="col-10">
-          <h5 class="cart-title pb-1">{% trans "Order Details" %}</h5>
-        </div>
-      </div>
-        {% for item in items %}
-        <div class="row mt-3">
+  <div class="receipt">
+    <div class="card shadow p-3 bg-white rounded mb-4">
+      <div class="card-body">
+        <div class="row">
           <div class="col-2">
-            {{ item.quantity }}
-          </div>
-          <div class="col-6">
-            <h5>{{ item.item.name }}</h5>
-          </div>
-          <div class="col-4">
-            <h6>${{ item.price }}</h6>
-          </div>
-        </div>
-        {% if item.custom_instructions %}
-        <div class="row mb-2">
-          <div class="col-2 d-flex flex-row-reverse">
-            <p>.</p>
+            <svg class="bi bi-receipt" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zm.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51z"/>
+              <path fill-rule="evenodd" d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
+            </svg>
           </div>
           <div class="col-10">
-            <p>{{ item.custom_instructions }}</p>
+            <h5 class="cart-title pb-1">{% trans "Order Details" %}</h5>
           </div>
         </div>
-        {% endif %}
-        <hr>
-        {% endfor %}
-
-        <div class="row pt-3">
-          <div class="col-6">
-            <h6>{% trans "Subtotal" %}</h6>
+          {% for item in items %}
+          <div class="row mt-3">
+            <div class="col-2">
+              {{ item.quantity }}
+            </div>
+            <div class="col-6">
+              <h5>{{ item.item.name }}</h5>
+            </div>
+            <div class="col-4">
+              <h6>${{ item.price }}</h6>
+            </div>
           </div>
-          <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.total }}
-          </div>
-        </div>
-
-        <div class="row pt-1">
-          <div class="col-6">
-            <h6>{% trans "Tip" %}</h6>
-          </div>
-          {% if cart.tip %}
-          <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.tip }}
-          </div>
-          {% else %}
-          <div class="col-6 d-flex flex-row-reverse">
-            $0.00
+          {% if item.custom_instructions %}
+          <div class="row mb-2">
+            <div class="col-2 d-flex flex-row-reverse">
+              <p>.</p>
+            </div>
+            <div class="col-10">
+              <p>{{ item.custom_instructions }}</p>
+            </div>
           </div>
           {% endif %}
-        </div>
-        <div class="row pt-1">
-          <div class="col-6">
-            <h5>{% trans "Total" %}</h5>
+          <hr>
+          {% endfor %}
+
+          <div class="row pt-3">
+            <div class="col-6">
+              <h6>{% trans "Subtotal" %}</h6>
+            </div>
+            <div class="col-6 d-flex flex-row-reverse">
+              ${{ cart.total }}
+            </div>
           </div>
-          {% if cart.total_with_tip %}
-          <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.total_with_tip }}
+
+          <div class="row pt-1">
+            <div class="col-6">
+              <h6>{% trans "Tip" %}</h6>
+            </div>
+            {% if cart.tip %}
+            <div class="col-6 d-flex flex-row-reverse">
+              ${{ cart.tip }}
+            </div>
+            {% else %}
+            <div class="col-6 d-flex flex-row-reverse">
+              $0.00
+            </div>
+            {% endif %}
           </div>
-          {% else %}
-          <div class="col-6 d-flex flex-row-reverse">
-            ${{ cart.total }}
+          <div class="row pt-1">
+            <div class="col-6">
+              <h5>{% trans "Total" %}</h5>
+            </div>
+            {% if cart.total_with_tip %}
+            <div class="col-6 d-flex flex-row-reverse">
+              ${{ cart.total_with_tip }}
+            </div>
+            {% else %}
+            <div class="col-6 d-flex flex-row-reverse">
+              ${{ cart.total }}
+            </div>
+            {% endif %}
           </div>
-          {% endif %}
-        </div>
-        <!-- Tip Section Ends -->
+          <!-- Tip Section Ends -->
+      </div>
     </div>
   </div>
 
@@ -153,4 +155,19 @@
       </div>
   </footer>
 </div>
+
+<script>
+  var passprnt_uri;
+  receipt_html = $(".receipt").html();
+  // console.log(receipt_html)
+
+  passprnt_uri = "starpassprnt://v1/print/nopreview?";
+  passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+  passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent(receipt_html);
+
+  document.getElementById("print").onclick = function () {
+      location.href = passprnt_uri;
+  };
+
+</script>
 {% endblock %}
