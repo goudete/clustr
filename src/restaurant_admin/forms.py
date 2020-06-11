@@ -44,16 +44,12 @@ class RestaurantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RestaurantForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
-        self.fields['info'].required = False
-        self.fields['about'].required = False
         #stuff about input sizes
         self.fields['name'].widget.attrs.update(style='width: 200px;')
-        self.fields['info'].widget.attrs.update(style='width: 200px; height: 80px;')
-        self.fields['about'].widget.attrs.update(style='width: 200px; height: 80px;')
 
     class Meta:
         model = Restaurant
-        fields = ('name', 'info', 'about')
+        fields = ('name',)
 
 #form for creating new menu
 class MenuForm(forms.ModelForm):

@@ -17,6 +17,8 @@ class Restaurant(models.Model):
     answered_pay_question = models.BooleanField(default = False)
     #boolean field if they want us to handle their payments or not, can be null b/c before they answer its neither
     handle_payment = models.BooleanField(null = True)
+    #boolean field if they have input their logo/ about info
+    info_input = models.BooleanField(default = False)
     #stripe account id
     stripe_account_id = models.CharField(null = True, default = '', max_length = 255)
 
@@ -24,6 +26,7 @@ class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
     restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE) #this connects menu to restaurant
     photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage
+    qr_code_path = models.CharField(null = True, max_length = 255) #path to qr code svg in S3
     created_at = models.DateTimeField(auto_now_add=True)
 
 class MenuItem(models.Model):

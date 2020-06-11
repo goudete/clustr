@@ -17,6 +17,8 @@ from django.core.files import File
 import os
 from cashier.models import CashierProfile
 import stripe
+import pyqrcode
+import png
 #  your views here.
 
 """this function just verifies that you are not trying to edit another restaurant's menu"""
@@ -135,6 +137,48 @@ def stripe_connect(request):
         return redirect('/restaurant_admin/my_menus')
 
 
+"""this method is for when a restaurant puts in their info about their restaurant
+1st it checks that the method is a post request or get
+if post:
+2nd it checks if a logo is included -> saves it to S3
+3rd it saves the tagline and about info for the restaurant
+then it redirects to the my menus page
+
+else:
+2nd it renders a page for them to view/edit their about info
+3rd sends a post request to this view
+"""
+def answer_about(request):
+    #query restaurant
+    curr_rest = Restaurant.objects.filter(user = request.user).first()
+    #check request method
+    if request.method == 'POST':
+        #check for a logo
+        logo = request.FILES.get('logo', False)
+        if logo:
+            doc = request.FILES['logo'] #get file
+            files_dir = '{user}/photos/logo/'.format(user = "R" + str(request.user.id))
+            file_storage = FileStorage()
+            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+            doc_path = os.path.join(files_dir, "logo."+mime) #set path for file to be stored in
+            file_storage.save(doc_path, doc)
+            curr_rest.photo_path = doc_path
+        #check for a tagline
+        if request.POST['tagline'] != "":
+            curr_rest.info = request.POST['tagline']
+        #check for about
+        if request.POST['about'] != "":
+            curr_rest.about = request.POST['about']
+        #save
+        curr_rest.info_input = True
+        curr_rest.save()
+        #redirect either way post vs get
+        return redirect('/restaurant_admin/my_menus')
+    #otherwise render the about page
+    else:
+        return render(request, 'restaurant/about_info.html', {'me': curr_rest})
+
+
 def my_menus(request):
     menus = Menu.objects.filter(restaurant = Restaurant.objects.get(user = request.user)) #query set of all menus belonging to this restaurant
     form = MenuForm()
@@ -158,7 +202,7 @@ def add_menu(request):
             new_menu.save()
             #save photo to AWS
             doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
+            files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
             file_storage = FileStorage()
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
             doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
@@ -170,7 +214,17 @@ def add_menu(request):
             new_menu = menu.save(commit = False)
             new_menu.restaurant = Restaurant.objects.get(user = request.user)
             new_menu.save()
-
+        #generate qr code for menu
+        qr_path = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
+        qr_url = 'http://127.0.0.1:8000/customers/{rest_id}/{men_id}'.format(rest_id = new_menu.restaurant.id, men_id = new_menu.id)
+        qr_code = pyqrcode.create(qr_url)
+        qr_png = qr_code.png('QR'+str(new_menu.id)+'.png', scale=6, module_color=[0, 0, 0, 128], background=[0xff, 0xff, 0xcc])
+        file_storage = FileStorage()
+        doc_path = os.path.join(qr_path, "QR"+str(new_menu.id)+'.png') #set path for file to be stored in
+        file_storage.save(doc_path, open("QR"+str(new_menu.id)+'.png', 'rb'))
+        new_menu.qr_code_path = doc_path
+        os.unlink('QR'+str(new_menu.id)+'.png')
+        new_menu.save()
         #redirect to the edit menu so they can add new stuff to it
         return redirect('edit_menu/{menu}'.format(menu = new_menu.id))
 
@@ -207,7 +261,7 @@ def edit_menu(request, menu_id):
     if photo:
         #save photo to AWS
         doc = request.FILES['photo'] #get file
-        files_dir = '{user}/photos/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(menu_id))
+        files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(menu_id))
         file_storage = FileStorage()
         mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
         doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
@@ -218,7 +272,18 @@ def edit_menu(request, menu_id):
         items = MenuItem.objects.filter(menu = curr_menu)
         item_form = MenuItemForm()
         selct_options = SelectOption.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
-        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form, 'selct_options': selct_options})
+        #generate pre-signed url to download the QR code
+        s3 = boto3.resource('s3') #setup to get from AWS
+        aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
+        bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+        objs = bucket.objects.filter(Prefix=aws_dir) #get folder
+        url = "#"
+        for obj in objs: #iterate over file objects in folder
+             if os.path.split(obj.key)[1].split('.')[1] == 'png':
+                s3Client = boto3.client('s3')
+                url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
+        print('url: ', url)
+        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form, 'selct_options': selct_options, 'url':url})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -256,8 +321,7 @@ def add_item(request, menu_id):
         if photo:
             #save photo to AWS
             doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/{menu_num}/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                        menu_num = 'menu'+str(menu_id),
+            files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                         item_number = 'item'+str(item.id))
             file_storage = FileStorage()
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
@@ -307,7 +371,7 @@ def edit_item(request, menu_id, item_id):
         if photo:
             #save photo to AWS
             doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/{menu_num}/{item_number}'.format(user = "R" + str(request.user.id),
+            files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                         menu_num = 'menu'+str(menu_id),
                                                                         item_number = 'item'+str(item.id))
             file_storage = FileStorage()
@@ -407,8 +471,7 @@ def add_item_no_menu(request):
         if photo:
             #save photo to AWS
             doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/{menu_num}/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                        menu_num = 'menu'+str(-1),
+            files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                         item_number = 'item'+str(item.id))
             file_storage = FileStorage()
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
