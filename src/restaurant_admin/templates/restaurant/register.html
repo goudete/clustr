@@ -4,24 +4,11 @@
 
 <html>
 
-  <body style="background-image: url('{% static 'imgs/new_item_background.jpg' %}'); background-size:55% 100%; background-repeat: no-repeat; background-color: rgba(255,255,255,0.5); background-blend-mode: lighten;"">
+  <body>
     <div class="container-fluid">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
       <div class = 'row'>
-
-        <div class ='col'>
-          <div class = 'row justify-content-center mt-5'>
-            <!-- just to add spacing-->
-          </div>
-          <div class = 'row justify-content-center ml-3 mt-5'>
-            <h2>{% trans 'Join Our Platform' %}</h2>
-          </div>
-          <div class = 'row justify-content-center ml-3'>
-            <h5>{% trans 'Here is a little blurb about us, blah blah blah, sherm stcik sherm stick sherm stick sherm stick sherm stick sherm stick' %}</h5>
-          </div>
-        </div>
-
         <div class = 'col-sm'>
           <div class = 'row justify-content-center mb-5'>
 
@@ -30,7 +17,7 @@
 
                 <div class = 'card-header'>
                   <div class="row justify-content-center mt-5">
-                      <h3>{% trans "Create your X account" %}</h3>
+                      <h3>{% trans "Create your shift account" %}</h3>
                   </div>
 
                   <div class = 'row justify-content-center mt-2'>
@@ -42,9 +29,11 @@
                   <form method="post" action= "/restaurant_admin/register">
                     {% csrf_token %}
 
-                    {% for message in messages %}
-                      <p id="messages">{{message}}</p>
-                    {% endfor %}
+                    <div class = 'row justify-content-center mt-3'>
+                      {% for message in messages %}
+                        <p id="messages">{{message}}</p>
+                      {% endfor %}
+                    </div>
 
                     <div class = 'row justify-content-center mt-3'>
                       <h5><b>{% trans 'Account Info' %}</b></h5>
@@ -76,14 +65,6 @@
 
                     <div class="row justify-content-center mt-3">
                       {{ rest_form.name|as_crispy_field }}
-                    </div>
-
-                    <div class="row justify-content-center mt-3">
-                      {{ rest_form.info|as_crispy_field }}
-                    </div>
-
-                    <div class="row justify-content-center mt-3">
-                      {{ rest_form.about|as_crispy_field }}
                     </div>
 
                     <!-- Buttons -->

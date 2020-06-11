@@ -60,6 +60,54 @@
             </div>
           {% endif %}
 
+          <!-- the alert card if they havent put their logo and about info -->
+          {% if me.info_input == False %}
+            <div class = 'row justify-content-center mb-2'>
+              <div class="card mb-3" style = 'width: 20rem;'>
+                <div class = 'card-body'>
+                  <div class = 'row justify-content-center'>
+                    <div class = 'col'>
+                      <h5>{% trans 'Tell Us About Your Restaurant' %}</h5>
+                    </div>
+                  </div>
+                  <div class = 'row justify-content-center'>
+                    <div class = 'col'>
+                      <h7>{% trans 'this information will help your customers understand your vision' %}</h7>
+                    </div>
+                  </div>
+                  <div class = 'row justify-content-center mt-3'>
+                    <div class = 'col'>
+                      <form action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
+                        {% csrf_token %}
+                        <div class = 'row justify-content-center'>
+                          <b><label for="no">{% trans 'Your Menu Tagline' %}</label><br></b>
+                          <input type = 'text' id = 'tagline' name = 'tagline' placeholder = "{% trans 'a short description ....' %}">
+                        </div>
+
+                        <div class = 'row justify-content-center mt-3'>
+                          <b><label for="about">{% trans 'About Your Restaurant' %}</label><br></b>
+                          <textarea rows = '4' cols = '23' id = 'about' name = 'about' placeholder = "{% trans 'We specialize in ....' %}"></textarea>
+                        </div>
+
+                        <div class = 'row justify-content-center mt-3'>
+                          <b><label for = 'logo'>{% trans 'Restaurant Logo' %}</label><br></b>
+                          <div class = 'col'>
+                            <input type = 'file' id = 'logo' name = 'logo'>
+                          </div>
+                        </div>
+
+                        <div class = 'row justify-content-center mt-3'>
+                          <button class = 'rounded' type = 'submit'>{% trans 'Submit' %}</button>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
             <div class = 'row justify-content-center mb-2'>
               <h2>
                 <b>

@@ -1,0 +1,76 @@
+{% extends 'restaurant/base.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<html>
+
+  <head>
+    <style>
+      #xOut {
+        float: left;
+        margin-top: 0px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+          <!-- the alert card if they havent put their logo and about info -->
+            <div class = 'row justify-content-center mb-2'>
+              <div class="card mb-3" style = 'width: 20rem;'>
+                <div class = 'card-body'>
+                  <div class = 'row justify-content-center'>
+                    <div class = 'col'>
+                      <h5>{% trans 'Tell Us About Your Restaurant' %}</h5>
+                    </div>
+                  </div>
+                  <div class = 'row justify-content-center'>
+                    <div class = 'col'>
+                      <h7>{% trans 'this information will help your customers understand your vision' %}</h7>
+                    </div>
+                  </div>
+                  <div class = 'row justify-content-center mt-3'>
+                    <div class = 'col'>
+                      <form action = '' method = 'post' enctype = 'multipart/form-data'>
+                        {% csrf_token %}
+                        <div class = 'row justify-content-center'>
+                          <b><label for="no">{% trans 'Your Menu Tagline' %}</label><br></b>
+                          <input type = 'text' id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
+                        </div>
+
+                        <div class = 'row justify-content-center mt-3'>
+                          <b><label for="about">{% trans 'About Your Restaurant' %}</label><br></b>
+                          <textarea rows = '4' cols = '23' id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
+                        </div>
+
+                        {% if me.photo_path %}
+                        <div class = 'row justify-content-center mt-3'>
+                          <b><label for = 'logo_pic'>{% trans 'Current Logo' %}</label><br></b>
+                          <img id = 'logo_pic' src = "{% static me.photo_path %}" border=3 height=250 width=250>
+                        </div>
+                        {% endif %}
+                        <div class = 'row justify-content-center mt-3'>
+                          <b><label for = 'logo'>{% trans 'New Logo' %}</label><br></b>
+                          <div class = 'col'>
+                            <input type = 'file' id = 'logo' name = 'logo'>
+                          </div>
+                        </div>
+
+                        <div class = 'row justify-content-center mt-3'>
+                          <button class = 'rounded' type = 'submit'>{% trans 'Submit' %}</button>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <!-- </div> -->
+
+    </div>
+  </body>
+</html>
+{% endblock %}
