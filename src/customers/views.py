@@ -22,7 +22,7 @@ def show_all_menus(request):
 #this method just creates a cart object and then redirects to the menu
 #method needs to be a post, otherwise someone could accidentally create 2 carts
 def create_cart(request, restaurant_id, menu_id):
-    if request.method == 'POST':
+    if request.method == 'GET':
         cart = Cart()
         cart.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
         cart.total = 0
