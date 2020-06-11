@@ -10,6 +10,8 @@ import json
 from django.shortcuts import redirect
 from django.contrib.auth import update_session_auth_hash
 from itertools import chain
+from django.core.mail import send_mail, EmailMultiAlternatives
+from qr import settings
 
 # Create your views here.
 def baseView(request):
@@ -58,6 +60,12 @@ def reviewOrderView(request):
         curr_cart.save()
         print('is_paid = TRUE')
         print("marked true")
+
+        email = 'luis.costa.laveron@googlemail.com'
+        subject, from_email, to = 'Test', settings.EMAIL_HOST_USER, email
+        msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
+        msg.send()
+
         return HttpResponseRedirect('cashier/base')
     return render(request,'review_order2.html')
 
