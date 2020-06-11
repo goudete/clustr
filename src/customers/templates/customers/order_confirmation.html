@@ -170,27 +170,39 @@
             doc.addImage(imgData, 'PNG', 5, 5);
             blob = doc.output('blob');
             // doc.save('sample.pdf');
-            // const blob = new Blob([doc], {type: 'pdf'});
-            // return blob;
+
             var reader = new FileReader();
-            reader.readAsDataURL(blob);
-            // Onload of file read the file content
-            reader.onloadend = function() {
-                var base64data = reader.result;
+            // reader.readAsDataURL(blob);
+            // // Onload of file read the file content
+            // reader.onloadend = function() {
+            //     var base64data = reader.result;
+            //     var passprnt_uri;
+            //     passprnt_uri = "starpassprnt://v1/print/nopreview?";
+            //     passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+            //     passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(base64data);
+            //     console.log(passprnt_uri)
+            //
+            //     location.href = passprnt_uri;
+            //
+            // };
+
+            reader.onload = function(fileLoadedEvent) {
+                var base64 = fileLoadedEvent.target.result;
                 var passprnt_uri;
                 passprnt_uri = "starpassprnt://v1/print/nopreview?";
                 passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
-                passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(base64data);
+                passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(base64);
+                console.log(passprnt_uri)
 
-                // document.getElementById("print").onclick = function () {
                 location.href = passprnt_uri;
-                // console.log(base64data);
-                // return base64data
+                // Print data in console
+                console.log(base64);
             };
+            // Convert data to base64
+            reader.readAsDataURL(blob);
 
         }
       });
-      // console.log('suppose_blob: '+blob)
     }
       //PDF to base64
     function convertToBase64( selectedFile ) {
