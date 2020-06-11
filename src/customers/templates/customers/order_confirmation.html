@@ -160,39 +160,41 @@
   // function Print(){
     //Converts HTML receipt to PDF
     function PDF(){
+      var blob;
       html2canvas(document.getElementById("receipt"), {
         onrendered: function(canvas) {
             var imgData = canvas.toDataURL('image/png');
-            console.log('Report Image URL: '+imgData);
+            // console.log('Report Image URL: '+imgData);
             var doc = new jsPDF('p', 'mm', 'a6'); //210mm wide and 297mm high
 
             doc.addImage(imgData, 'PNG', 5, 5);
+            blob = doc.output('blob');
             // doc.save('sample.pdf');
-            console.log('DOC:  ' + doc)
-            return imgData;
+            // const blob = new Blob([doc], {type: 'pdf'});
+            // return blob;
+            var reader = new FileReader();
+            reader.readAsDataURL(blob);
+            // Onload of file read the file content
+            reader.onloadend = function() {
+                var base64data = reader.result;
+                console.log(base64data);
+                return base64data
+            };
+
         }
       });
+      // console.log('suppose_blob: '+blob)
     }
       //PDF to base64
     function convertToBase64( selectedFile ) {
-        //Check File is not Empty
-        // if (selectedFile.length > 0) {
-            // Select the very first file from list
-            var fileToLoad = selectedFile;
-            // FileReader function for read the file.
-            var fileReader = new FileReader();
-            var base64;
-            // Onload of file read the file content
-            fileReader.onload = function(fileLoadedEvent) {
-                // base64 = fileLoadedEvent.target.result;
-                return resolve(fileLoadedEvent.target.result);
-                // Print data in console
-                // console.log(base64);
-                // return base64
-            };
-            // Convert data to base64
-            fileReader.readAsDataURL(fileToLoad);
-        // }
+      var reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      // Onload of file read the file content
+      reader.onloadend = function() {
+          var base64data = reader.result;
+          console.log(base64data);
+          return base64data
+      };
     }
 
     function SendToPrinter ( file ){
@@ -208,8 +210,9 @@
       //};
     }
   //}
-    var docu = PDF();
-    // var base64 = convertToBase64(docu);
-    SendToPrinter(docu);
+    const blob = PDF();
+    // console.log('suppose_blob: '+blob)
+    //const base64 = convertToBase64(blob);
+    SendToPrinter(blob);
 </script>
 {% endblock %}
