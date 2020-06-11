@@ -14,6 +14,8 @@ import os
 import environ
 import django_heroku
 import dj_database_url
+# from django.utils.translation import gettext as _
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #env variables init
@@ -93,17 +95,17 @@ django_heroku.settings(locals())
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#           'NAME': env('DB_NAME'),
-#           'USER': env('DB_USER'),
-#           'PASSWORD': env("DB_PASS"),
-#           'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
-#           'PORT': '',
-#     }
-# }
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': env('DB_NAME'),
+          'USER': env('DB_USER'),
+          'PASSWORD': env("DB_PASS"),
+          'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
+          'PORT': '',
+    }
+}
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -127,7 +129,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
+
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
+
 
 TIME_ZONE = 'UTC'
 
@@ -136,6 +145,12 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+#
+LANGUAGES = [
+    ('en-us','English'),
+    ('es-MX', 'Spanish')
+]
+
 
 #Stripe Settings
 STRIPE_PUBLISHABLE_KEY = env('STRIPE_API_KEY')

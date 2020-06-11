@@ -1,0 +1,521 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-10 20:32-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: customers/templates/customers/about.html:21
+#: customers/templates/customers/menu.html:75
+msgid "Menu"
+msgstr "Menu"
+
+#: customers/templates/customers/about.html:25
+#: customers/templates/customers/menu.html:79
+msgid "About"
+msgstr "Quiénes somos"
+
+#: customers/templates/customers/card_email_receipt.html:13
+#: customers/templates/customers/cash_email_receipt.html:13
+msgid "Email receipt and Order notifications"
+msgstr "Recibo por Correo Electrónico y Notificaciones de tu Orden"
+
+#: customers/templates/customers/card_email_receipt.html:21
+#: customers/templates/customers/cash_email_receipt.html:21
+msgid "Email address"
+msgstr "Correo Electrónico"
+
+#: customers/templates/customers/card_email_receipt.html:27
+#: customers/templates/customers/cash_email_receipt.html:27
+msgid "Receive Text Message When Order is Ready?"
+msgstr "Quieres recibir un mensaje cuando este tu orden?"
+
+#: customers/templates/customers/card_email_receipt.html:34
+#: customers/templates/customers/cash_email_receipt.html:34
+#: customers/templates/customers/order_confirmation.html:142
+#: customers/templates/customers/view_cart.html:136
+#: restaurant_admin/templates/restaurant/about_info.html:62
+#: restaurant_admin/templates/restaurant/my_items.html:50
+#: restaurant_admin/templates/restaurant/my_menus.html:51
+#: restaurant_admin/templates/restaurant/my_menus.html:100
+msgid "Submit"
+msgstr "Enviar"
+
+#: customers/templates/customers/card_email_receipt.html:40
+#: customers/templates/customers/cash_email_receipt.html:40
+msgid "No thanks"
+msgstr "No gracias"
+
+#: customers/templates/customers/cash_code.html:23
+msgid "Please show the cashier this code:"
+msgstr "Muéstrale el código al cajero para pagar:"
+
+#: customers/templates/customers/menu.html:47
+msgid "Bienvenido a Local Tres"
+msgstr "Bienvenido a Local Tres"
+
+#: customers/templates/customers/menu.html:100
+msgid "No Items on Menu!"
+msgstr "Esta vacio el Menu!"
+
+#: customers/templates/customers/menu.html:128
+#: customers/templates/customers/menu.html:132
+#: customers/templates/customers/view_item.html:80
+#: customers/templates/customers/view_item.html:82
+msgid "View Cart $"
+msgstr "Ver Carrito $"
+
+#: customers/templates/customers/menu.html:136
+#: customers/templates/customers/view_item.html:84
+msgid "View Cart"
+msgstr "Ver Carrito"
+
+#: customers/templates/customers/order_confirmation.html:33
+msgid "Payment Confirmed"
+msgstr "Pago Confirmado"
+
+#: customers/templates/customers/order_confirmation.html:34
+msgid "Order Number:"
+msgstr "Número de Orden:"
+
+#: customers/templates/customers/order_confirmation.html:36
+msgid "Email Receipt:"
+msgstr "Correo Electrónico:"
+
+#: customers/templates/customers/order_confirmation.html:52
+msgid "Order Details"
+msgstr "Detalles de Orden"
+
+#: customers/templates/customers/order_confirmation.html:82
+#: customers/templates/customers/view_cart.html:147
+msgid "Subtotal"
+msgstr "Subtotal"
+
+#: customers/templates/customers/order_confirmation.html:91
+#: customers/templates/customers/view_cart.html:109
+#: customers/templates/customers/view_cart.html:156
+msgid "Tip"
+msgstr "Propina"
+
+#: customers/templates/customers/order_confirmation.html:105
+#: customers/templates/customers/view_cart.html:170
+msgid "Total"
+msgstr "Total"
+
+#: customers/templates/customers/order_confirmation.html:130
+msgid "Feedback"
+msgstr "Compártenos tu Opinión"
+
+#: customers/templates/customers/order_confirmation.html:153
+msgid "Back to Menu"
+msgstr "Regresar a Menu"
+
+#: customers/templates/customers/payment.html:74
+msgid "Payment"
+msgstr "Pago"
+
+#: customers/templates/customers/payment.html:90
+msgid "Credit or Debit Card"
+msgstr "Crédito o Débito"
+
+#: customers/templates/customers/payment.html:106
+msgid "Submit Payment"
+msgstr "Enviar Pago"
+
+#: customers/templates/customers/payment.html:125
+msgid "Cash"
+msgstr "Efectivo"
+
+#: customers/templates/customers/payment.html:129
+msgid "Please show the cashier this number:"
+msgstr "Por favor muéstrale este número al cajero:"
+
+#: customers/templates/customers/payment.html:139
+msgid "Pay Cash"
+msgstr "Pagar en Efectivo"
+
+#: customers/templates/customers/view_cart.html:52
+msgid "Your Order"
+msgstr "Tu Orden"
+
+#: customers/templates/customers/view_cart.html:57
+msgid "Your Cart is Empty!"
+msgstr "Tu Carrito esta Vacio!"
+
+#: customers/templates/customers/view_cart.html:117
+msgid "Custom"
+msgstr "Personalizar"
+
+#: customers/templates/customers/view_cart.html:128
+msgid "Custom Tip $"
+msgstr "Propina Personalizada $"
+
+#: customers/templates/customers/view_cart.html:193
+msgid "Place Order"
+msgstr "Enviar Orden"
+
+#: customers/templates/customers/view_item.html:62
+msgid "Custom Instructions..."
+msgstr "Especificar detalles..."
+
+#: customers/templates/customers/view_item.html:70
+msgid "Add to Cart"
+msgstr "Agregar a Carrito"
+
+#: kitchen/templates/kitchen/active_orders.html:24
+msgid "Active Orders"
+msgstr "Ordenes en Preparación"
+
+#: kitchen/templates/kitchen/active_orders.html:33
+msgid "No Active Orders"
+msgstr "No hay Ordenes en Preparación"
+
+#: kitchen/templates/kitchen/active_orders.html:65
+msgid "Complete"
+msgstr "Finalizada"
+
+#: restaurant_admin/models.py:10
+msgid "Restaurant Name"
+msgstr "Nombre del Restaurante"
+
+#: restaurant_admin/models.py:11
+msgid "Additional Info"
+msgstr "Información Adicional"
+
+#: restaurant_admin/models.py:13
+msgid "Your Restaurant's Vision"
+msgstr "La visión de tu Restaurante"
+
+#: restaurant_admin/models.py:26 restaurant_admin/models.py:35
+#: restaurant_admin/templates/restaurant/cashiers.html:115
+#: restaurant_admin/templates/restaurant/edit_menu.html:204
+msgid "Name"
+msgstr "Nombre"
+
+#: restaurant_admin/models.py:36
+#: restaurant_admin/templates/restaurant/edit_menu.html:209
+msgid "Description"
+msgstr "Descripción"
+
+#: restaurant_admin/models.py:37
+msgid "Course"
+msgstr "Tiempo"
+
+#: restaurant_admin/models.py:38
+#: restaurant_admin/templates/restaurant/edit_menu.html:224
+msgid "Price"
+msgstr "Precio"
+
+#: restaurant_admin/templates/restaurant/about_info.html:26
+#: restaurant_admin/templates/restaurant/my_menus.html:70
+msgid "Tell Us About Your Restaurant"
+msgstr "Cuéntanos sobre tu Restaurante"
+
+#: restaurant_admin/templates/restaurant/about_info.html:31
+#: restaurant_admin/templates/restaurant/my_menus.html:75
+msgid "this information will help your customers understand your vision"
+msgstr "esta información le ayudará a tus clientes entender tu visión"
+
+#: restaurant_admin/templates/restaurant/about_info.html:39
+#: restaurant_admin/templates/restaurant/my_menus.html:83
+msgid "Your Menu Tagline"
+msgstr "Descripción de tu Menu"
+
+#: restaurant_admin/templates/restaurant/about_info.html:44
+#: restaurant_admin/templates/restaurant/my_menus.html:88
+msgid "About Your Restaurant"
+msgstr "Sobre tu Restaurante"
+
+#: restaurant_admin/templates/restaurant/about_info.html:50
+msgid "Current Logo"
+msgstr "Logo Actual"
+
+#: restaurant_admin/templates/restaurant/about_info.html:55
+msgid "New Logo"
+msgstr "Nuevo Logo"
+
+#: restaurant_admin/templates/restaurant/base.html:56
+msgid "My Menus"
+msgstr "Mis Menus"
+
+#: restaurant_admin/templates/restaurant/base.html:62
+msgid "My Menu Items"
+msgstr "Contenido de mi Menu"
+
+#: restaurant_admin/templates/restaurant/base.html:69
+msgid "My Sales"
+msgstr "Mis Ventas"
+
+#: restaurant_admin/templates/restaurant/base.html:76
+msgid "Cashiers"
+msgstr "Cajeros"
+
+#: restaurant_admin/templates/restaurant/base.html:82
+msgid "Kitchen Login"
+msgstr "Iniciar Sesión Cocina"
+
+#: restaurant_admin/templates/restaurant/base.html:86
+msgid "Help"
+msgstr "Ayuda"
+
+#: restaurant_admin/templates/restaurant/base.html:89
+msgid "Contact Us"
+msgstr "Contáctanos"
+
+#: restaurant_admin/templates/restaurant/base.html:125
+msgid "Bank Info"
+msgstr "Información Bancaria"
+
+#: restaurant_admin/templates/restaurant/base.html:127
+msgid "Profile"
+msgstr "Perfil"
+
+#: restaurant_admin/templates/restaurant/base.html:129
+msgid "Logout"
+msgstr "Cerrar Sesión"
+
+#: restaurant_admin/templates/restaurant/base.html:148
+msgid "Disrupting Mexican Logistics"
+msgstr ""
+
+#: restaurant_admin/templates/restaurant/cashiers.html:24
+msgid "Your Cashiers"
+msgstr "Tus Cajeros"
+
+#: restaurant_admin/templates/restaurant/cashiers.html:47
+msgid "Register New Cashier"
+msgstr "Registrar un Nuevo Cajero"
+
+#: restaurant_admin/templates/restaurant/cashiers.html:94
+#: restaurant_admin/templates/restaurant/edit_menu.html:140
+#: restaurant_admin/templates/restaurant/my_items.html:125
+#: restaurant_admin/templates/restaurant/my_menus.html:164
+msgid "Create"
+msgstr "Crear"
+
+#: restaurant_admin/templates/restaurant/cashiers.html:107
+msgid "No Cashiers Yet"
+msgstr "No hay Cajeros Registrados"
+
+#: restaurant_admin/templates/restaurant/confirm_remove.html:11
+#: restaurant_admin/templates/restaurant/confirm_remove.html:14
+#: restaurant_admin/templates/restaurant/confirm_remove.html:22
+#: restaurant_admin/templates/restaurant/confirm_remove.html:47
+msgid "Are You Sure You Want to Delete "
+msgstr "Seguro que quieres eliminar? "
+
+#: restaurant_admin/templates/restaurant/confirm_remove.html:12
+#: restaurant_admin/templates/restaurant/confirm_remove.html:15
+#: restaurant_admin/templates/restaurant/confirm_remove.html:24
+#: restaurant_admin/templates/restaurant/confirm_remove.html:52
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: restaurant_admin/templates/restaurant/confirm_remove.html:28
+msgid "All These Items Will Be Deleted as Well"
+msgstr "Los siguientes platillos serán eliminados"
+
+#: restaurant_admin/templates/restaurant/confirm_remove.html:34
+msgid "No Items"
+msgstr "No hay Platillos"
+
+#: restaurant_admin/templates/restaurant/confirm_remove.html:50
+msgid "Yes, Delete This Item"
+msgstr "Si, eliminar este platillo"
+
+#: restaurant_admin/templates/restaurant/confirm_remove.html:60
+msgid "Yes, Delete This"
+msgstr "Si, eliminar"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:42
+#: restaurant_admin/templates/restaurant/my_items.html:167
+msgid "New Name"
+msgstr "Nuevo Nombre"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:46
+#: restaurant_admin/templates/restaurant/my_items.html:171
+msgid "New Photo"
+msgstr "Nueva Foto"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:50
+#: restaurant_admin/templates/restaurant/edit_menu.html:235
+#: restaurant_admin/templates/restaurant/kitchen.html:70
+#: restaurant_admin/templates/restaurant/my_items.html:175
+msgid "Update"
+msgstr "Actualizar"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:58
+msgid "View QR Code"
+msgstr "Ver tu Código QR"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:67
+msgid "Items"
+msgstr "Platillos"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:91
+#: restaurant_admin/templates/restaurant/my_items.html:84
+msgid "Create New Item"
+msgstr "Crear Nuevo Platillo"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:113
+#: restaurant_admin/templates/restaurant/edit_menu.html:214
+msgid "Category"
+msgstr "Categoría"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:131
+#: restaurant_admin/templates/restaurant/my_items.html:116
+msgid "Item Photo"
+msgstr "Foto de Platillo"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:229
+#: restaurant_admin/templates/restaurant/my_menus.html:156
+msgid "Photo"
+msgstr "Foto"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:240
+msgid "Remove This Item"
+msgstr "Eliminar Platillo"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:260
+msgid "Delete This Menu"
+msgstr "Eliminar Menu"
+
+#: restaurant_admin/templates/restaurant/kitchen.html:24
+msgid "Your Kitchen Login"
+msgstr "Inicio de Sesión de Cocina"
+
+#: restaurant_admin/templates/restaurant/kitchen.html:53
+msgid "New Kitchen Login"
+msgstr "Nueva Sesión de Cocina"
+
+#: restaurant_admin/templates/restaurant/login.html:18
+msgid "Welcome to Our Platform"
+msgstr "Bienvenido a Shift"
+
+#: restaurant_admin/templates/restaurant/login.html:30
+msgid "Login to you account"
+msgstr "Iniciar Sesión"
+
+#: restaurant_admin/templates/restaurant/login.html:40
+msgid "Username"
+msgstr "Nombre de Usuario"
+
+#: restaurant_admin/templates/restaurant/login.html:45
+msgid "Password"
+msgstr "Contraseña"
+
+#: restaurant_admin/templates/restaurant/login.html:52
+msgid "Login"
+msgstr "Iniciar Sesión"
+
+#: restaurant_admin/templates/restaurant/login.html:60
+msgid "Don't have an account?"
+msgstr "No tienes cuenta?"
+
+#: restaurant_admin/templates/restaurant/login.html:60
+msgid "Sign up"
+msgstr "Regístrate"
+
+#: restaurant_admin/templates/restaurant/my_items.html:30
+#: restaurant_admin/templates/restaurant/my_menus.html:31
+msgid "Would You Like Us to Handle the Payment Process for You?"
+msgstr "Quieres aceptar pagos con Tarjeta?"
+
+#: restaurant_admin/templates/restaurant/my_items.html:40
+#: restaurant_admin/templates/restaurant/my_menus.html:41
+msgid "No"
+msgstr "No"
+
+#: restaurant_admin/templates/restaurant/my_items.html:44
+#: restaurant_admin/templates/restaurant/my_menus.html:45
+msgid "Yes"
+msgstr "Si"
+
+#: restaurant_admin/templates/restaurant/my_items.html:65
+msgid "Add Items"
+msgstr "Agregar Platillos"
+
+#: restaurant_admin/templates/restaurant/my_menus.html:84
+msgid "a short description ...."
+msgstr "una breve descripción..."
+
+#: restaurant_admin/templates/restaurant/my_menus.html:89
+msgid "We specialize in ...."
+msgstr "Nos especializamos en ..."
+
+#: restaurant_admin/templates/restaurant/my_menus.html:93
+msgid "Restaurant Logo"
+msgstr "Logo"
+
+#: restaurant_admin/templates/restaurant/my_menus.html:114
+msgid "Your Menus"
+msgstr "Tus Menus"
+
+#: restaurant_admin/templates/restaurant/my_menus.html:140
+msgid "Create New Menu"
+msgstr "Crear Nuevo Menu"
+
+#: restaurant_admin/templates/restaurant/my_menus.html:177
+msgid "No Menus Yet"
+msgstr "Todavía no hay Menus"
+
+#: restaurant_admin/templates/restaurant/my_menus.html:194
+msgid "No Photo"
+msgstr "No hay Foto"
+
+#: restaurant_admin/templates/restaurant/my_menus.html:200
+msgid "View"
+msgstr "Ver"
+
+#: restaurant_admin/templates/restaurant/my_menus.html:204
+msgid "Edit"
+msgstr "Editar"
+
+#: restaurant_admin/templates/restaurant/register.html:20
+msgid "Create your shift account"
+msgstr "Crea tu cuenta shift"
+
+#: restaurant_admin/templates/restaurant/register.html:24
+msgid "Already have an account?"
+msgstr "Ya tienes cuenta?"
+
+#: restaurant_admin/templates/restaurant/register.html:24
+msgid "Sign in"
+msgstr "Ingresar"
+
+#: restaurant_admin/templates/restaurant/register.html:39
+msgid "Account Info"
+msgstr "Infomacion de Cuenta"
+
+#: restaurant_admin/templates/restaurant/register.html:63
+msgid "Restaurant Info"
+msgstr "Información del Restaurante"
+
+#: restaurant_admin/templates/restaurant/register.html:73
+msgid "Register"
+msgstr "Regístrate"
+
+#: restaurant_admin/views.py:45
+msgid "Username or Password is incorrect"
+msgstr "Usuario o Contraseña Incorrecta"
+
+#: restaurant_admin/views.py:421
+msgid "error in form, please try again"
+msgstr "Hay un error, por favor vuelve a intentar"
+
+#: restaurant_admin/views.py:439
+msgid "Login Not Available"
+msgstr "Inicio de Sesión no Disponible"
