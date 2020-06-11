@@ -8,7 +8,7 @@
             <th scope = 'col'>{{menu.name}}</th>
             <th>
               <!-- empty form -->
-              <form action = '/customers/{{menu.restaurant.id}}/{{menu.id}}' method = 'post'>
+              <form action = '/customers/{{menu.restaurant.id}}/{{menu.id}}' method = 'get'>
                 {% csrf_token %}
                 <button type = 'submit' class = 'button-link'>view</button>
               </form>
