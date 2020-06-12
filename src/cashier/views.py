@@ -29,8 +29,8 @@ def cashPaymentView(request):
             print('order_code')
             curr_cart = Cart.objects.filter(cash_code=order_code).first()
             item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
-            tip_amount = round(curr_cart.tip*curr_cart.total,2)
-            grand_total = tip_amount + curr_cart.total
+            # tip_amount = round((curr_cart.tip/10)*curr_cart.total,2)
+            # grand_total = tip_amount + curr_cart.total
             backend = PasswordlessAuthBackend()
             user = backend.get_user(request.user.id)
             restaurant = user.cashierprofile.restaurant
@@ -39,8 +39,7 @@ def cashPaymentView(request):
             for menu in menus:
                 items += list(MenuItem.objects.filter(menu=menu))
             alphabetically_sorted = sorted(items, key = lambda x: x.name)
-            context = {'cart':curr_cart,'item_counters':item_counters,
-                       'tip_amount':tip_amount,'grand_total':grand_total,'cash_code':order_code,'items':alphabetically_sorted}
+            context = {'cart':curr_cart,'item_counters':item_counters, 'cash_code':order_code,'items':alphabetically_sorted}
             return render(request,'review_order2.html',context)
         else:
             print("here")
@@ -66,12 +65,12 @@ def reviewOrderView(request):
         msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
         msg.send()
 
-        return HttpResponseRedirect('cashier/base')
+        return HttpResponseRedirect('/cashier/base')
     return render(request,'review_order2.html')
 
 def orderHistoryView(request):
     carts = Cart.objects.filter(restaurant = request.user.cashierprofile.restaurant)
-    return render(request,'order_history.html',{'carts':cart})
+    return render(request,'order_history.html',{'carts':carts})
 
 def loginCashier(request):
     form = CashierLoginForm
@@ -85,7 +84,7 @@ def loginCashier(request):
             login(request,cashier.user,backend='cashier.auth_backend.PasswordlessAuthBackend')
             print(request.user.is_authenticated)
             #return render(request,'base2.html',{'name':cashier.name})
-            return HttpResponseRedirect('/../cashier/base')
+            return HttpResponseRedirect('/cashier/base')
     return render(request,'cashier_login.html',{'form':form})
 
 def ajax_change_order_quantity(request):

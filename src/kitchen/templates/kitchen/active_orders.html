@@ -47,6 +47,14 @@
                         <div class = 'row justify-content-center'>
                             <h7>-{{item.quantity}} {{item.item.name}}</h7>
                         </div>
+                        {% if item.custom_instructions %}
+                        <div class = 'row justify-content-center'>
+                          <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
+                        </div>
+                        {% endif %}
+                        <div class = 'row mt-2 mb-2'>
+                          <!-- just for spacing -->
+                        </div>
                       {% endfor %}
 
                       <div class = 'row justify-content-center mt-2'>
