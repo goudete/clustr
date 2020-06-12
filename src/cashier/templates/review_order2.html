@@ -172,7 +172,7 @@ input[type=number]::-webkit-outer-spin-button {
                   <tbody>
                     {% for item_counter in item_counters %}
                     <tr>
-                        <td class="col-md-9"><em>{{item_counter.item.name}}</em></td>
+                        <td class="col-md-9"><em>{{item_counter.item.name}}</em>{% if item_counter.custom_instructions %}<br><em style = 'color:red;'>{{item_counter.custom_instructions}}</em>{% endif %}</td>
                         <td class="col-md-1" style="text-align: center">{{item_counter.quantity}}</td>
                         <td class="col-md-1 text-center">${{item_counter.item.price}}</td>
                         <td class="col-md-1 text-center">${{item_counter.price}}</td>
@@ -198,7 +198,7 @@ input[type=number]::-webkit-outer-spin-button {
                               <strong id="order_subtotal">${{cart.total}}</strong>
                           </p>
                           <p>
-                              <strong id="tip_amount">${{tip_amount}}</strong>
+                              <strong id="tip_amount">${{cart.tip}}</strong>
                           </p></td>
                       </tr>
                       <tr>
