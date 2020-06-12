@@ -16,6 +16,7 @@ class Cart(models.Model):
     custom_tip = models.BooleanField(default = False)
     total_with_tip = models.DecimalField(decimal_places=2, max_digits=12, validators=[MinValueValidator(0.0)])
     email = models.EmailField(max_length=200)
+    receipt_html = models.TextField(null = True)
 
 
 """ this model acts as a way to keep track of how many of a MenuItem are in a cart

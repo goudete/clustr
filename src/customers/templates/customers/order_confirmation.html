@@ -118,11 +118,6 @@
     </div>
   </div>
 
-  <!-- print button -->
-  <div class="row justify-content-center">
-    <!-- <a href="#" id="print">PRINT</a> -->
-    <button onclick="Print()">PRINT</button>
-  </div>
 
   <!-- Feedback Form -->
   <div class="card shadow p-3 bg-white rounded mb-4">
@@ -157,21 +152,40 @@
 </div>
 
 <script>
+  $(document).ready(function(){
+    var cart_id = {{ cart.id }};
+    var receipt_html = $("#receipt").html();
+
+    $.ajax({
+      type: "POST",
+      url: "{% url 'ajax_receipt' %}",
+      data: {
+        'cart_id': cart_id,
+        'receipt_html': receipt_html,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+      },
+      dataType: 'json',
+      success: function (data) {
+        console.log('successfuly sent/saved receipt html')
+      }
+    });
+  });
+  //Print PDF Attempts
   // function Print(){
     //Converts HTML receipt to PDF
-    function PDF(){
-      var blob;
-      html2canvas(document.getElementById("receipt"), {
-        onrendered: function(canvas) {
-            var imgData = canvas.toDataURL('image/png');
-            // console.log('Report Image URL: '+imgData);
-            var doc = new jsPDF('p', 'mm', 'a6'); //210mm wide and 297mm high
-
-            doc.addImage(imgData, 'PNG', 5, 5);
-            blob = doc.output('blob');
-            // doc.save('sample.pdf');
-
-            var reader = new FileReader();
+    // function PDF(){
+    //   var blob;
+    //   html2canvas(document.getElementById("receipt"), {
+    //     onrendered: function(canvas) {
+    //         var imgData = canvas.toDataURL('image/png');
+    //         // console.log('Report Image URL: '+imgData);
+    //         var doc = new jsPDF('p', 'mm', 'a6'); //210mm wide and 297mm high
+    //
+    //         doc.addImage(imgData, 'PNG', 5, 5);
+    //         blob = doc.output('blob');
+    //         // doc.save('sample.pdf');
+    //
+    //         var reader = new FileReader();
             // reader.readAsDataURL(blob);
             // // Onload of file read the file content
             // reader.onloadend = function() {
@@ -186,52 +200,52 @@
             //
             // };
 
-            reader.onload = function(fileLoadedEvent) {
-                var base64 = fileLoadedEvent.target.result;
-                var passprnt_uri;
-                passprnt_uri = "starpassprnt://v1/print/nopreview?";
-                passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
-                passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(base64);
-                console.log(passprnt_uri)
-
-                location.href = passprnt_uri;
-                // Print data in console
-                console.log(base64);
-            };
-            // Convert data to base64
-            reader.readAsDataURL(blob);
-
-        }
-      });
-    }
-      //PDF to base64
-    function convertToBase64( selectedFile ) {
-      var reader = new FileReader();
-      reader.readAsDataURL(selectedFile);
-      // Onload of file read the file content
-      reader.onloadend = function() {
-          var base64data = reader.result;
-          console.log(base64data);
-          return base64data
-      };
-    }
-
-    function SendToPrinter ( file ){
-      //Printer Stuff
-      //Sends PDF Receipt to PassPRNT through URL
-      var passprnt_uri;
-      passprnt_uri = "starpassprnt://v1/print/nopreview?";
-      passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
-      passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(file);
-
-      // document.getElementById("print").onclick = function () {
-      location.href = passprnt_uri;
-      //};
-    }
-  //}
-    PDF();
-    // const blob = PDF();
-    console.log(blob)
+  //           reader.onload = function(fileLoadedEvent) {
+  //               var base64 = fileLoadedEvent.target.result;
+  //               var passprnt_uri;
+  //               passprnt_uri = "starpassprnt://v1/print/nopreview?";
+  //               passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+  //               passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(base64);
+  //               console.log(passprnt_uri)
+  //
+  //               location.href = passprnt_uri;
+  //               // Print data in console
+  //               console.log(base64);
+  //           };
+  //           // Convert data to base64
+  //           reader.readAsDataURL(blob);
+  //
+  //       }
+  //     });
+  //   }
+  //     //PDF to base64
+  //   function convertToBase64( selectedFile ) {
+  //     var reader = new FileReader();
+  //     reader.readAsDataURL(selectedFile);
+  //     // Onload of file read the file content
+  //     reader.onloadend = function() {
+  //         var base64data = reader.result;
+  //         console.log(base64data);
+  //         return base64data
+  //     };
+  //   }
+  //
+  //   function SendToPrinter ( file ){
+  //     //Printer Stuff
+  //     //Sends PDF Receipt to PassPRNT through URL
+  //     var passprnt_uri;
+  //     passprnt_uri = "starpassprnt://v1/print/nopreview?";
+  //     passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+  //     passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(file);
+  //
+  //     // document.getElementById("print").onclick = function () {
+  //     location.href = passprnt_uri;
+  //     //};
+  //   }
+  // //}
+  //   PDF();
+  //   // const blob = PDF();
+  //   console.log(blob)
     // console.log('suppose_blob: '+blob)
     //const base64 = convertToBase64(blob);
     // SendToPrinter(blob);

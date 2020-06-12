@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from restaurant_admin.views import ajax_receipt
 
 urlpatterns = [
     path('', views.show_all_menus), #this one is for showing all menus in your db
@@ -22,5 +23,6 @@ urlpatterns = [
     path('ajax/ajax_increase_quantity', views.ajax_increase_quantity, name='increase_quantity'),
     path('ajax/ajax_decrease_quantity', views.ajax_decrease_quantity, name='decrease_quantity'),
     path('ajax/ajax_confirm_cash_payment', views.ajax_confirm_cash_payment, name='confirm_cash_payment'),
+    path('ajax/ajax_receipt', ajax_receipt, name = 'ajax_receipt'),
 
 ]

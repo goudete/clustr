@@ -21,4 +21,5 @@ urlpatterns = [
     path('edit_item/<int:menu_id>/<int:item_id>', views.edit_item),
     path('my_items',views.my_items),
     path('add_item_no_menu', views.add_item_no_menu),
+    path('ajax_receipt', views.ajax_receipt, name = 'ajax_receipt'),
 ]

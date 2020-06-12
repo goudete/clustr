@@ -1,0 +1,20 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+
+{% block content %}
+<div id="receipt">
+{{ receipt_html }}
+</div>
+<h1>RECEIPT HERE</h1>
+<script>
+  var receipt_html = $('#receipt').html()
+  var passprnt_uri;
+  console.log(receipt_html)
+  passprnt_uri = "starpassprnt://v1/print/nopreview?";
+  passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+  passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent(receipt_html);
+
+  location.href = passprnt_uri;
+</script>
+
+{% endblock %}

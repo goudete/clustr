@@ -16,6 +16,7 @@ from .file_storage import FileStorage
 from django.core.files import File
 import os
 from cashier.models import CashierProfile
+from customers.models import Cart
 import stripe
 import pyqrcode
 import png
@@ -484,3 +485,18 @@ def add_item_no_menu(request):
         print('redirecting')
         #redirect back to edit menu page
         return redirect('/restaurant_admin/my_items')
+
+def ajax_receipt(request):
+    #could fix prob with making ajax call Post, then get could just render receipt.html
+    if request.method == 'POST':
+        cart_id = request.POST.get('cart_id', None)
+        receipt_html = request.POST.get('receipt_html', None)
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_cart.receipt_html = receipt_html
+        print(receipt_html)
+        curr_cart.save()
+
+        return redirect('restaurant/receipt.html')
+    else:
+
+        return render(request, 'restaurant/receipt.html')

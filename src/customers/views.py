@@ -485,6 +485,16 @@ def order_confirmation(request, cart_id):
         #if this is a post, just send back to the view cart page
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
 
+# def ajax_send_receipt(request):
+#     cart_id = request.GET.get('cart_id', None)
+#     receipt_html = request.GET.get('receipt_html', None)
+#     curr_cart = Cart.objects.filter(id = cart_id).first()
+#     curr_cart.receipt_html = receipt_html
+#     print(receipt_html)
+#     curr_cart.save()
+#
+#     return JsonResponse({})
+
 '''Handles Feedback form in order_confirmation. '''
 def feedback(request, cart_id):
     form = FeedbackForm()
