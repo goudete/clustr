@@ -496,7 +496,7 @@ def ajax_receipt(request):
         print(receipt_html)
         curr_cart.save()
 
-        return redirect('restaurant/receipt.html')
+        return redirect('restaurant/receipt.html', {'receipt_html': receipt_html})
     else:
 
         return render(request, 'restaurant/receipt.html')
