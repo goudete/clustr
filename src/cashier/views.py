@@ -12,6 +12,8 @@ from django.contrib.auth import update_session_auth_hash
 from itertools import chain
 from django.core.mail import send_mail, EmailMultiAlternatives
 from qr import settings
+from kitchen.models import OrderTracker
+
 
 # Create your views here.
 def baseView(request):
@@ -64,6 +66,11 @@ def reviewOrderView(request):
         subject, from_email, to = 'Test', settings.EMAIL_HOST_USER, email
         msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
         msg.send()
+
+        #create new order tracker if one DNE
+        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
+            tracker.save()
 
         return HttpResponseRedirect('/cashier/base')
     return render(request,'review_order2.html')
