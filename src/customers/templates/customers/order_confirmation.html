@@ -157,19 +157,22 @@
     var receipt_html = $("#receipt").html();
 
     $.ajax({
-      type: "POST",
+      type: "GET",
       url: "{% url 'ajax_receipt' %}",
       data: {
         'cart_id': cart_id,
         'receipt_html': receipt_html,
-        csrfmiddlewaretoken: '{{ csrf_token }}'
+        // csrfmiddlewaretoken: '{{ csrf_token }}'
       },
       dataType: 'json',
       success: function (data) {
         console.log('successfuly sent/saved receipt html')
+        console.log('cart_id: ' + data.cart_id)
+
       }
     });
   });
+
   //Print PDF Attempts
   // function Print(){
     //Converts HTML receipt to PDF
