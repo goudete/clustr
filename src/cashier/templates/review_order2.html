@@ -137,8 +137,8 @@ input[type=number]::-webkit-outer-spin-button {
 <body>
   <div id="wrapper" class="animate">
     <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark">
-      <span class="navbar-toggler-icon leftmenutrigger"></span>
-      <a class="navbar-brand" href="#">LOGO</a>
+      <!-- <span class="navbar-toggler-icon leftmenutrigger"></span> -->
+      <a class="navbar-brand" href=""><img src = "{% static path %}"height=30 width=30></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -146,15 +146,27 @@ input[type=number]::-webkit-outer-spin-button {
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav ml-md-auto d-md-flex">
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
+            {% if name %}
+            <a class="nav-link" href="#">{% trans "Hi" %}, {{ name }}</a>
+            {% endif %}
           </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
+          </li> -->
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-key"></i> Logout</a>
+            <a href = "logout" class="nav-link"><i class="fas fa-key"></i> Logout</a>
           </li>
         </ul>
       </div>
     </nav>
     <div class="container-fluid">
+      <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
+          <div class="navbar-header">
+            <h4>{% trans "Review Order" %}</h4>
+          </div>
+          <button onclick="history.back();" class = "btn btn-outline-dark" href="#"><i class="fas fa-arrow-left"></i> {% trans "Back" %}</button>
+      </nav>
+      <br>
       <div class="row">
         <div class="col">
           <div class="card">

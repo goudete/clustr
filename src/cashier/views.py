@@ -26,6 +26,9 @@ def baseView(request):
                                         'path':logo_photo_path})
 
 def cashPaymentView(request):
+    backend = PasswordlessAuthBackend()
+    user = backend.get_user(request.user.id)
+    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
     print("we in the wrong view")
     if request.method == "POST":
         form = SubmitOrderCode(request.POST)
@@ -43,7 +46,8 @@ def cashPaymentView(request):
             for menu in menus:
                 items += list(MenuItem.objects.filter(menu=menu))
             alphabetically_sorted = sorted(items, key = lambda x: x.name)
-            context = {'cart':curr_cart,'item_counters':item_counters, 'cash_code':order_code,'items':alphabetically_sorted}
+            context = {'cart':curr_cart,'item_counters':item_counters, 'cash_code':order_code,'items':alphabetically_sorted,
+                       'name': user.cashierprofile.name,'path':logo_photo_path}
             return render(request,'review_order2.html',context)
         else:
             print("here")
