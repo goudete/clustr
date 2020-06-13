@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 10:34+0200\n"
+"POT-Creation-Date: 2020-06-13 12:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,31 +26,67 @@ msgstr ""
 msgid "Order is already paid"
 msgstr ""
 
-#: cashier/templates/emails/receipt/receipt.html:36
+#: cashier/templates/emails/receipt/receipt.html:37
 msgid "Date"
 msgstr "Fecha"
 
-#: cashier/templates/emails/receipt/receipt.html:39
-#: cashier/templates/emails/receipt/receipt.html:45
+#: cashier/templates/emails/receipt/receipt.html:40
+#: cashier/templates/emails/receipt/receipt.html:46
 msgid "Receipt"
 msgstr "Recibo"
 
-#: cashier/templates/emails/receipt/receipt.html:50
+#: cashier/templates/emails/receipt/receipt.html:51
 msgid "Product"
 msgstr "Producto"
 
-#: cashier/templates/emails/receipt/receipt.html:52
-#: restaurant_admin/models.py:38
+#: cashier/templates/emails/receipt/receipt.html:53
+#: cashier/templates/order_history.html:71
+#: cashier/templates/order_history.html:99 restaurant_admin/models.py:38
 #: restaurant_admin/templates/restaurant/edit_menu.html:224
 #: restaurant_admin/templates/restaurant/my_items.html:199
 msgid "Price"
 msgstr "Precio"
 
-#: cashier/templates/emails/receipt/receipt.html:80
+#: cashier/templates/emails/receipt/receipt.html:81
 #: customers/templates/customers/order_confirmation.html:82
 #: customers/templates/customers/view_cart.html:147
 msgid "Subtotal"
 msgstr "Base"
+
+#: cashier/templates/order_history.html:60
+msgid "Order History"
+msgstr "Historial de Pedidos"
+
+#: cashier/templates/order_history.html:62
+msgid "Back"
+msgstr "Regresar"
+
+#: cashier/templates/order_history.html:68
+#: cashier/templates/order_history.html:96
+msgid "Order"
+msgstr "Pedido"
+
+#: cashier/templates/order_history.html:69
+#: cashier/templates/order_history.html:97
+msgid "Time Created"
+msgstr "Tiempo Creado"
+
+#: cashier/templates/order_history.html:70
+#: cashier/templates/order_history.html:98
+msgid "Guest email"
+msgstr "Correo Electrónico"
+
+#: cashier/templates/order_history.html:83
+msgid "Paid"
+msgstr "Pagado"
+
+#: cashier/templates/order_history.html:86
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#: cashier/templates/order_history.html:89
+msgid "Open"
+msgstr "Abierto"
 
 #: cashier/views.py:65
 msgid "Your Receipt"

@@ -55,29 +55,36 @@ def reviewOrderView(request):
         jsn = json.loads(jdp)
         jsn.pop("csrfmiddlewaretoken")
         cash_code = jsn['cash_code']
-        print(cash_code)
-        curr_cart = Cart.objects.filter(cash_code=cash_code).first()
+        if "confirm_payment" in request.POST: #cashier confirmed the payment
+            print(cash_code)
+            curr_cart = Cart.objects.filter(cash_code=cash_code).first()
 
-        current_date = datetime.date.today()
-        email = curr_cart.email
-        subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, email
-        msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
-        html_template = get_template("emails/receipt/receipt.html").render({
-                                                    'date':current_date,
-                                                    'receipt_number':curr_cart.id
-                                        })
-        msg.attach_alternative(html_template, "text/html")
-        msg.send()
+            current_date = datetime.date.today()
+            logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(request.user.cashierprofile.restaurant.id))
+            email = curr_cart.email
+            subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, email
+            msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
+            html_template = get_template("emails/receipt/receipt.html").render({
+                                                        'date':current_date,
+                                                        'receipt_number':curr_cart.id,
+                                                        'path':request.user.cashierprofile.restaurant.photo_path
+                                            })
+            msg.attach_alternative(html_template, "text/html")
+            msg.send()
 
-        # curr_cart.is_paid = True
-        # curr_cart.save()
+            curr_cart.is_paid = True
+            curr_cart.save()
 
-        #create new order tracker if one DNE
-        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
-            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
-            tracker.save()
-
-        return HttpResponseRedirect('/cashier/base')
+            #create new order tracker if one DNE
+            if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+                tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
+                tracker.save()
+            return HttpResponseRedirect('/cashier/base')
+        elif "cancel_order" in request.POST: #cashier cacelled order, we delete order object
+            curr_cart = Cart.objects.filter(cash_code=cash_code).first()
+            curr_cart.is_cancelled = True
+            curr_cart.save()
+            return HttpResponseRedirect('/cashier/base')
     return render(request,'review_order2.html')
 
 def orderHistoryView(request):
