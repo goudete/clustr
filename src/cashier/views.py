@@ -13,15 +13,22 @@ from itertools import chain
 from django.core.mail import send_mail, EmailMultiAlternatives
 from qr import settings
 from kitchen.models import OrderTracker
-
+from django.utils.translation import gettext as _
+import datetime
+from django.template.loader import get_template, render_to_string
 
 # Create your views here.
 def baseView(request):
     backend = PasswordlessAuthBackend()
     user = backend.get_user(request.user.id)
-    return render(request,'base2.html',{'name':user.cashierprofile.name})
+    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
+    return render(request,'base2.html',{'name':user.cashierprofile.name,
+                                        'path':logo_photo_path})
 
 def cashPaymentView(request):
+    backend = PasswordlessAuthBackend()
+    user = backend.get_user(request.user.id)
+    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
     print("we in the wrong view")
     if request.method == "POST":
         form = SubmitOrderCode(request.POST)
@@ -39,7 +46,8 @@ def cashPaymentView(request):
             for menu in menus:
                 items += list(MenuItem.objects.filter(menu=menu))
             alphabetically_sorted = sorted(items, key = lambda x: x.name)
-            context = {'cart':curr_cart,'item_counters':item_counters, 'cash_code':order_code,'items':alphabetically_sorted}
+            context = {'cart':curr_cart,'item_counters':item_counters, 'cash_code':order_code,'items':alphabetically_sorted,
+                       'name': user.cashierprofile.name,'path':logo_photo_path}
             return render(request,'review_order2.html',context)
         else:
             print("here")
@@ -53,29 +61,52 @@ def reviewOrderView(request):
         jsn = json.loads(jdp)
         jsn.pop("csrfmiddlewaretoken")
         cash_code = jsn['cash_code']
-        print(cash_code)
-        curr_cart = Cart.objects.filter(cash_code=cash_code).first()
-        curr_cart.is_paid = True
-        curr_cart.save()
-        print('is_paid = TRUE')
-        print("marked true")
+        if "confirm_payment" in request.POST: #cashier confirmed the payment
+            print(cash_code)
+            curr_cart = Cart.objects.filter(cash_code=cash_code).first()
 
-        email = 'luis.costa.laveron@googlemail.com'
-        subject, from_email, to = 'Test', settings.EMAIL_HOST_USER, email
-        msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
-        msg.send()
+            current_date = datetime.date.today()
+            logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(request.user.cashierprofile.restaurant.id))
+            item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
 
-        #create new order tracker if one DNE
-        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
-            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
-            tracker.save()
+            email = curr_cart.email
+            subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, email
+            msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
+            html_template = get_template("emails/receipt/receipt.html").render({
+                                                        'date':current_date,
+                                                        'receipt_number':curr_cart.id,
+                                                        'path':request.user.cashierprofile.restaurant.photo_path,
+                                                        'order_id':curr_cart.id,
+                                                        'item_counters': item_counters,
+                                                        'cart': curr_cart
+                                            })
+            msg.attach_alternative(html_template, "text/html")
+            msg.send()
 
-        return HttpResponseRedirect('/cashier/base')
+            curr_cart.is_paid = True
+            curr_cart.save()
+
+            #create new order tracker if one DNE
+            if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+                tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
+                tracker.save()
+            return HttpResponseRedirect('/cashier/base')
+        elif "cancel_order" in request.POST: #cashier cacelled order, we delete order object
+            curr_cart = Cart.objects.filter(cash_code=cash_code).first()
+            curr_cart.is_cancelled = True
+            curr_cart.save()
+            return HttpResponseRedirect('/cashier/base')
     return render(request,'review_order2.html')
 
 def orderHistoryView(request):
+    backend = PasswordlessAuthBackend()
+    user = backend.get_user(request.user.id)
+    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
+
     carts = Cart.objects.filter(restaurant = request.user.cashierprofile.restaurant)
-    return render(request,'order_history.html',{'carts':carts})
+    return render(request,'order_history.html',{'carts':carts,
+                                                'path':logo_photo_path,
+                                                'name':user.cashierprofile.name})
 
 def loginCashier(request):
     form = CashierLoginForm
@@ -94,6 +125,8 @@ def loginCashier(request):
 
 def ajax_change_order_quantity(request):
     item_name = request.GET.get('item_name', None).strip(' ')
+    print("item_name:")
+    print(item_name)
     cash_code = request.GET.get('cash_code', None)
     indicator = request.GET.get('indicator', None) #1 if we are increasing quantity, 0 if we are decreasing
     print(item_name)
@@ -106,17 +139,25 @@ def ajax_change_order_quantity(request):
                 item_counter.quantity = item_counter.quantity + 1
                 item_counter.price += item_counter.item.price
                 curr_cart.total += item_counter.item.price
+                curr_cart.total_with_tip += item_counter.item.price
+                new_price = item_counter.price
+                new_quantity = item_counter.quantity
             else:
                 item_counter.quantity = item_counter.quantity - 1
                 item_counter.price -= item_counter.item.price
                 curr_cart.total -= item_counter.item.price
+                curr_cart.total_with_tip -= item_counter.item.price
+                new_price = item_counter.price
+                new_quantity = item_counter.quantity
             if item_counter.quantity == 0:
                 item_counter.delete()
             else:
                 item_counter.save()
-            curr_cart.total_with_tip = round(curr_cart.total*(1+curr_cart.tip),2)
             curr_cart.save()
-    return JsonResponse({'new_quantity':item_counter.quantity,'new_price':round(item_counter.price,2),
+            break
+            print("new quantity")
+            print(new_quantity)
+    return JsonResponse({'new_quantity':new_quantity,'new_price':new_price,
                          'new_total': curr_cart.total,'new_total_with_tip':curr_cart.total_with_tip,
                          'tip_amount':round(curr_cart.total*curr_cart.tip,2)})
 
@@ -137,9 +178,11 @@ def ajax_add_item(request):
                                        price = menu_item.price*number_items)
     new_item_counter.save()
     curr_cart.total += new_item_counter.price
+    curr_cart.total_with_tip += new_item_counter.price
     curr_cart.save()
     data = {'item_name':item_name,'number_items':number_items,'price':menu_item.price,
-            'total':menu_item.price*number_items}
+            'total':menu_item.price*number_items,'new_total':curr_cart.total,
+            'new_total_with_tip':curr_cart.total_with_tip}
     return JsonResponse(data)
 
 def cashier_logout(request):

@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!-- layout stuff -->
 <style>
   body{background:#f9f9f9;}
@@ -136,8 +137,8 @@ input[type=number]::-webkit-outer-spin-button {
 <body>
   <div id="wrapper" class="animate">
     <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark">
-      <span class="navbar-toggler-icon leftmenutrigger"></span>
-      <a class="navbar-brand" href="#">LOGO</a>
+      <!-- <span class="navbar-toggler-icon leftmenutrigger"></span> -->
+      <a class="navbar-brand" href=""><img src = "{% static path %}"height=30 width=30></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -145,28 +146,40 @@ input[type=number]::-webkit-outer-spin-button {
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav ml-md-auto d-md-flex">
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
+            {% if name %}
+            <a class="nav-link" href="#">{% trans "Hi" %}, {{ name }}</a>
+            {% endif %}
           </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
+          </li> -->
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-key"></i> Logout</a>
+            <a href = "logout" class="nav-link"><i class="fas fa-key"></i> Logout</a>
           </li>
         </ul>
       </div>
     </nav>
     <div class="container-fluid">
+      <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
+          <div class="navbar-header">
+            <h4>{% trans "Review Order" %}</h4>
+          </div>
+          <button onclick="history.back();" class = "btn btn-outline-dark" href="#"><i class="fas fa-arrow-left"></i> {% trans "Back" %}</button>
+      </nav>
+      <br>
       <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Order Details</h5>
+              <h5 class="card-title">{% trans "Order Details" %}</h5>
               <table id = "order_table" class="table table-hover">
                   <thead>
                       <tr>
-                          <th>Product</th>
+                          <th>{% trans "Product" %}</th>
                           <th>#</th>
-                          <th class="text-center">Price</th>
-                          <th class="text-center">Total</th>
-                          <th class="text-center">Actions</th>
+                          <th class="text-center">{% trans "Price" %}</th>
+                          <th class="text-center">{% trans "Total" %}</th>
+                          <th class="text-center">{% trans "Actions" %}</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -188,10 +201,10 @@ input[type=number]::-webkit-outer-spin-button {
                           <td>   </td>
                           <td class="text-right">
                           <p>
-                              <strong>Subtotal: </strong>
+                              <strong>{% trans "Subtotal" %}: </strong>
                           </p>
                           <p>
-                              <strong>Tip: </strong>
+                              <strong>{% trans "Tip" %}: </strong>
                           </p></td>
                           <td class="text-center">
                           <p>
@@ -215,19 +228,19 @@ input[type=number]::-webkit-outer-spin-button {
                 {% csrf_token %}
                 <td class = 'widefield'><input class = 'field' id = 'cash_code' name = 'cash_code' type = 'text' value = {{cash_code}} hidden = 'true' style = "display : none;" readonly></td>
                 <button type="submit" name="confirm_payment" class="btn btn-success btn-lg btn-block">
-                    Confirm Payment <span class="glyphicon glyphicon-chevron-right"></span>
+                    {% trans "Confirm Payment" %} <span class="glyphicon glyphicon-chevron-right"></span>
                 </button>
-              </form>
-              <button type="button" class="btn btn-danger btn-lg btn-block">
-                  Cancel <span class="glyphicon glyphicon-chevron-right"></span>
+              <button type="submit" name="cancel_order" class="btn btn-danger btn-lg btn-block">
+                  {% trans "Cancel" %} <span class="glyphicon glyphicon-chevron-right"></span>
               </button>
+              </form>
             </div>
           </div>
         </div>
         <div class="col">
           <div class="card">
             <div class="card-body text-center">
-              <h5 class="card-title" style = "text-align: center">Add Menu Items</h5>
+              <h5 class="card-title" style = "text-align: center">{% trans "Add Menu Items" %}</h5>
               <!-- <a href="#" class="btn btn-squared-default btn-success" style="margin-left: 1cm;">
                 <br>
                    <i class="fas fa-utensils fa-10x"></i>
@@ -253,7 +266,7 @@ input[type=number]::-webkit-outer-spin-button {
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Items to Order</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{% trans "Add Items to Order" %}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -262,9 +275,9 @@ input[type=number]::-webkit-outer-spin-button {
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th class="text-center" >Price</th>
-                    <th class="text-center">Actions</th>
+                    <th>{% trans "Product" %}</th>
+                    <th class="text-center" >{% trans "Price" %}</th>
+                    <th class="text-center">{% trans "Actions" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -279,7 +292,7 @@ input[type=number]::-webkit-outer-spin-button {
                       <input class="quantity" min="1" name="quantity" value="1" type="number">
                       <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus"></button>
                     </div>
-                      <button name="add_item" type="button" class="btn btn-success" style="margin-left: 0.6cm">Add</button>
+                      <button name="add_item" type="button" class="btn btn-success" style="margin-left: 0.6cm">{% trans "Add" %}</button>
                     </div>
                   </td>
               </tr>
@@ -289,7 +302,6 @@ input[type=number]::-webkit-outer-spin-button {
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -344,13 +356,14 @@ input[type=number]::-webkit-outer-spin-button {
             button_elem.closest("tr").children("td")[3].innerHTML ="$".concat(String(data.new_price)); //update total for item
             $('#order_subtotal')[0].innerHTML = "$".concat(String(data.new_total)); //update order subttotal
             $('#order_total')[0].innerHTML = "$".concat(String(data.new_total_with_tip)); //update order total
-            $('#tip_amount')[0].innerHTML = "$".concat(String(data.tip_amount)); //update order total
+            //$('#tip_amount')[0].innerHTML = "$".concat(String(data.tip_amount)); //update order total
           }
         });
       });
       // Decrease item number button
     	$(document).on("click", ".minus_item", function(){
             console.log("here");
+            var button_elem = $(this);
             var number_items = parseInt($(this).closest("tr").children("td")[1].innerHTML);
             if (number_items == 1){ //if item count currently at 1, taking one away deletes the row in the table
               $(this).closest("tr").remove()
@@ -378,7 +391,10 @@ input[type=number]::-webkit-outer-spin-button {
             dataType: 'json',
             success: function (data) {
               console.log("successfully updated Cart object");
-              $(this).closest("tr").children("td")[1].innerHTML = number_items - 1; //update product count
+              button_elem.closest("tr").children("td")[1].innerHTML = data.new_quantity; //update product count
+              button_elem.closest("tr").children("td")[3].innerHTML ="$".concat(String(data.new_price)); //update total for item
+              $('#order_subtotal')[0].innerHTML = "$".concat(String(data.new_total)); //update order subttotal
+              $('#order_total')[0].innerHTML = "$".concat(String(data.new_total_with_tip)); //update order total
             }
           });
         });
@@ -401,7 +417,8 @@ input[type=number]::-webkit-outer-spin-button {
                 console.log("successfully updated Cart object");
                 var tableRef = document.getElementById('order_table').getElementsByTagName('tbody')[0];
                 var newRow   = tableRef.insertRow(tableRef.rows.length-2);
-                var newCell  = newRow.insertCell(0); newCell.appendChild(document.createTextNode(data.item_name));
+                var newCell  = newRow.insertCell(0); //newCell.appendChild(document.createTextNode("<em>".concat(data.item_name).concat("</em>")));
+                newCell.innerHTML = "<em>".concat(data.item_name).concat("</em>")
                 var newCell2  = newRow.insertCell(1); newCell2.appendChild(document.createTextNode(data.number_items));
                 var newCell3  = newRow.insertCell(2); newCell3.appendChild(document.createTextNode("$".concat(data.price)));
                 var newCell4  = newRow.insertCell(3); newCell4.appendChild(document.createTextNode("$".concat(data.total)));
@@ -409,6 +426,8 @@ input[type=number]::-webkit-outer-spin-button {
                 var html_string = "<button class='plus_item' title='Add' style='margin-right: 0.5cm'><i class='fas fa-plus'></i></button><button class='minus_item' title='Add' style='margin-right: 0cm'><i class='fas fa-minus' style = 'margin-left: 0cm;'></i></button>";
                 var newCell5  = newRow.insertCell(4);
                 newCell5.innerHTML = html_string;
+                $('#order_subtotal')[0].innerHTML = "$".concat(String(data.new_total)); //update order subttotal
+                $('#order_total')[0].innerHTML = "$".concat(String(data.new_total_with_tip)); //update order total
 
                 //var newCell5  = newRow.insertCell(4); newCell.appendChild("");
 

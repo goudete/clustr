@@ -1,3 +1,4 @@
+{% load i18n %}
 <style media="screen">
   @import url(https://fonts.googleapis.com/css?family=Roboto:400,300,600,400italic);
 * {
@@ -78,7 +79,7 @@ fieldset {
   margin: 0 0 5px;
   padding: 10px;
   text-align: center;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   padding-top:40px;
   font-size: 40px;
 }
@@ -171,7 +172,7 @@ fieldset {
 }
 .code_input {
 text-align: center;
-text-transform: uppercase;
+/* text-transform: uppercase; */
 padding-top:40px;
 font-size: 40px;
 }
@@ -185,13 +186,13 @@ font-size: 40px;
 <div class="container">
   <form id="contact" method="post">
     {% csrf_token %}
-    <h3 style = "text-align: center;">Input Ticket Number</h3>
-    <h4>blah blah blah</h4>
+    <h3 style = "text-align: center;">{% trans "Input Cash Code" %}</h3>
+    <h4>{% trans "Enter the code the customer was given for cash payment" %} </h4>
     {% render_field form.order_code class+="code_input" %}
     <fieldset>
-      <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
+      <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">{% trans "Submit" %}</button>
     </fieldset>
-    <button name="submit" type="button" onclick="history.back();" id="contact-submit" data-submit="...Sending">Back</button>
+    <button name="submit" type="button" onclick="history.back();" id="contact-submit" data-submit="...Sending">{% trans "Back" %}</button>
     {% if form.errors %}
       {% for field in form %}
           {% for error in field.errors %}

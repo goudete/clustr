@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!-- layout stuff -->
 <style>
   body{background:#f9f9f9;}
@@ -57,8 +58,8 @@
 <body>
   <div id="wrapper" class="animate">
     <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark">
-      <span class="navbar-toggler-icon leftmenutrigger"></span>
-      <a class="navbar-brand" href="#">LOGO</a>
+      <!-- <span class="navbar-toggler-icon leftmenutrigger"></span> -->
+      <a class="navbar-brand" href=""><img src = "{% static path %}"height=30 width=30></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -67,12 +68,12 @@
         <ul class="navbar-nav ml-md-auto d-md-flex">
           <li class="nav-item">
             {% if name %}
-            <a class="nav-link" href="#">Hi, {{ name }}</a>
+            <a class="nav-link" href="#">{% trans "Hi" %}, {{ name }}</a>
             {% endif %}
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
-          </li>
+          </li> -->
           <li class="nav-item">
             <a href = "logout" class="nav-link"><i class="fas fa-key"></i> Logout</a>
           </li>
@@ -80,7 +81,7 @@
       </div>
     </nav>
     <div class="container-fluid">
-      <div class="row">
+      <!-- <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-body">
@@ -103,12 +104,12 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title" style = "text-align:center;">Cash Payment</h5>
+              <h5 class="card-title" style = "text-align:center;">{% trans "Cash Payment" %}</h5>
               <div style = "text-align:center;">
                 <a href="{% url 'cash_payment' %}" class="btn btn-squared-default btn-success" >
                     <br>
@@ -122,7 +123,7 @@
         <div class="col">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title" style = "text-align:center;">Order History</h5>
+              <h5 class="card-title" style = "text-align:center;">{% trans "Order History" %}</h5>
               <div style = "text-align:center;">
                 <a href="{% url 'order_history' %}" class="btn btn-squared-default btn-success" >
                     <br>
