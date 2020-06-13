@@ -67,13 +67,18 @@ def reviewOrderView(request):
 
             current_date = datetime.date.today()
             logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(request.user.cashierprofile.restaurant.id))
+            item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
+
             email = curr_cart.email
             subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, email
             msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
             html_template = get_template("emails/receipt/receipt.html").render({
                                                         'date':current_date,
                                                         'receipt_number':curr_cart.id,
-                                                        'path':request.user.cashierprofile.restaurant.photo_path
+                                                        'path':request.user.cashierprofile.restaurant.photo_path,
+                                                        'order_id':curr_cart.id,
+                                                        'item_counters': item_counters,
+                                                        'cart': curr_cart
                                             })
             msg.attach_alternative(html_template, "text/html")
             msg.send()

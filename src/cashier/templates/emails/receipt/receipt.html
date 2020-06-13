@@ -37,7 +37,7 @@
                         <em>{% trans "Date" %}: {{date}}</em>
                     </p>
                     <p>
-                        <em>{% trans "Receipt" %} #: 34522677W</em>
+                        <em> #{% trans "Receipt" %} : {{order_id}}</em>
                     </p>
                 </div>
             </div>
@@ -55,48 +55,38 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="col-md-9"><em>Baked Rodopa Sheep Feta</em></td>
-                            <td class="col-md-1" style="text-align: center"> 2 </td>
-                            <td class="col-md-1 text-center">$13</td>
-                            <td class="col-md-1 text-center">$26</td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-9"><em>Lebanese Cabbage Salad</em></td>
-                            <td class="col-md-1" style="text-align: center"> 1 </td>
-                            <td class="col-md-1 text-center">$8</td>
-                            <td class="col-md-1 text-center">$8</td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-9"><em>Baked Tart with Thyme and Garlic</em></td>
-                            <td class="col-md-1" style="text-align: center"> 3 </td>
-                            <td class="col-md-1 text-center">$16</td>
-                            <td class="col-md-1 text-center">$48</td>
-                        </tr>
-                        <tr>
-                            <td>   </td>
-                            <td>   </td>
-                            <td class="text-right">
-                            <p>
-                                <strong>{% trans "Subtotal" %}: </strong>
-                            </p>
-                            <!-- <p>
-                                <strong>Tax: </strong>
-                            </p> -->
-                          </td>
-                            <td class="text-center">
-                            <p>
-                                <strong>$6.94</strong>
-                            </p>
-                            <p>
-                                <strong>$6.94</strong>
-                            </p></td>
-                        </tr>
+                      {% for item_counter in item_counters %}
+                      <tr>
+                          <td class="col-md-9"><em>{{item_counter.item.name}}</em>{% if item_counter.custom_instructions %}<br><em style = 'color:red;'>{{item_counter.custom_instructions}}</em>{% endif %}</td>
+                          <td class="col-md-1" style="text-align: center">{{item_counter.quantity}}</td>
+                          <td class="col-md-1 text-center">${{item_counter.item.price}}</td>
+                          <td class="col-md-1 text-center">${{item_counter.price}}</td>
+                      </tr>
+                      {% endfor %}
+                      <tr>
+                          <td>   </td>
+                          <td>   </td>
+                          <td>   </td>
+                          <td class="text-right">
+                          <p>
+                              <strong>{% trans "Subtotal" %}: </strong>
+                          </p>
+                          <p>
+                              <strong>{% trans "Tip" %}: </strong>
+                          </p></td>
+                          <td class="text-center">
+                          <p>
+                              <strong id="order_subtotal">${{cart.total}}</strong>
+                          </p>
+                          <p>
+                              <strong id="tip_amount">${{cart.tip}}</strong>
+                          </p></td>
+                      </tr>
                         <tr>
                             <td>   </td>
                             <td>   </td>
                             <td class="text-right"><h4><strong>Total: </strong></h4></td>
-                            <td class="text-center text-danger"><h4><strong>$31{{total}}</strong></h4></td>
+                            <td class="text-center text-danger"><h4><strong>${{cart.total_with_tip}}</strong></h4></td>
                         </tr>
                     </tbody>
                 </table>
