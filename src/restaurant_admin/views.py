@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login, authenticate, logout
 from django.utils.translation import gettext as _
 from django.utils import translation
@@ -486,17 +486,47 @@ def add_item_no_menu(request):
         #redirect back to edit menu page
         return redirect('/restaurant_admin/my_items')
 
+def receipt_page(request):
+    if request.method == 'GET':
+
+        return render(request, 'restaurant/receipt.html')
+
+    else:
+        return redirect('restaurant/receipt.html')
+
+queue = []
 def ajax_receipt(request):
-    #could fix prob with making ajax call Post, then get could just render receipt.html
+    ''' Two parts, one adds to the queue (the ones coming from order_confirmation)
+        And the other dequeues (the one coming from receipt.html)'''
+
     if request.method == 'POST':
         cart_id = request.POST.get('cart_id', None)
+        queue.append(cart_id)
+        print(queue)
         receipt_html = request.POST.get('receipt_html', None)
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_cart.receipt_html = receipt_html
-        print(receipt_html)
         curr_cart.save()
 
-        return redirect('restaurant/receipt.html', {'receipt_html': receipt_html})
+        data = {
+            'receipt_html': receipt_html,
+            'cart_id': cart_id,
+        }
+        return JsonResponse(data)
     else:
+        if queue:
+            print('QUEUE pre-pop: ', queue)
+            cart_id = queue.pop(0)
+            print('QUEUE post-pop: ', queue)
+            curr_cart = Cart.objects.filter(id = cart_id).first()
+            receipt_html = curr_cart.receipt_html
 
-        return render(request, 'restaurant/receipt.html')
+            data = {
+                'receipt_html': receipt_html,
+            }
+            return JsonResponse(data)
+        else:
+            data = {
+                'receipt_html': None
+            }
+            return JsonResponse(data)

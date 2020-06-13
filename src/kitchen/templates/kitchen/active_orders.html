@@ -92,6 +92,12 @@
       if(document.getElementById('tracker'+a).style.display == 'block') document.getElementById('item'+a).style.display = 'none';
       else document.getElementById('tracker'+a).style.display = 'block';
     }
+    // $(document).ready(function(){
+    window.setInterval(function(){
+      location.reload();
+    }, 10000);
+    // });
+
   </script>
 </html>
 {% endblock %}
