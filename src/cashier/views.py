@@ -21,7 +21,9 @@ from django.template.loader import get_template, render_to_string
 def baseView(request):
     backend = PasswordlessAuthBackend()
     user = backend.get_user(request.user.id)
-    return render(request,'base2.html',{'name':user.cashierprofile.name})
+    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
+    return render(request,'base2.html',{'name':user.cashierprofile.name,
+                                        'path':logo_photo_path})
 
 def cashPaymentView(request):
     print("we in the wrong view")
@@ -88,8 +90,14 @@ def reviewOrderView(request):
     return render(request,'review_order2.html')
 
 def orderHistoryView(request):
+    backend = PasswordlessAuthBackend()
+    user = backend.get_user(request.user.id)
+    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
+
     carts = Cart.objects.filter(restaurant = request.user.cashierprofile.restaurant)
-    return render(request,'order_history.html',{'carts':carts})
+    return render(request,'order_history.html',{'carts':carts,
+                                                'path':logo_photo_path,
+                                                'name':user.cashierprofile.name})
 
 def loginCashier(request):
     form = CashierLoginForm
