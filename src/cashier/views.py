@@ -116,6 +116,8 @@ def loginCashier(request):
 
 def ajax_change_order_quantity(request):
     item_name = request.GET.get('item_name', None).strip(' ')
+    print("item_name:")
+    print(item_name)
     cash_code = request.GET.get('cash_code', None)
     indicator = request.GET.get('indicator', None) #1 if we are increasing quantity, 0 if we are decreasing
     print(item_name)
@@ -143,6 +145,7 @@ def ajax_change_order_quantity(request):
             else:
                 item_counter.save()
             curr_cart.save()
+            break
             print("new quantity")
             print(new_quantity)
     return JsonResponse({'new_quantity':new_quantity,'new_price':new_price,
