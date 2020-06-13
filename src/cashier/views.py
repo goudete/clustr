@@ -13,7 +13,9 @@ from itertools import chain
 from django.core.mail import send_mail, EmailMultiAlternatives
 from qr import settings
 from kitchen.models import OrderTracker
-
+from django.utils.translation import gettext as _
+import datetime
+from django.template.loader import get_template, render_to_string
 
 # Create your views here.
 def baseView(request):
@@ -55,15 +57,20 @@ def reviewOrderView(request):
         cash_code = jsn['cash_code']
         print(cash_code)
         curr_cart = Cart.objects.filter(cash_code=cash_code).first()
-        curr_cart.is_paid = True
-        curr_cart.save()
-        print('is_paid = TRUE')
-        print("marked true")
 
-        email = 'luis.costa.laveron@googlemail.com'
-        subject, from_email, to = 'Test', settings.EMAIL_HOST_USER, email
+        current_date = datetime.date.today()
+        email = curr_cart.email
+        subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, email
         msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
+        html_template = get_template("emails/receipt/receipt.html").render({
+                                                    'date':current_date,
+                                                    'receipt_number':curr_cart.id
+                                        })
+        msg.attach_alternative(html_template, "text/html")
         msg.send()
+
+        # curr_cart.is_paid = True
+        # curr_cart.save()
 
         #create new order tracker if one DNE
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
