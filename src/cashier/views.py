@@ -166,9 +166,11 @@ def ajax_add_item(request):
                                        price = menu_item.price*number_items)
     new_item_counter.save()
     curr_cart.total += new_item_counter.price
+    curr_cart.total_with_tip += new_item_counter.price
     curr_cart.save()
     data = {'item_name':item_name,'number_items':number_items,'price':menu_item.price,
-            'total':menu_item.price*number_items}
+            'total':menu_item.price*number_items,'new_total':curr_cart.total,
+            'new_total_with_tip':curr_cart.total_with_tip}
     return JsonResponse(data)
 
 def cashier_logout(request):

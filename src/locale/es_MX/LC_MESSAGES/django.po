@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 12:05+0200\n"
+"POT-Creation-Date: 2020-06-13 14:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,53 @@ msgstr ""
 msgid "Order is already paid"
 msgstr ""
 
+#: cashier/templates/base2.html:71
+msgid "Hi"
+msgstr "Hola"
+
+#: cashier/templates/base2.html:112
+msgid "Cash Payment"
+msgstr "Pago en metálico"
+
+#: cashier/templates/base2.html:126 cashier/templates/order_history.html:65
+msgid "Order History"
+msgstr "Historial de Pedidos"
+
+#: cashier/templates/cash_payment.html:189
+msgid "Input Cash Code"
+msgstr "Introducir Código"
+
+#: cashier/templates/cash_payment.html:190
+msgid "Enter the code the customer was given for cash payment"
+msgstr "Introducir el código dado al huesped para pagar en metálico"
+
+#: cashier/templates/cash_payment.html:193
+#: cashier/templates/cashier_login.html:193
+#: customers/templates/customers/card_email_receipt.html:34
+#: customers/templates/customers/cash_email_receipt.html:34
+#: customers/templates/customers/order_confirmation.html:138
+#: customers/templates/customers/view_cart.html:136
+#: restaurant_admin/templates/restaurant/about_info.html:62
+#: restaurant_admin/templates/restaurant/my_items.html:50
+#: restaurant_admin/templates/restaurant/my_menus.html:51
+#: restaurant_admin/templates/restaurant/my_menus.html:100
+msgid "Submit"
+msgstr "Enviar"
+
+#: cashier/templates/cash_payment.html:195
+#: cashier/templates/cashier_login.html:195
+#: cashier/templates/order_history.html:67
+msgid "Back"
+msgstr "Regresar"
+
+#: cashier/templates/cashier_login.html:189
+msgid "Input Cashier Code"
+msgstr "Introducir Número de cajero"
+
+#: cashier/templates/cashier_login.html:190
+msgid "Input your cashier code to start the session"
+msgstr "Introduce tu número dado de cajero para empezar la sesión."
+
 #: cashier/templates/emails/receipt/receipt.html:37
 msgid "Date"
 msgstr "Fecha"
@@ -36,59 +83,99 @@ msgid "Receipt"
 msgstr "Recibo"
 
 #: cashier/templates/emails/receipt/receipt.html:51
+#: cashier/templates/review_order2.html:166
+#: cashier/templates/review_order2.html:266
 msgid "Product"
 msgstr "Producto"
 
 #: cashier/templates/emails/receipt/receipt.html:53
-#: cashier/templates/order_history.html:71
-#: cashier/templates/order_history.html:99 restaurant_admin/models.py:38
+#: cashier/templates/order_history.html:76
+#: cashier/templates/order_history.html:104
+#: cashier/templates/review_order2.html:168
+#: cashier/templates/review_order2.html:267 restaurant_admin/models.py:38
 #: restaurant_admin/templates/restaurant/edit_menu.html:224
 #: restaurant_admin/templates/restaurant/my_items.html:199
 msgid "Price"
 msgstr "Precio"
 
 #: cashier/templates/emails/receipt/receipt.html:81
+#: cashier/templates/review_order2.html:192
 #: customers/templates/customers/order_confirmation.html:82
 #: customers/templates/customers/view_cart.html:147
 msgid "Subtotal"
 msgstr "Base"
 
-#: cashier/templates/order_history.html:60
-msgid "Order History"
-msgstr "Historial de Pedidos"
-
-#: cashier/templates/order_history.html:62
-msgid "Back"
-msgstr "Regresar"
-
-#: cashier/templates/order_history.html:68
-#: cashier/templates/order_history.html:96
+#: cashier/templates/order_history.html:73
+#: cashier/templates/order_history.html:101
 msgid "Order"
 msgstr "Pedido"
 
-#: cashier/templates/order_history.html:69
-#: cashier/templates/order_history.html:97
+#: cashier/templates/order_history.html:74
+#: cashier/templates/order_history.html:102
 msgid "Time Created"
 msgstr "Tiempo Creado"
 
-#: cashier/templates/order_history.html:70
-#: cashier/templates/order_history.html:98
+#: cashier/templates/order_history.html:75
+#: cashier/templates/order_history.html:103
 msgid "Guest email"
 msgstr "Correo Electrónico"
 
-#: cashier/templates/order_history.html:83
+#: cashier/templates/order_history.html:88
 msgid "Paid"
 msgstr "Pagado"
 
-#: cashier/templates/order_history.html:86
+#: cashier/templates/order_history.html:91
 msgid "Cancelled"
 msgstr "Cancelado"
 
-#: cashier/templates/order_history.html:89
+#: cashier/templates/order_history.html:94
 msgid "Open"
 msgstr "Abierto"
 
-#: cashier/views.py:65
+#: cashier/templates/review_order2.html:162
+#: customers/templates/customers/order_confirmation.html:52
+msgid "Order Details"
+msgstr "Detalles de Orden"
+
+#: cashier/templates/review_order2.html:169
+#: customers/templates/customers/order_confirmation.html:105
+#: customers/templates/customers/view_cart.html:170
+msgid "Total"
+msgstr "Total"
+
+#: cashier/templates/review_order2.html:170
+#: cashier/templates/review_order2.html:268
+msgid "Actions"
+msgstr "Acciones"
+
+#: cashier/templates/review_order2.html:195
+#: customers/templates/customers/order_confirmation.html:91
+#: customers/templates/customers/view_cart.html:109
+#: customers/templates/customers/view_cart.html:156
+msgid "Tip"
+msgstr "Propina"
+
+#: cashier/templates/review_order2.html:219
+msgid "Confirm Payment"
+msgstr "Confirmar Pago"
+
+#: cashier/templates/review_order2.html:222
+#: restaurant_admin/templates/restaurant/confirm_remove.html:12
+#: restaurant_admin/templates/restaurant/confirm_remove.html:15
+#: restaurant_admin/templates/restaurant/confirm_remove.html:24
+#: restaurant_admin/templates/restaurant/confirm_remove.html:52
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: cashier/templates/review_order2.html:231
+msgid "Add Menu Items"
+msgstr "Agregar Platillos"
+
+#: cashier/templates/review_order2.html:257
+msgid "Add Items to Order"
+msgstr "Agregar Platillos al pedido"
+
+#: cashier/views.py:67
 msgid "Your Receipt"
 msgstr "Tu Recibo"
 
@@ -116,17 +203,6 @@ msgstr "Correo Electrónico"
 #: customers/templates/customers/cash_email_receipt.html:27
 msgid "Receive Text Message When Order is Ready?"
 msgstr "Quieres recibir un mensaje cuando este tu orden?"
-
-#: customers/templates/customers/card_email_receipt.html:34
-#: customers/templates/customers/cash_email_receipt.html:34
-#: customers/templates/customers/order_confirmation.html:138
-#: customers/templates/customers/view_cart.html:136
-#: restaurant_admin/templates/restaurant/about_info.html:62
-#: restaurant_admin/templates/restaurant/my_items.html:50
-#: restaurant_admin/templates/restaurant/my_menus.html:51
-#: restaurant_admin/templates/restaurant/my_menus.html:100
-msgid "Submit"
-msgstr "Enviar"
 
 #: customers/templates/customers/card_email_receipt.html:40
 #: customers/templates/customers/cash_email_receipt.html:40
@@ -168,21 +244,6 @@ msgstr "Número de Orden:"
 #: customers/templates/customers/order_confirmation.html:36
 msgid "Email Receipt:"
 msgstr "Correo Electrónico:"
-
-#: customers/templates/customers/order_confirmation.html:52
-msgid "Order Details"
-msgstr "Detalles de Orden"
-
-#: customers/templates/customers/order_confirmation.html:91
-#: customers/templates/customers/view_cart.html:109
-#: customers/templates/customers/view_cart.html:156
-msgid "Tip"
-msgstr "Propina"
-
-#: customers/templates/customers/order_confirmation.html:105
-#: customers/templates/customers/view_cart.html:170
-msgid "Total"
-msgstr "Total"
 
 #: customers/templates/customers/order_confirmation.html:126
 msgid "Feedback"
@@ -375,13 +436,6 @@ msgstr "No hay Cajeros Registrados"
 #: restaurant_admin/templates/restaurant/confirm_remove.html:47
 msgid "Are You Sure You Want to Delete "
 msgstr "Seguro que quieres eliminar? "
-
-#: restaurant_admin/templates/restaurant/confirm_remove.html:12
-#: restaurant_admin/templates/restaurant/confirm_remove.html:15
-#: restaurant_admin/templates/restaurant/confirm_remove.html:24
-#: restaurant_admin/templates/restaurant/confirm_remove.html:52
-msgid "Cancel"
-msgstr "Cancelar"
 
 #: restaurant_admin/templates/restaurant/confirm_remove.html:28
 msgid "All These Items Will Be Deleted as Well"
