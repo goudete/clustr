@@ -128,17 +128,24 @@ def ajax_change_order_quantity(request):
                 item_counter.quantity = item_counter.quantity + 1
                 item_counter.price += item_counter.item.price
                 curr_cart.total += item_counter.item.price
+                curr_cart.total_with_tip += item_counter.item.price
+                new_price = item_counter.price
+                new_quantity = item_counter.quantity
             else:
                 item_counter.quantity = item_counter.quantity - 1
                 item_counter.price -= item_counter.item.price
                 curr_cart.total -= item_counter.item.price
+                curr_cart.total_with_tip -= item_counter.item.price
+                new_price = item_counter.price
+                new_quantity = item_counter.quantity
             if item_counter.quantity == 0:
                 item_counter.delete()
             else:
                 item_counter.save()
-            curr_cart.total_with_tip = round(curr_cart.total*(1+curr_cart.tip),2)
             curr_cart.save()
-    return JsonResponse({'new_quantity':item_counter.quantity,'new_price':round(item_counter.price,2),
+            print("new quantity")
+            print(new_quantity)
+    return JsonResponse({'new_quantity':new_quantity,'new_price':new_price,
                          'new_total': curr_cart.total,'new_total_with_tip':curr_cart.total_with_tip,
                          'tip_amount':round(curr_cart.total*curr_cart.tip,2)})
 

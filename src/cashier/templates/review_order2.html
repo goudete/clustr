@@ -289,7 +289,6 @@ input[type=number]::-webkit-outer-spin-button {
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -344,13 +343,14 @@ input[type=number]::-webkit-outer-spin-button {
             button_elem.closest("tr").children("td")[3].innerHTML ="$".concat(String(data.new_price)); //update total for item
             $('#order_subtotal')[0].innerHTML = "$".concat(String(data.new_total)); //update order subttotal
             $('#order_total')[0].innerHTML = "$".concat(String(data.new_total_with_tip)); //update order total
-            $('#tip_amount')[0].innerHTML = "$".concat(String(data.tip_amount)); //update order total
+            //$('#tip_amount')[0].innerHTML = "$".concat(String(data.tip_amount)); //update order total
           }
         });
       });
       // Decrease item number button
     	$(document).on("click", ".minus_item", function(){
             console.log("here");
+            var button_elem = $(this);
             var number_items = parseInt($(this).closest("tr").children("td")[1].innerHTML);
             if (number_items == 1){ //if item count currently at 1, taking one away deletes the row in the table
               $(this).closest("tr").remove()
@@ -378,7 +378,10 @@ input[type=number]::-webkit-outer-spin-button {
             dataType: 'json',
             success: function (data) {
               console.log("successfully updated Cart object");
-              $(this).closest("tr").children("td")[1].innerHTML = number_items - 1; //update product count
+              button_elem.closest("tr").children("td")[1].innerHTML = data.new_quantity; //update product count
+              button_elem.closest("tr").children("td")[3].innerHTML ="$".concat(String(data.new_price)); //update total for item
+              $('#order_subtotal')[0].innerHTML = "$".concat(String(data.new_total)); //update order subttotal
+              $('#order_total')[0].innerHTML = "$".concat(String(data.new_total_with_tip)); //update order total
             }
           });
         });
