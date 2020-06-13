@@ -1,6 +1,6 @@
 {% extends 'customers/base.html'%}
 {% load i18n %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container-fluid">
   <div class="row mt-5">
@@ -25,7 +25,7 @@
 
         <div class="form-group mx-sm-3 mb-2 mt-4">
           <label for="phone_input">{% trans "Receive Text Message When Order is Ready?" %}</label>
-          <input type="tel" class="form-control" name="phone_input" id="phone_input" placeholder="eg: +525555555555">
+          {{phone.phone|as_crispy_field}}
         </div>
 
         <!-- Buttons -->

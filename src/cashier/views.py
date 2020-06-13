@@ -85,11 +85,6 @@ def reviewOrderView(request):
 
             curr_cart.is_paid = True
             curr_cart.save()
-
-            #create new order tracker if one DNE
-            if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
-                tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
-                tracker.save()
             return HttpResponseRedirect('/cashier/base')
         elif "cancel_order" in request.POST: #cashier cacelled order, we delete order object
             curr_cart = Cart.objects.filter(cash_code=cash_code).first()

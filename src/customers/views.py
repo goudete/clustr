@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter
 from restaurant_admin.models import Restaurant
-from .forms import CustomOrderForm, CustomTipForm, EmailForm, FeedbackForm
+from .forms import CustomOrderForm, CustomTipForm, EmailForm, FeedbackForm, PhoneForm
 import stripe
 import os
 from decimal import Decimal
@@ -402,6 +402,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
 ''' This is an intermediary step between payment and order confirmation. Email and Phone form'''
 def card_email_receipt(request, cart_id, restaurant_id, menu_id):
     form = EmailForm()
+    phone_form = PhoneForm()
     if request.method == 'GET':
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
@@ -410,7 +411,7 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
             tracker.save()
-        return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form})
+        return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
     else:
         curr_cart = Cart.objects.filter(id = cart_id).first()
         form = EmailForm(request.POST)
@@ -419,23 +420,25 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
             curr_cart.email = curr_user_email
             curr_cart.save()
             print('user_email:', curr_cart.email)
-        if request.POST['phone_input'] != "":
+        if request.POST['phone'] != "":
             tracker = OrderTracker.objects.filter(cart = curr_cart).first()
-            tracker.phone_number = request.POST['phone_input']
+            tracker.phone_number = request.POST['phone']
             tracker.save()
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
 def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
     '''Notify cashier that customer is paying cash'''
     form = EmailForm()
+    phone_form = PhoneForm()
+    curr_cart = Cart.objects.filter(id = cart_id).first()
+    curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+    curr_menu = Menu.objects.filter(id = menu_id).first()
     if request.method == 'GET':
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-        curr_menu = Menu.objects.filter(id = menu_id).first()
+        #create new order tracker if one DNE
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
             tracker.save()
-        return render(request, 'customers/cash_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form})
+        return render(request, 'customers/cash_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
     else:
         curr_cart = Cart.objects.filter(id = cart_id).first()
         form = EmailForm(request.POST)
@@ -444,10 +447,15 @@ def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
             curr_cart.email = curr_user_email
             curr_cart.save()
             print('user_email:', curr_cart.email)
-        if request.POST['phone_input'] != "":
+        phone_num = PhoneForm(request.POST)
+        print(phone_num.errors)
+        if request.POST['phone'] != "" and phone_num.is_valid():
             tracker = OrderTracker.objects.filter(cart = curr_cart).first()
-            tracker.phone_number = request.POST['phone_input']
+            tracker.phone_number = request.POST['phone']
             tracker.save()
+            return redirect('/customers/cash_code/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+        elif request.POST['phone'] != "" and not phone_num.is_valid():
+            return render(request, 'customers/cash_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_num})
         return redirect('/customers/cash_code/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 ''' This view handles showing their cash code to the user if paying cash'''
