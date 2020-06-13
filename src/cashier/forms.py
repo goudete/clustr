@@ -2,6 +2,13 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from customers.models import Cart
 from .models import CashierProfile
+from django.utils.translation import gettext as _
+
+
+def stringToUpper(string):
+    indices = set([0,1])
+    return "".join(c.upper() if i in indices else c for i, c in enumerate(string))
+
 
 class SubmitOrderCode(forms.Form):
     order_code = forms.CharField(max_length=100, required = True, widget=forms.Textarea(attrs={
@@ -9,9 +16,11 @@ class SubmitOrderCode(forms.Form):
     }))
 
     def clean_order_code(self):
-        order_code_passed = self.cleaned_data.get('order_code')
+        order_code_passed = stringToUpper(self.cleaned_data.get('order_code'))
         if not(Cart.objects.filter(cash_code=order_code_passed).exists()):
-            raise forms.ValidationError("Order with this code does not exist.")
+            raise forms.ValidationError(_("Order with this code does not exist."))
+        elif not(Cart.objects.filter(cash_code=order_code_passed).filter(is_paid = False).exists()):
+            raise forms.ValidationError(_("Order is already paid"))
         return order_code_passed
 
     def __init__(self, *args, **kwargs):

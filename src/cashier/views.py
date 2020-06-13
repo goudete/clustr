@@ -28,11 +28,9 @@ def cashPaymentView(request):
         if form.is_valid():
             cd = form.cleaned_data
             order_code = cd['order_code']
-            print('order_code')
+            print(order_code)
             curr_cart = Cart.objects.filter(cash_code=order_code).first()
             item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
-            # tip_amount = round((curr_cart.tip/10)*curr_cart.total,2)
-            # grand_total = tip_amount + curr_cart.total
             backend = PasswordlessAuthBackend()
             user = backend.get_user(request.user.id)
             restaurant = user.cashierprofile.restaurant
