@@ -1,13 +1,47 @@
 {% extends 'restaurant/base.html' %}
 
 {% block content %}
-<div id="receipt">
-{{ cart.receipt_html }}
+<!-- <button onclick="GetReceipt()">Call Ajax</button> -->
+
+<div class="receipt">
+  <h1>RECEIPT HERE</h1>
 </div>
-<h1>RECEIPT HERE</h1>
+
 
 
 <script>
+  //call queueu every X sec,
+window.setInterval(function(){
+  $.ajax({
+    type: "GET",
+    url: "{% url 'ajax_receipt' %}",
+    dataType: 'json',
+    success: function (data) {
+      //If there are cart_id's in queue, place receipt_html in div
+      if (data.receipt_html != null){
+        // console.log('queue is not empty')
+        // console.log('receipt_html: ' + data.receipt_html)
+        $(".receipt").html(data.receipt_html)
+        //send to Printer
+        var passprnt_uri;
+        passprnt_uri = "starpassprnt://v1/print/nopreview?";
+        passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
+        passprnt_uri = passprnt_uri + "&html=" + encodeURIComponent(data.receipt_html);
+        location.href = passprnt_uri;
+
+      }
+      //If there are no cart_id's in queue, remove contents in div
+      else{
+        // console.log('queue is empty')
+        $(".receipt").html('')
+      }
+    }
+  });
+}, 10000);
+
+
+
+
   // var receipt_html = $('#receipt').html()
   // var passprnt_uri;
   // console.log(receipt_html)

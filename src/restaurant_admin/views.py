@@ -494,18 +494,39 @@ def receipt_page(request):
     else:
         return redirect('restaurant/receipt.html')
 
+queue = []
 def ajax_receipt(request):
     ''' Two parts, one adds to the queue (the ones coming from order_confirmation)
         And the other dequeues (the one coming from receipt.html)'''
-    cart_id = request.GET.get('cart_id', None)
-    receipt_html = request.GET.get('receipt_html', None)
-    curr_cart = Cart.objects.filter(id = cart_id).first()
-    curr_cart.receipt_html = receipt_html
-    print(receipt_html)
-    curr_cart.save()
 
-    data = {
-        'receipt_html': receipt_html,
-        'cart_id': cart_id,
-    }
-    return JsonResponse(data)
+    if request.method == 'POST':
+        cart_id = request.POST.get('cart_id', None)
+        queue.append(cart_id)
+        print(queue)
+        receipt_html = request.POST.get('receipt_html', None)
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_cart.receipt_html = receipt_html
+        curr_cart.save()
+
+        data = {
+            'receipt_html': receipt_html,
+            'cart_id': cart_id,
+        }
+        return JsonResponse(data)
+    else:
+        if queue:
+            print('QUEUE pre-pop: ', queue)
+            cart_id = queue.pop(0)
+            print('QUEUE post-pop: ', queue)
+            curr_cart = Cart.objects.filter(id = cart_id).first()
+            receipt_html = curr_cart.receipt_html
+
+            data = {
+                'receipt_html': receipt_html,
+            }
+            return JsonResponse(data)
+        else:
+            data = {
+                'receipt_html': None
+            }
+            return JsonResponse(data)
