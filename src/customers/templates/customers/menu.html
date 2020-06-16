@@ -20,6 +20,25 @@
 #item_img{
   max-height: 250px;
 }
+
+div.scrollmenu {
+  /* background-color: #333; */
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+div.scrollmenu a:hover {
+  background-color: #D3D3D3;
+}
+
 </style>
 
 <!-- logo -->
@@ -60,10 +79,6 @@
            con tu salud como prioridad. Agradecemos cualquier comentario que tengas al respecto.
         </p>
       </div>
-      <!-- <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div> -->
     </div>
   </div>
 </div>
@@ -91,7 +106,15 @@
 
   <!-- End  -->
 
-  <hr>
+  <!-- Button Categories Start -->
+  <div class="scrollmenu mb-5">
+    {% for category in categories %}
+        <button class="btn btn-light view_category" id="view_category_{{ forloop.counter }}" value="{{ forloop.counter }}" res="{{ restaurant.id }}" menu="{{ menu.id }}">{{ category.name }}</button>
+    {% endfor %}
+  </div>
+  <!-- Button Categories End -->
+
+  <!-- <hr> -->
 
   <!-- Menu Items -->
   <ul class="list-unstyled">
@@ -154,10 +177,32 @@
 
       sessionStorage.setItem('#myModal', 'true');
     }
+
+    $(document).on("click", ".view_category", function(){
+      var index = String(this.value);
+      var category_name = document.getElementById('view_category_' + index).textContent;
+      // var restaurant = document.getElementById('view_category_' + index).getAttribute('res');
+      var menu = document.getElementById('view_category_' + index).getAttribute('menu');
+
+      $.ajax({
+      type: "GET",
+      url: "{% url 'category_items' %}",
+      data: {
+        'category': category_name,
+        // 'restaurant': restaurant,
+        'menu': menu,
+      },
+      dataType: 'json',
+      success: function (data) {
+        //receive Items from category and display
+        //How to use JS objects as I do Python objects that get passed in through render
+        var response = JSON.parse(data)
+
+      }
+      });
+    });
   });
-  // $(window).on('load',function(){
-  //   $('#myModal').modal('show');
-  // });
+
 
 </script>
 
