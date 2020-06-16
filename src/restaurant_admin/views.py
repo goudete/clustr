@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage
 from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem, SelectOption
@@ -350,9 +350,10 @@ def remove_item(request, menu_id, item_id):
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
 
-def edit_item(request, menu_id, item_id):
-    if not validate_id_number(request, menu_id):
-        return HttpResponse('you are not authorized to view this')
+def edit_item(request, item_id, origin,menu_id):
+    if origin == 'edit_menu': #validate if request is coming from an edit_menu page
+        if not validate_id_number(request, menu_id):
+            return HttpResponse('you are not authorized to view this')
     item = MenuItem.objects.filter(id = item_id).first()
     #if method is get, then user is filling out form to change item
     if request.method == 'GET':
@@ -366,6 +367,12 @@ def edit_item(request, menu_id, item_id):
         if request.POST['course'] != "":
             item.course = request.POST['course']
         item.price = request.POST['price']
+
+        #code to update is_in_stock status
+        if 'is_in_stock' in request.POST:
+                item.is_in_stock = True
+        else:
+            item.is_in_stock = False
         item.save()
         #check if they uploaded new photo
         photo = request.FILES.get('photo', False)
@@ -373,7 +380,6 @@ def edit_item(request, menu_id, item_id):
             #save photo to AWS
             doc = request.FILES['photo'] #get file
             files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                        menu_num = 'menu'+str(menu_id),
                                                                         item_number = 'item'+str(item.id))
             file_storage = FileStorage()
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
@@ -382,8 +388,11 @@ def edit_item(request, menu_id, item_id):
             item.photo_path = doc_path
             print(item.photo_path)
             item.save()
-        #redirect
-        return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+        #redirect depending on where the request came from
+        if origin == 'edit_menu':
+            return redirect('/restaurant_admin/edit_menu/' + str(menu_id))
+        elif origin == 'my_items':
+            return redirect('/restaurant_admin/my_items')
 
 
 def view_item(request, menu_id, item_id):
@@ -451,7 +460,7 @@ def my_items(request):
     restaurant = Restaurant.objects.get(user = request.user)
     items = MenuItem.objects.filter(restaurant=restaurant)
     alphabetically_sorted = sorted(items, key = lambda x: x.name)
-    form = MenuItemForm()
+    form = MenuItemFormItemPage()
     return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'items':alphabetically_sorted})
 
 def add_item_no_menu(request):
