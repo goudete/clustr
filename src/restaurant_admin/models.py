@@ -33,7 +33,7 @@ class MenuItem(models.Model):
     menu = models.ForeignKey(Menu, null=True, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
     restaurant = models.ForeignKey(Restaurant, null=True, on_delete = models.CASCADE)
     name = models.CharField(_('Name'), default = '', max_length = 200)
-    description = models.TextField(_('Description'), default = '')
+    description = models.TextField(_('Description'), null = True, default = '')
     course = models.CharField(_('Course'), default = '', max_length = 200) #this is to help organize the menu, somethting like appetizer, entree, dessert, etc..
     price = models.DecimalField(_('Price'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
     photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage

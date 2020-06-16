@@ -191,7 +191,7 @@ input:checked + .slider:before {
           <div class="row justify-content-center mt-3 mb-2">
             <div class = 'col'>
               <label for = 'photo'>{% trans 'Item Photo' %}</label>
-              <input type = 'file' accept="image/*" id = 'photo' name = "photo" required>
+              <input type = 'file' accept="image/*" id = 'photo' name = "photo">
             </div>
           </div>
 
@@ -235,7 +235,9 @@ input:checked + .slider:before {
           <div class="media">
             <div class="media-body">
               <h6 class="mt-0 mb-1">{{ item.name }}</h6>
+              {% if item.description %}
               {{ item.description }}<br>
+              {% endif %}
               ${{ item.price}} <br>
               <!--jst to add spacing-->
               <a style = 'cursor: pointer;' onclick = "showItemForm({{item.id}})">
@@ -346,7 +348,9 @@ input:checked + .slider:before {
             </div>
           </div>
             </div>
+            {% if item.photo_path %}
             <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
+            {% endif %}
           </div>
           <hr>
         </div>

@@ -27,7 +27,7 @@ class UserForm(UserCreationForm):
 
     class Meta():
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+        fields = ('username', 'email', 'password1', 'password2')
         help_texts = {
             'username': None,
             'password1': None,
@@ -72,7 +72,7 @@ class MenuItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MenuItemForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
-        self.fields['description'].required = True
+        self.fields['description'].required = False
         self.fields['course'].required = True
         self.fields['price'].required = True
         #sizing stuff
