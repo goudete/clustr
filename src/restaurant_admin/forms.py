@@ -27,7 +27,7 @@ class UserForm(UserCreationForm):
 
     class Meta():
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+        fields = ('username', 'email', 'password1', 'password2')
         help_texts = {
             'username': None,
             'password1': None,
@@ -72,7 +72,7 @@ class MenuItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MenuItemForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
-        self.fields['description'].required = True
+        self.fields['description'].required = False
         self.fields['course'].required = True
         self.fields['price'].required = True
         #sizing stuff
@@ -115,3 +115,16 @@ class KitchenForm(forms.ModelForm):
     class Meta:
         model = Kitchen
         fields = ('login_number',)
+
+class MenuItemFormItemPage(MenuItemForm):
+    def __init__(self, *args, **kwargs):
+        super(MenuItemForm, self).__init__(*args, **kwargs)
+        self.fields['name'].required = True
+        self.fields['description'].required = True
+        self.fields['course'].required = True
+        self.fields['price'].required = True
+        #sizing stuff
+        self.fields['name'].widget.attrs.update(style='width: 450px;')
+        self.fields['description'].widget.attrs.update(style='width: 450px;')
+        self.fields['course'].widget.attrs.update(style='width: 450px;')
+        self.fields['price'].widget.attrs.update(style='width: 450px;')

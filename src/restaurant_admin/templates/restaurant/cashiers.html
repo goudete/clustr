@@ -32,9 +32,9 @@
             </div>
 
             <div class = 'row justify-content-center'>
-              {% if messages %}
-                  {% for message in messages %}
-                      <div style = 'color:red;' class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}"><b>{{ message|safe }}</b></div>
+              {% if user_form.errors %}
+                  {% for error in user_form.errors %}
+                      <div style = 'color:red;' class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}"><b>{% trans 'Error with cashier ' %}{{ error }}</b></div><br>
                   {% endfor %}
               {% endif %}
             </div>

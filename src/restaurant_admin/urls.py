@@ -18,7 +18,7 @@ urlpatterns = [
     path('add_item/<int:menu_id>', views.add_item),
     path('remove_item/<int:menu_id>/<int:item_id>', views.remove_item),
     path('view_item/<int:menu_id>/<int:item_id>', views.view_item),
-    path('edit_item/<int:menu_id>/<int:item_id>', views.edit_item),
+    path('edit_item/<int:item_id>/<str:origin>/<int:menu_id>', views.edit_item),
     path('my_items',views.my_items),
     path('add_item_no_menu', views.add_item_no_menu),
     path('receipt_page', views.receipt_page, name = 'receipt_page'),

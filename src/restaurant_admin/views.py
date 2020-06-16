@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage
 from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem, SelectOption
@@ -260,6 +260,7 @@ def edit_menu(request, menu_id):
     #check if they uploaded new photo
     photo = request.FILES.get('photo', False)
     if photo:
+        # print("issue is here")
         #save photo to AWS
         doc = request.FILES['photo'] #get file
         files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(menu_id))
@@ -271,19 +272,25 @@ def edit_menu(request, menu_id):
     #if method is a get, then the user is looking at the menu
     if request.method == 'GET':
         items = MenuItem.objects.filter(menu = curr_menu)
+        # print('items queried')
         item_form = MenuItemForm()
         selct_options = SelectOption.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
+        # print('select options queried')
         #generate pre-signed url to download the QR code
         s3 = boto3.resource('s3') #setup to get from AWS
         aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
+        # print('aws dir good')
         bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
         objs = bucket.objects.filter(Prefix=aws_dir) #get folder
         url = "#"
+        # print('objs queried')
         for obj in objs: #iterate over file objects in folder
              if os.path.split(obj.key)[1].split('.')[1] == 'png':
                 s3Client = boto3.client('s3')
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
         print('url: ', url)
+        for item in items:
+            print(item.photo_path)
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form, 'selct_options': selct_options, 'url':url})
     else:
         curr_menu.name = request.POST['name']
@@ -320,6 +327,7 @@ def add_item(request, menu_id):
         #check if they uploaded new photo
         photo = request.FILES.get('photo', False)
         if photo:
+            # print('PHOTO HERE!!!! BADD')
             #save photo to AWS
             doc = request.FILES['photo'] #get file
             files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
@@ -350,9 +358,10 @@ def remove_item(request, menu_id, item_id):
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
 
-def edit_item(request, menu_id, item_id):
-    if not validate_id_number(request, menu_id):
-        return HttpResponse('you are not authorized to view this')
+def edit_item(request, item_id, origin, menu_id):
+    if origin == 'edit_menu': #validate if request is coming from an edit_menu page
+        if not validate_id_number(request, menu_id):
+            return HttpResponse('you are not authorized to view this')
     item = MenuItem.objects.filter(id = item_id).first()
     #if method is get, then user is filling out form to change item
     if request.method == 'GET':
@@ -366,6 +375,12 @@ def edit_item(request, menu_id, item_id):
         if request.POST['course'] != "":
             item.course = request.POST['course']
         item.price = request.POST['price']
+
+        #code to update is_in_stock status
+        if 'is_in_stock' in request.POST:
+                item.is_in_stock = True
+        else:
+            item.is_in_stock = False
         item.save()
         #check if they uploaded new photo
         photo = request.FILES.get('photo', False)
@@ -373,7 +388,6 @@ def edit_item(request, menu_id, item_id):
             #save photo to AWS
             doc = request.FILES['photo'] #get file
             files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                        menu_num = 'menu'+str(menu_id),
                                                                         item_number = 'item'+str(item.id))
             file_storage = FileStorage()
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
@@ -382,8 +396,11 @@ def edit_item(request, menu_id, item_id):
             item.photo_path = doc_path
             print(item.photo_path)
             item.save()
-        #redirect
-        return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+        #redirect depending on where the request came from
+        if origin == 'edit_menu':
+            return redirect('/restaurant_admin/edit_menu/' + str(menu_id))
+        elif origin == 'my_items':
+            return redirect('/restaurant_admin/my_items')
 
 
 def view_item(request, menu_id, item_id):
@@ -418,9 +435,9 @@ def register_cashier(request):
             new_user = authenticate(request, username=username, password=password)
             if new_user is not None:
                 print('success')
-        else:
-            messages.error(request, _('error in form, please try again'))
-        return redirect('/restaurant_admin/cashiers')
+            return redirect('/restaurant_admin/cashiers')
+        context = {'form' : cashier_form, 'user_form' : form, 'cashiers': CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())}
+        return render(request, 'restaurant/cashiers.html', context)
     #if method is get, then user is filling out form
     else:
         form = CashierForm()
@@ -451,7 +468,7 @@ def my_items(request):
     restaurant = Restaurant.objects.get(user = request.user)
     items = MenuItem.objects.filter(restaurant=restaurant)
     alphabetically_sorted = sorted(items, key = lambda x: x.name)
-    form = MenuItemForm()
+    form = MenuItemFormItemPage()
     return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'items':alphabetically_sorted})
 
 def add_item_no_menu(request):
