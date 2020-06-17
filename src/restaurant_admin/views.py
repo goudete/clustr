@@ -364,6 +364,8 @@ def edit_item(request, item_id, origin, menu_id):
     if origin == 'edit_menu': #validate if request is coming from an edit_menu page
         if not validate_id_number(request, menu_id):
             return HttpResponse('you are not authorized to view this')
+    print("origin")
+    print(origin)
     item = MenuItem.objects.filter(id = item_id).first()
     #if method is get, then user is filling out form to change item
     if request.method == 'GET':
