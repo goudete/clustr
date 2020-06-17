@@ -20,6 +20,8 @@ from customers.models import Cart
 import stripe
 import pyqrcode
 import png
+from django.template.loader import render_to_string
+
 #  your views here.
 
 """this function just verifies that you are not trying to edit another restaurant's menu"""
@@ -466,9 +468,24 @@ def kitchen_no(request):
 
 def my_items(request):
     restaurant = Restaurant.objects.get(user = request.user)
-    items = MenuItem.objects.filter(restaurant=restaurant)
-    alphabetically_sorted = sorted(items, key = lambda x: x.name)
+    url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
+    if url_parameter:
+        items = MenuItem.objects.filter(restaurant=restaurant).filter(name__icontains=url_parameter) #icontains is case insensitive search
+    else:
+        items = MenuItem.objects.filter(restaurant=restaurant)
+    alphabetically_sorted = sorted(items, key = lambda x: x.name) #sort menu items alphabetically
     form = MenuItemFormItemPage()
+
+    if request.is_ajax():
+        print("here")
+        html = render_to_string(
+            template_name="restaurant/replaceable_content.html",
+            context={"menus": [],'item_form':form,'me':restaurant,'items':alphabetically_sorted}
+        )
+
+        data_dict = {"html_from_view": html}
+
+        return JsonResponse(data=data_dict, safe=False)
     return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'items':alphabetically_sorted})
 
 def add_item_no_menu(request):

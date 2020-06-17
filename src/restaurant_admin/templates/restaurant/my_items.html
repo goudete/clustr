@@ -7,6 +7,9 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> <!-- search icon -->
+<!-- JQuery CDN -->
+
 <style>
 .switch {
   position: relative;
@@ -68,11 +71,22 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 </style>
-  <!-- <head>
-    <style>
+<!-- ajax search css -->
+<style>
+  @keyframes blinker {
+      from {opacity: 1.0;}
+      to {opacity: 0.0;}
+    }
 
-    </style>
-  </head> -->
+  .blink {
+      text-decoration: blink;
+      animation-name: blinker;
+      animation-duration: 0.6s;
+      animation-iteration-count:infinite;
+      animation-timing-function:ease-in-out;
+      animation-direction: alternate;
+    }
+</style>
 
   <body>
     <div class="container">
@@ -120,17 +134,26 @@ input:checked + .slider:before {
             </div>
           {% endif %}
 
-            <div class = 'row justify-content-center mb-2'>
-              <h2>
-                <b>
-                  {% trans "Add Items" %}
-                </b>
-                <a style = 'cursor: pointer;'>
-                  <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
-                  </svg>
-                </a>
-              </h2>
+            <div class = 'row mb-2'>
+              <div class = "col-6 align-right"
+                <h2>
+                  <b>
+                    {% trans "Add Items" %}
+                  </b>
+                  <a style = 'cursor: pointer;'>
+                    <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
+                    </svg>
+                  </a>
+                </h2>
+              </div>
+              <div class="col-6 align-right">
+            		<form class="form-inline">
+            		<i id="search_icon" class="fas fa-search" aria-hidden="true"></i>
+                {% trans "Search" as search_trans %}
+            		<input id="user-input" class="form-control form-control-sm ml-3 w-75" type="text" placeholder="{{search_trans}}" aria-label="{{search_trans}}">
+            		</form>
+            	</div>
             </div>
             <!-- modal that pops up when item is to be created-->
             <div class="modal fade bd-example-modal-lg" id="add_modal" tabindex="-1" role="dialog">
@@ -187,9 +210,7 @@ input:checked + .slider:before {
                                 </div>
                               </div>
                             </div>
-
                           </form>
-
                         </div>
                       </div>
                   </div>
@@ -198,7 +219,7 @@ input:checked + .slider:before {
           </div>
         </div>
           <!-- </div> -->
-          <div class="container">
+          <div class="container" id="replaceable-content">
             <div class="row">
               {% for item in items %}
               <div class="col-sm-2 py-2">
@@ -354,6 +375,51 @@ input:checked + .slider:before {
 <script>
 $('#add_modal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
+  })
+</script>
+
+<!-- ajax search js -->
+<script>
+  const user_input = $("#user-input")
+  const search_icon = $('#search_icon')
+  const artists_div = $('#replaceable-content')
+  const endpoint = ''
+  const delay_by_in_ms = 700
+  let scheduled_function = false
+
+  let ajax_call = function (endpoint, request_parameters) {
+      $.getJSON("/restaurant_admin/my_items", request_parameters)
+          .done(response => {
+              // fade out the artists_div, then:
+              artists_div.fadeTo('slow', 0).promise().then(() => {
+                  // replace the HTML contents
+                  artists_div.html(response['html_from_view'])
+                  // fade-in the div with new contents
+                  artists_div.fadeTo('slow', 1)
+                  // stop animating search icon
+                  $('#search_icon').removeClass('blink');
+              })
+          })
+  }
+
+
+  user_input.on('keyup', function () {
+
+      const request_parameters = {
+          q: $(this).val() // value of user_input: the HTML element with ID user-input
+      }
+
+      // start animating the search icon with the CSS class
+      console.log("here");
+      $('#search_icon').addClass('blink');
+
+      // if scheduled_function is NOT false, cancel the execution of the function
+      if (scheduled_function) {
+          clearTimeout(scheduled_function)
+      }
+
+      // setTimeout returns the ID of the function to be executed
+      scheduled_function = setTimeout(ajax_call, delay_by_in_ms, "/my_items", request_parameters)
   })
 </script>
 
