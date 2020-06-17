@@ -471,24 +471,33 @@ def kitchen_no(request):
 def my_items(request):
     restaurant = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
+    categories = MenuItem.objects.values_list('course', flat=True).distinct()
+    category_items = {}
     if url_parameter:
-        items = MenuItem.objects.filter(restaurant=restaurant).filter(name__icontains=url_parameter) #icontains is case insensitive search
+        print("we here")
+        for category in categories:
+            category_items[category]  = MenuItem.objects.filter(course = category).filter(name__icontains=url_parameter)
     else:
-        items = MenuItem.objects.filter(restaurant=restaurant)
-    alphabetically_sorted = sorted(items, key = lambda x: x.name) #sort menu items alphabetically
+        for category in categories:
+            category_items[category]  = MenuItem.objects.filter(course = category)
     form = MenuItemFormItemPage()
 
-    if request.is_ajax():
-        print("here")
+    #get all possible categories of menu
+    print("categories length")
+    print(len(categories))
+    print(category_items)
+
+    if request.is_ajax(): #this is for search
+        print("ajax")
         html = render_to_string(
             template_name="restaurant/replaceable_content.html",
-            context={"menus": [],'item_form':form,'me':restaurant,'items':alphabetically_sorted}
+            context={"menus": [],'item_form':form,'me':restaurant,'category_items':category_items}
         )
 
         data_dict = {"html_from_view": html}
 
         return JsonResponse(data=data_dict, safe=False)
-    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'items':alphabetically_sorted})
+    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'category_items':category_items})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
