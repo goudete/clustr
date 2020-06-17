@@ -43,3 +43,4 @@ class MenuItem(models.Model):
 class SelectOption(models.Model):
     name = models.CharField(default = '', max_length = 200)
     restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE)
+    menu = models.ForeignKey(Menu, on_delete = models.CASCADE)

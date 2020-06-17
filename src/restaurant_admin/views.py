@@ -322,7 +322,7 @@ def add_item(request, menu_id):
         item.save()
         #check for new category
         if new_category(request, item.course):
-            new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=item.menu)
             new_cat.save()
         #check if they uploaded new photo
         photo = request.FILES.get('photo', False)
