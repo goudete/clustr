@@ -105,7 +105,6 @@ div.scrollmenu a:hover {
   <!-- Button Categories Start -->
   <div class="scrollmenu mb-5">
     {% for category in categories %}
-        <!-- <button class="btn btn-light view_category" id="view_category_{{ forloop.counter }}" value="{{ forloop.counter }}" res="{{ restaurant.id }}" menu="{{ menu.id }}">{{ category.name }}</button> -->
         <button class="btn btn-light cat_button" name="{{ category.name }}">{{ category.name }}</button>
     {% endfor %}
   </div>
@@ -121,8 +120,8 @@ div.scrollmenu a:hover {
       </div>
     {% else %}
       {% for key, value in category_items.items %}
+        <div class="MenuItems" id="display_category_{{ key }}" style="display:none">
         {% for v in value %}
-          <div class="MenuItems" id="category_{{ v.course }}" style="display:none">
             <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ v.id }}" style="text-decoration:none; color:#000000">
             <div class="media">
               <div class="media-body">
@@ -138,8 +137,8 @@ div.scrollmenu a:hover {
             </div>
             </a>
             <hr>
-          </div>
         {% endfor %}
+        </div>
       {% endfor %}
     {% endif %}
   </ul>
@@ -175,7 +174,7 @@ div.scrollmenu a:hover {
 
   $(document).ready(function () {
     var category_name = $(".cat_button").attr("name");
-    $('#category_' + category_name).show()
+    $('#display_category_' + category_name).show()
 
     if (sessionStorage.getItem('#myModal') !== 'true'){
       $('#myModal').modal('show');
@@ -186,7 +185,7 @@ div.scrollmenu a:hover {
     $(".cat_button").click(function(){
        $('.MenuItems').hide();
       var category_name = $(this).attr("name");
-      $('#category_' + category_name).show(400);
+      $('#display_category_' + category_name).show(400);
 
     });
 

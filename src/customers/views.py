@@ -47,23 +47,11 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         category_items = {}
         for category in categories:
             category_items[category.name]  = MenuItem.objects.filter(course = category.name)
-        print(category_items)
 
         return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
     else:
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
-''' This function is called when a user selects a category from menu.html
-    It returns the MenuItems that are associated with that category'''
-def ajax_category_items(request):
-    category = request.GET.get('category', None)
-    # restaurant = request.GET.get('restaurant', None)
-    menu = request.GET.get('menu', None)
-
-    items = MenuItem.objects.filter(menu = menu).filter(course = category)
-
-
-    return JsonResponse(data, safe=False)
 
 '''Renders About page for restaurants'''
 def about_page(request, cart_id, restaurant_id, menu_id):
