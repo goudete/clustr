@@ -35,7 +35,9 @@
   <!-- Item image -->
   <div class="row justify-content-center">
     <div class="thumbnail thumb">
+      {% if item.photo_path %}
       <img src="{% static item.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% endif %}
     </div>
   </div>
   <!-- End item image -->
