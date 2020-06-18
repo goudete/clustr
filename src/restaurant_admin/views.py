@@ -21,6 +21,7 @@ import stripe
 import pyqrcode
 import png
 from django.template.loader import render_to_string
+import json
 
 #  your views here.
 
@@ -183,9 +184,10 @@ def answer_about(request):
 
 
 def my_menus(request):
-    menus = Menu.objects.filter(restaurant = Restaurant.objects.get(user = request.user)) #query set of all menus belonging to this restaurant
-    form = MenuForm()
     me = Restaurant.objects.get(user = request.user)
+    menus = Menu.objects.filter(restaurant =me) #query set of all menus belonging to this restaurant
+    form = MenuForm()
+    existing_items = MenuItem.objects.filter(restaurant = me)
     return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me})
 
 
@@ -274,9 +276,12 @@ def edit_menu(request, menu_id):
     #if method is a get, then the user is looking at the menu
     if request.method == 'GET':
         items = MenuItem.objects.filter(menu = curr_menu)
+        restaurant = Restaurant.objects.filter(user = request.user).first()
         # print('items queried')
         item_form = MenuItemForm()
-        selct_options = SelectOption.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
+        selct_options = SelectOption.objects.filter(restaurant = restaurant)
+        existing_items = MenuItem.objects.filter(restaurant = restaurant)
+        alphabetically_sorted = sorted(existing_items, key = lambda x: x.name)
         # print('select options queried')
         #generate pre-signed url to download the QR code
         s3 = boto3.resource('s3') #setup to get from AWS
@@ -293,7 +298,8 @@ def edit_menu(request, menu_id):
         print('url: ', url)
         for item in items:
             print(item.photo_path)
-        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form, 'selct_options': selct_options, 'url':url})
+        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form, 'selct_options': selct_options,
+                                'url':url, 'existing_items': alphabetically_sorted})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -318,29 +324,36 @@ def add_item(request, menu_id):
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
     #otherwise the user created a new item, and it must be added to the menu
     else:
-        item = MenuItemForm(request.POST).save(commit = False)
-        item.menu = Menu.objects.filter(id = menu_id).first()
-        item.restaurant = request.user.restaurant
-        item.save()
-        #check for new category
-        if new_category(request, item.course):
-            new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=item.menu)
-            new_cat.save()
-        #check if they uploaded new photo
-        photo = request.FILES.get('photo', False)
-        if photo:
-            # print('PHOTO HERE!!!! BADD')
-            #save photo to AWS
-            doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                        item_number = 'item'+str(item.id))
-            file_storage = FileStorage()
-            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-            file_storage.save(doc_path, doc)
-            item.photo_path = doc_path
+        if "existing_item_select" in request.POST:
+            item_name = request.POST.get("existing_item", None)
+            item = MenuItem.objects.get(name=item_name)
+            menu = Menu.objects.filter(id = menu_id).first()
+            item.menu = menu
+            print(item.menu)
             item.save()
-        print('redirecting')
+        else:
+            item = MenuItemForm(request.POST).save(commit = False)
+            item.menu = Menu.objects.filter(id = menu_id).first()
+            item.restaurant = request.user.restaurant
+            item.save()
+            #check for new category
+            if new_category(request, item.course):
+                new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=item.menu)
+                new_cat.save()
+            #check if they uploaded new photo
+            photo = request.FILES.get('photo', False)
+            if photo:
+                # print('PHOTO HERE!!!! BADD')
+                #save photo to AWS
+                doc = request.FILES['photo'] #get file
+                files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+                                                                            item_number = 'item'+str(item.id))
+                file_storage = FileStorage()
+                mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+                doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+                file_storage.save(doc_path, doc)
+                item.photo_path = doc_path
+                item.save()
         #redirect back to edit menu page
         return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id))
 
@@ -471,24 +484,33 @@ def kitchen_no(request):
 def my_items(request):
     restaurant = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
+    categories = MenuItem.objects.values_list('course', flat=True).distinct()
+    category_items = {}
     if url_parameter:
-        items = MenuItem.objects.filter(restaurant=restaurant).filter(name__icontains=url_parameter) #icontains is case insensitive search
+        print("we here")
+        for category in categories:
+            category_items[category]  = MenuItem.objects.filter(course = category).filter(name__icontains=url_parameter)
     else:
-        items = MenuItem.objects.filter(restaurant=restaurant)
-    alphabetically_sorted = sorted(items, key = lambda x: x.name) #sort menu items alphabetically
+        for category in categories:
+            category_items[category]  = MenuItem.objects.filter(course = category)
     form = MenuItemFormItemPage()
 
-    if request.is_ajax():
-        print("here")
+    #get all possible categories of menu
+    print("categories length")
+    print(len(categories))
+    print(category_items)
+
+    if request.is_ajax(): #this is for search
+        print("ajax")
         html = render_to_string(
             template_name="restaurant/replaceable_content.html",
-            context={"menus": [],'item_form':form,'me':restaurant,'items':alphabetically_sorted}
+            context={"menus": [],'item_form':form,'me':restaurant,'category_items':category_items}
         )
 
         data_dict = {"html_from_view": html}
 
         return JsonResponse(data=data_dict, safe=False)
-    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'items':alphabetically_sorted})
+    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'category_items':category_items})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
