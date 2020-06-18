@@ -45,7 +45,9 @@ div.scrollmenu a:hover {
 <div class="jumbotron">
   <div class="row justify-content-center">
     <div class="thumbnail thumb">
+      {% if restaurant.photo_path %}
       <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% endif %}
     </div>
   </div>
 </div>
@@ -67,11 +69,13 @@ div.scrollmenu a:hover {
       <div class="modal-body">
         <div class="row justify-content-center">
           <div class="thumbnail thumb">
+            {% if menu.photo_path %}
             <img src="{% static menu.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+            {% endif %}
           </div>
         </div>
 
-        <p>Queremos agraecerte de ante mano por apoyarnos. Estamos probando este nuevo sistema,
+        <p>Queremos agradecerte de ante mano por apoyarnos. Estamos probando este nuevo sistema,
            con tu salud como prioridad. Agradecemos cualquier comentario que tengas al respecto.
         </p>
       </div>
