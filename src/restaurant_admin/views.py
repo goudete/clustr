@@ -223,7 +223,7 @@ def add_menu(request):
         qr_path = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
         qr_url = 'https://cluster-mvp.herokuapp.com/customers/{rest_id}/{men_id}'.format(rest_id = new_menu.restaurant.id, men_id = new_menu.id)
         qr_code = pyqrcode.create(qr_url)
-        qr_png = qr_code.png('QR'+str(new_menu.id)+'.png', scale=6, module_color=[0, 0, 0, 128], background=[0xff, 0xff, 0xcc])
+        qr_png = qr_code.png('QR'+str(new_menu.id)+'.png', scale=6, module_color=[0, 0, 0, 128], background=[0xff, 0xff, 0xff])
         file_storage = FileStorage()
         doc_path = os.path.join(qr_path, "QR"+str(new_menu.id)+'.png') #set path for file to be stored in
         file_storage.save(doc_path, open("QR"+str(new_menu.id)+'.png', 'rb'))
