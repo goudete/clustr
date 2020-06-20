@@ -17,6 +17,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('base',views.baseView),
@@ -27,4 +28,5 @@ urlpatterns = [
     path('ajax/ajax_change_order_quantity', views.ajax_change_order_quantity, name = 'change_order_quantity'),
     path('ajax/ajax_add_item',views.ajax_add_item, name = 'add_item'),
     path('logout', views.cashier_logout, name='logout'),
+    path('receipt', TemplateView.as_view(template_name="emails/receipt/receipt.html")),
 ]

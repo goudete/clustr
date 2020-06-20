@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-17 16:19+0200\n"
+"POT-Creation-Date: 2020-06-19 18:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,12 +49,13 @@ msgstr "Introducir el código dado al huesped para pagar en metálico"
 
 #: cashier/templates/cash_payment.html:193
 #: cashier/templates/cashier_login.html:193
+#: comms/templates/contact_form.html:192
 #: customers/templates/customers/card_email_receipt.html:34
 #: customers/templates/customers/cash_email_receipt.html:34
 #: customers/templates/customers/order_confirmation.html:138
 #: customers/templates/customers/view_cart.html:136
 #: restaurant_admin/templates/restaurant/about_info.html:62
-#: restaurant_admin/templates/restaurant/my_items.html:129
+#: restaurant_admin/templates/restaurant/my_items.html:125
 #: restaurant_admin/templates/restaurant/my_menus.html:51
 #: restaurant_admin/templates/restaurant/my_menus.html:100
 msgid "Submit"
@@ -64,6 +65,7 @@ msgstr "Enviar"
 #: cashier/templates/cashier_login.html:195
 #: cashier/templates/order_history.html:67
 #: cashier/templates/review_order2.html:167
+#: comms/templates/contact_form.html:194
 msgid "Back"
 msgstr "Regresar"
 
@@ -95,9 +97,9 @@ msgstr "Producto"
 #: cashier/templates/order_history.html:104
 #: cashier/templates/review_order2.html:180
 #: cashier/templates/review_order2.html:279 restaurant_admin/models.py:38
-#: restaurant_admin/templates/restaurant/edit_menu.html:290
-#: restaurant_admin/templates/restaurant/my_items.html:288
-#: restaurant_admin/templates/restaurant/replaceable_content.html:157
+#: restaurant_admin/templates/restaurant/edit_menu.html:308
+#: restaurant_admin/templates/restaurant/my_items.html:291
+#: restaurant_admin/templates/restaurant/replaceable_content.html:73
 msgid "Price"
 msgstr "Precio"
 
@@ -184,6 +186,7 @@ msgid "Add Items to Order"
 msgstr "Agregar Platillos al pedido"
 
 #: cashier/templates/review_order2.html:295
+#: restaurant_admin/templates/restaurant/edit_menu.html:151
 msgid "Add"
 msgstr "Agregar"
 
@@ -191,17 +194,27 @@ msgstr "Agregar"
 msgid "Your Receipt"
 msgstr "Tu Recibo"
 
+#: comms/templates/contact_form.html:174
+msgid "Contact the Team"
+msgstr "Contáctanos"
+
+#: comms/templates/contact_form.html:175
+msgid ""
+"Leave us your information and a message and we will get back to you soon! "
+"Alternatively, you can reach out to us at clustrfood@gmail.com"
+msgstr "Déjanos tus datos y tu mensjae aquí y te responderemos pronto! También nos puedes mandar un email a clustrfood@gmail.com"
+
 #: customers/forms.py:29
 msgid "Invalid Phone Number"
 msgstr ""
 
-#: customers/templates/customers/about.html:21
-#: customers/templates/customers/menu.html:75
+#: customers/templates/customers/about.html:39
+#: customers/templates/customers/menu.html:86
 msgid "Menu"
 msgstr "Menu"
 
-#: customers/templates/customers/about.html:25
-#: customers/templates/customers/menu.html:79
+#: customers/templates/customers/about.html:43
+#: customers/templates/customers/menu.html:90
 msgid "About"
 msgstr "Quiénes somos"
 
@@ -229,23 +242,23 @@ msgstr "No gracias"
 msgid "Please show the cashier this code:"
 msgstr "Muéstrale el código al cajero para pagar:"
 
-#: customers/templates/customers/menu.html:47
+#: customers/templates/customers/menu.html:62
 msgid "Bienvenido a Local Tres"
 msgstr "Bienvenido a Local Tres"
 
-#: customers/templates/customers/menu.html:100
+#: customers/templates/customers/menu.html:119
 msgid "No Items on Menu!"
 msgstr "Esta vacio el Menu!"
 
-#: customers/templates/customers/menu.html:128
-#: customers/templates/customers/menu.html:132
-#: customers/templates/customers/view_item.html:80
+#: customers/templates/customers/menu.html:151
+#: customers/templates/customers/menu.html:155
 #: customers/templates/customers/view_item.html:82
+#: customers/templates/customers/view_item.html:84
 msgid "View Cart $"
 msgstr "Ver Carrito $"
 
-#: customers/templates/customers/menu.html:136
-#: customers/templates/customers/view_item.html:84
+#: customers/templates/customers/menu.html:159
+#: customers/templates/customers/view_item.html:86
 msgid "View Cart"
 msgstr "Ver Carrito"
 
@@ -310,11 +323,11 @@ msgstr "Propina Personalizada $"
 msgid "Place Order"
 msgstr "Enviar Orden"
 
-#: customers/templates/customers/view_item.html:62
+#: customers/templates/customers/view_item.html:64
 msgid "Custom Instructions..."
 msgstr "Especificar detalles..."
 
-#: customers/templates/customers/view_item.html:70
+#: customers/templates/customers/view_item.html:72
 msgid "Add to Cart"
 msgstr "Agregar a Carrito"
 
@@ -344,16 +357,16 @@ msgstr "La visión de tu Restaurante"
 
 #: restaurant_admin/models.py:26 restaurant_admin/models.py:35
 #: restaurant_admin/templates/restaurant/cashiers.html:115
-#: restaurant_admin/templates/restaurant/edit_menu.html:268
-#: restaurant_admin/templates/restaurant/my_items.html:266
-#: restaurant_admin/templates/restaurant/replaceable_content.html:135
+#: restaurant_admin/templates/restaurant/edit_menu.html:286
+#: restaurant_admin/templates/restaurant/my_items.html:269
+#: restaurant_admin/templates/restaurant/replaceable_content.html:51
 msgid "Name"
 msgstr "Nombre"
 
 #: restaurant_admin/models.py:36
-#: restaurant_admin/templates/restaurant/edit_menu.html:271
-#: restaurant_admin/templates/restaurant/my_items.html:269
-#: restaurant_admin/templates/restaurant/replaceable_content.html:138
+#: restaurant_admin/templates/restaurant/edit_menu.html:289
+#: restaurant_admin/templates/restaurant/my_items.html:272
+#: restaurant_admin/templates/restaurant/replaceable_content.html:54
 msgid "Description"
 msgstr "Descripción"
 
@@ -442,8 +455,8 @@ msgid "Register New Cashier"
 msgstr "Registrar un Nuevo Cajero"
 
 #: restaurant_admin/templates/restaurant/cashiers.html:94
-#: restaurant_admin/templates/restaurant/edit_menu.html:202
-#: restaurant_admin/templates/restaurant/my_items.html:213
+#: restaurant_admin/templates/restaurant/edit_menu.html:220
+#: restaurant_admin/templates/restaurant/my_items.html:210
 #: restaurant_admin/templates/restaurant/my_menus.html:164
 msgid "Create"
 msgstr "Crear"
@@ -484,10 +497,10 @@ msgid "New Photo"
 msgstr "Nueva Foto"
 
 #: restaurant_admin/templates/restaurant/edit_menu.html:112
-#: restaurant_admin/templates/restaurant/edit_menu.html:334
+#: restaurant_admin/templates/restaurant/edit_menu.html:352
 #: restaurant_admin/templates/restaurant/kitchen.html:70
-#: restaurant_admin/templates/restaurant/my_items.html:332
-#: restaurant_admin/templates/restaurant/replaceable_content.html:201
+#: restaurant_admin/templates/restaurant/my_items.html:335
+#: restaurant_admin/templates/restaurant/replaceable_content.html:117
 msgid "Update"
 msgstr "Actualizar"
 
@@ -495,53 +508,61 @@ msgstr "Actualizar"
 msgid "View QR Code"
 msgstr "Ver tu Código QR"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:129
-msgid "Items"
-msgstr "Platillos"
+#: restaurant_admin/templates/restaurant/edit_menu.html:130
+#, fuzzy
+#| msgid "Add Menu Items"
+msgid "Add New Item"
+msgstr "Agregar Platillos"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:153
-#: restaurant_admin/templates/restaurant/my_items.html:172
+#: restaurant_admin/templates/restaurant/edit_menu.html:142
+#, fuzzy
+#| msgid "Add Menu Items"
+msgid "Add Existing Item"
+msgstr "Agregar Platillos"
+
+#: restaurant_admin/templates/restaurant/edit_menu.html:171
+#: restaurant_admin/templates/restaurant/my_items.html:169
 msgid "Create New Item"
 msgstr "Crear Nuevo Platillo"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:175
-#: restaurant_admin/templates/restaurant/edit_menu.html:286
-#: restaurant_admin/templates/restaurant/my_items.html:284
-#: restaurant_admin/templates/restaurant/replaceable_content.html:153
+#: restaurant_admin/templates/restaurant/edit_menu.html:193
+#: restaurant_admin/templates/restaurant/edit_menu.html:304
+#: restaurant_admin/templates/restaurant/my_items.html:287
+#: restaurant_admin/templates/restaurant/replaceable_content.html:69
 msgid "Category"
 msgstr "Categoría"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:193
-#: restaurant_admin/templates/restaurant/my_items.html:204
+#: restaurant_admin/templates/restaurant/edit_menu.html:211
+#: restaurant_admin/templates/restaurant/my_items.html:201
 msgid "Item Photo"
 msgstr "Foto de Platillo"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:260
-#: restaurant_admin/templates/restaurant/my_items.html:258
-#: restaurant_admin/templates/restaurant/replaceable_content.html:127
+#: restaurant_admin/templates/restaurant/edit_menu.html:278
+#: restaurant_admin/templates/restaurant/my_items.html:261
+#: restaurant_admin/templates/restaurant/replaceable_content.html:43
 msgid "Edit Item"
 msgstr "Editar Platillo"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:310
-#: restaurant_admin/templates/restaurant/my_items.html:308
+#: restaurant_admin/templates/restaurant/edit_menu.html:328
+#: restaurant_admin/templates/restaurant/my_items.html:311
 #: restaurant_admin/templates/restaurant/my_menus.html:156
-#: restaurant_admin/templates/restaurant/replaceable_content.html:177
+#: restaurant_admin/templates/restaurant/replaceable_content.html:93
 msgid "Photo"
 msgstr "Foto"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:316
-#: restaurant_admin/templates/restaurant/my_items.html:314
-#: restaurant_admin/templates/restaurant/replaceable_content.html:183
+#: restaurant_admin/templates/restaurant/edit_menu.html:334
+#: restaurant_admin/templates/restaurant/my_items.html:317
+#: restaurant_admin/templates/restaurant/replaceable_content.html:99
 msgid "In Stock"
 msgstr ""
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:337
-#: restaurant_admin/templates/restaurant/my_items.html:335
-#: restaurant_admin/templates/restaurant/replaceable_content.html:204
+#: restaurant_admin/templates/restaurant/edit_menu.html:355
+#: restaurant_admin/templates/restaurant/my_items.html:338
+#: restaurant_admin/templates/restaurant/replaceable_content.html:120
 msgid "Remove This Item"
 msgstr "Eliminar Platillo"
 
-#: restaurant_admin/templates/restaurant/edit_menu.html:364
+#: restaurant_admin/templates/restaurant/edit_menu.html:382
 msgid "Delete This Menu"
 msgstr "Eliminar Menu"
 
@@ -581,26 +602,26 @@ msgstr "No tienes cuenta?"
 msgid "Sign up"
 msgstr "Regístrate"
 
-#: restaurant_admin/templates/restaurant/my_items.html:109
+#: restaurant_admin/templates/restaurant/my_items.html:105
 #: restaurant_admin/templates/restaurant/my_menus.html:31
 msgid "Would You Like Us to Handle the Payment Process for You?"
 msgstr "Quieres aceptar pagos con Tarjeta?"
 
-#: restaurant_admin/templates/restaurant/my_items.html:119
+#: restaurant_admin/templates/restaurant/my_items.html:115
 #: restaurant_admin/templates/restaurant/my_menus.html:41
 msgid "No"
 msgstr "No"
 
-#: restaurant_admin/templates/restaurant/my_items.html:123
+#: restaurant_admin/templates/restaurant/my_items.html:119
 #: restaurant_admin/templates/restaurant/my_menus.html:45
 msgid "Yes"
 msgstr "Si"
 
-#: restaurant_admin/templates/restaurant/my_items.html:145
+#: restaurant_admin/templates/restaurant/my_items.html:141
 msgid "Add Items"
 msgstr "Agregar Platillos"
 
-#: restaurant_admin/templates/restaurant/my_items.html:157
+#: restaurant_admin/templates/restaurant/my_items.html:154
 msgid "Search"
 msgstr "Busca"
 
@@ -664,13 +685,16 @@ msgstr "Información del Restaurante"
 msgid "Register"
 msgstr "Regístrate"
 
-#: restaurant_admin/views.py:48
+#: restaurant_admin/views.py:49
 msgid "Username or Password is incorrect"
 msgstr "Usuario o Contraseña Incorrecta"
 
-#: restaurant_admin/views.py:459
+#: restaurant_admin/views.py:474
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
+
+#~ msgid "Items"
+#~ msgstr "Platillos"
 
 #~ msgid "error in form, please try again"
 #~ msgstr "Hay un error, por favor vuelve a intentar"
