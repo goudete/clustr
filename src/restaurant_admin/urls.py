@@ -22,4 +22,7 @@ urlpatterns = [
     path('my_items',views.my_items, name = 'my_items'),
     path('add_item_no_menu', views.add_item_no_menu),
     path('receipt_page', views.receipt_page, name = 'receipt_page'),
+    path('create_addon_group/<int:menu_id>/<int:item_id>', views.create_addon_group),
+    path('create_addon_item/<int:menu_id>/<int:group_id>', views.create_addon_item),
+    path('edit_addon_item/<int:menu_id>/<int:addon_item_id>', views.edit_addon_item),
 ]

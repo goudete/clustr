@@ -30,7 +30,7 @@ class Menu(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class MenuItem(models.Model):
-    menu = models.ForeignKey(Menu, null=True, on_delete = models.CASCADE) #this is how the item is linked to a specific menu
+    menus = models.ManyToManyField(Menu) #this is how the item is linked to a specific menu
     restaurant = models.ForeignKey(Restaurant, null=True, on_delete = models.CASCADE)
     name = models.CharField(_('Name'), default = '', max_length = 200)
     description = models.TextField(_('Description'), null = True, default = '')
@@ -44,3 +44,12 @@ class SelectOption(models.Model):
     name = models.CharField(default = '', max_length = 200)
     restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE)
     menu = models.ForeignKey(Menu, on_delete = models.CASCADE)
+
+class AddOnGroup(models.Model):
+    name = models.CharField(_('Name'), default='', max_length=255)
+    menu_items = models.ManyToManyField(MenuItem)
+
+class AddOnItem(models.Model):
+    name = models.CharField(_('Name'), default='', max_length=200)
+    price = models.DecimalField(_('Price'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
+    group = models.ForeignKey(AddOnGroup, null=True, on_delete=models.CASCADE)
