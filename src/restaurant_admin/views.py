@@ -8,7 +8,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage
 from django.conf import settings
 from django.contrib import messages
-from .models import Restaurant, Menu, MenuItem, SelectOption
+from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem
 from urllib.parse import urljoin
 import boto3
 import magic
@@ -257,6 +257,38 @@ def remove_menu(request, menu_id):
         return redirect('/restaurant_admin/my_menus')
 
 
+# this method generates a data structure structured like this:
+# {key = menu_item,
+#     value = [
+#         {
+#             inner_key = addon_group,
+#             value = <set of addon_items in the addon_group>
+#         }
+#     ]
+# }
+# a dictionary, with menu_items as the key, and a list as the value
+# within each list are inner dictionaries with addon_group as the key,
+# and a set of addon_items as the value
+
+#helper method to get groups associated with a menu_item
+def get_groups(item):
+    return AddOnGroup.objects.filter(menu_items = item)
+
+#helper method to get addon_items associated with an addon_group
+def get_items(grp):
+    return AddOnItem.objects.filter(group = grp)
+
+def item_addon_dict(items):
+    dict = {}
+    for item in items:
+        list = []
+        addon_groups = get_groups(item)
+        for addon_group in addon_groups:
+            addon_items = get_items(addon_group)
+            list.append({addon_group: addon_items})
+        dict[item] = list
+    return dict
+
 def edit_menu(request, menu_id):
     if not validate_id_number(request, menu_id):
         return HttpResponse('you are not authorized to view this')
@@ -275,7 +307,8 @@ def edit_menu(request, menu_id):
         curr_menu.photo_path = doc_path
     #if method is a get, then the user is looking at the menu
     if request.method == 'GET':
-        items = MenuItem.objects.filter(menu = curr_menu)
+        items = MenuItem.objects.filter(menus = curr_menu)
+        addon_dict = item_addon_dict(items)
         restaurant = Restaurant.objects.filter(user = request.user).first()
         # print('items queried')
         item_form = MenuItemForm()
@@ -295,10 +328,7 @@ def edit_menu(request, menu_id):
              if os.path.split(obj.key)[1].split('.')[1] == 'png':
                 s3Client = boto3.client('s3')
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
-        print('url: ', url)
-        for item in items:
-            print(item.photo_path)
-        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'items': items, 'item_form': item_form, 'selct_options': selct_options,
+        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
                                 'url':url, 'existing_items': alphabetically_sorted})
     else:
         curr_menu.name = request.POST['name']
@@ -328,17 +358,17 @@ def add_item(request, menu_id):
             item_name = request.POST.get("existing_item", None)
             item = MenuItem.objects.get(name=item_name)
             menu = Menu.objects.filter(id = menu_id).first()
-            item.menu = menu
-            print(item.menu)
+            item.menus.add(menu)
             item.save()
         else:
             item = MenuItemForm(request.POST).save(commit = False)
-            item.menu = Menu.objects.filter(id = menu_id).first()
             item.restaurant = request.user.restaurant
+            item.save()
+            item.menus.add(Menu.objects.filter(id = menu_id).first())
             item.save()
             #check for new category
             if new_category(request, item.course):
-                new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=item.menu)
+                new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=Menu.objects.filter(id = menu_id).first())
                 new_cat.save()
             #check if they uploaded new photo
             photo = request.FILES.get('photo', False)
@@ -365,7 +395,7 @@ def remove_item(request, menu_id, item_id):
     curr_item = MenuItem.objects.filter(id = item_id).first()
     #if the method is a get, then it sends them to a confirmation page making sure they want to delete the item
     if request.method == 'GET':
-        items = MenuItem.objects.filter(menu = curr_menu) #query all the items, show the user so they know that they'll be deleted
+        items = MenuItem.objects.filter(menus = curr_menu) #query all the items, show the user so they know that they'll be deleted
         return render(request, 'restaurant/confirm_remove.html', {'menu':None, 'items': curr_item})
     #else delete the item
     else:
@@ -588,3 +618,29 @@ def ajax_receipt(request):
                 'receipt_html': None
             }
             return JsonResponse(data)
+
+
+def create_addon_group(request, menu_id, item_id):
+    if request.method == 'POST':
+        group = AddOnGroup(name = request.POST['addon_group_name'])
+        group.save()
+        group.menu_items.add(MenuItem.objects.filter(id = item_id).first())
+        group.save()
+    return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+
+
+def create_addon_item(request, menu_id, group_id):
+    if request.method == 'POST':
+        curr_group = AddOnGroup.objects.filter(id = group_id).first()
+        addon_item = AddOnItem(name = request.POST['addon_item_name'], price = request.POST['addon_item_price'])
+        addon_item.group = curr_group
+        addon_item.save()
+    return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+
+def edit_addon_item(request, menu_id, addon_item_id):
+    if request.method == 'POST':
+        addon_item = AddOnItem.objects.filter(id = addon_item_id).first()
+        addon_item.name = request.POST['addon_item_name']
+        addon_item.price = request.POST['addon_item_price']
+        addon_item.save()
+    return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))

@@ -243,12 +243,12 @@ input:checked + .slider:before {
 
     <!-- Menu Items -->
     <ul class="list-unstyled">
-      {% if items|length == 0 %}
+      {% if addon_dict|length == 0 %}
       <div class="row justify-content-center mt-5">
         <h4>No Items on Menu!</h4>
       </div>
       {% else %}
-        {% for item in items %}
+        {% for item, list in addon_dict.items %}
         <div class="">
           <div class="media">
             <div class="media-body">
@@ -370,6 +370,105 @@ input:checked + .slider:before {
             <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
             {% endif %}
           </div>
+
+          <!-- start of addon stuff -->
+          <br>
+          <b>{% trans 'Add Ons' %}</b>
+          <a style = 'cursor:pointer;' onclick = 'showGroups({{item.id}})'>
+            <svg class="bi bi-eye-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+              <path fill-rule="evenodd" d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+            </svg>
+          </a><br>
+          <div class = 'mt-2' id = 'addon_groups_{{item.id}}' style = 'display:none;'>
+            {% trans 'new group' %}
+            <a style = 'cursor:pointer;' onclick = 'newGroup({{item.id}})'>
+              <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
+              </svg>
+            </a>
+            <div class = 'card' id = 'new_group_form_{{item.id}}' style = 'width:15rem; display:none;'>
+              <div class = 'card-header'>
+                {% trans 'new group' %}
+              </div>
+              <div class = 'card-body'>
+                <form action = '/restaurant_admin/create_addon_group/{{menu.id}}/{{item.id}}' method = 'post'>
+                  {% csrf_token %}
+                  <label for = 'addon_group_name'>{% trans 'Group Name' %}</label>
+                  <input type = 'text' name = 'addon_group_name' id = 'addon_group_name' required>
+                  <button type = 'submit' class = 'btn btn-link'>{% trans 'create' %}</button>
+                </form>
+              </div>
+            </div>
+            <br>
+            <br>
+          {% for inner_dict in list %}
+            <div class = 'mt-2' id = 'addon_groups_{{item.id}}'>
+              {% for group, item_set in inner_dict.items %}
+                  <button class = 'btn btn-primary' onclick = 'showItems({{group.id}})'>{{group.name}}</button>
+                  <br>
+                  <br>
+                  <div id = 'addon_items_{{group.id}}' style = 'display:none;'>
+
+                    {% trans 'new item' %}
+                    <a style = 'cursor:pointer;' onclick = 'newAddonItem({{group.id}})'>
+                      <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
+                      </svg>
+                    </a>
+                    <div class = 'card' id = 'new_item_form_{{group.id}}' style = 'width:15rem; display:none;'>
+                      <div class = 'card-header'>
+                        {% trans 'new item' %}
+                      </div>
+                      <div class = 'card-body'>
+                        <form action = '/restaurant_admin/create_addon_item/{{menu.id}}/{{group.id}}' method = 'post'>
+                          {% csrf_token %}
+                          <label for = 'addon_group_name'>{% trans 'Item Name' %}</label>
+                          <input type = 'text' name = 'addon_item_name' id = 'addon_item_name' required>
+                          <label for = 'addon_item_price'>{% trans 'Item Price' %}</label>
+                          <input type = 'number' step = '0.01' name = 'addon_item_price' id = 'addon_item_price' required>
+                          <button type = 'submit' class = 'btn btn-link'>{% trans 'create' %}</button>
+                        </form>
+                      </div>
+                    </div>
+
+                    <br>
+                    <br>
+                  {% for addon_item in item_set %}
+                    <div class = 'mt-2'>
+                      <b>{{addon_item.name}}</b> (${{addon_item.price}})
+                      <a style = 'cursor:pointer;' onclick = 'editAddonItem({{addon_item.id}})'>
+                        <svg class="bi bi-pencil" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                          <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                        </svg>
+                      </a>
+                      <div class = 'card' id = 'edit_item_form_{{addon_item.id}}' style = 'width:15rem; display:none;'>
+                        <div class = 'card-header'>
+                          {% trans 'edit item' %}
+                        </div>
+                        <div class = 'card-body'>
+                          <form action = '/restaurant_admin/edit_addon_item/{{menu.id}}/{{addon_item.id}}' method = 'post'>
+                            {% csrf_token %}
+                            <label for = 'addon_item_name'>{% trans 'Item Name' %}</label>
+                            <input type = 'text' name = 'addon_item_name' id = 'addon_item_name' value = "{{addon_item.name}}"required>
+                            <label for = 'addon_item_price'>{% trans 'Item Price' %}</label>
+                            <input type = 'number' step = '0.01' name = 'addon_item_price' id = 'addon_item_price' value = {{addon_item.price}} required>
+                            <button type = 'submit' class = 'btn btn-link'>{% trans 'update' %}</button>
+                          </form>
+                        </div>
+                      </div>
+                      <br>
+                      <br>
+                    </div>
+                  {% endfor %}
+                  </div>
+              {% endfor %}
+              </div>
+          {% endfor %}
+          </div>
+          <!-- end addon stuff -->
+
           <hr>
         </div>
 
@@ -409,6 +508,26 @@ input:checked + .slider:before {
   }
   function closeForm(a){
     document.getElementById('item'+a).style.display = 'none';
+  }
+  function showGroups(id){
+    if(document.getElementById('addon_groups_'+id).style.display == 'none') document.getElementById('addon_groups_'+id).style.display = 'block';
+    else document.getElementById('addon_groups_'+id).style.display = 'none';
+  }
+  function newGroup(id){
+    if(document.getElementById('new_group_form_'+id).style.display == 'none') document.getElementById('new_group_form_'+id).style.display = 'block';
+    else document.getElementById('new_group_form_'+id).style.display = 'none';
+  }
+  function newAddonItem(id){
+    if(document.getElementById('new_item_form_'+id).style.display == 'none') document.getElementById('new_item_form_'+id).style.display = 'block';
+    else document.getElementById('new_item_form_'+id).style.display = 'none';
+  }
+  function showItems(id){
+    if(document.getElementById('addon_items_'+id).style.display == 'none') document.getElementById('addon_items_'+id).style.display = 'block';
+    else document.getElementById('addon_items_'+id).style.display = 'none';
+  }
+  function editAddonItem(id){
+    if(document.getElementById('edit_item_form_'+id).style.display == 'none') document.getElementById('edit_item_form_'+id).style.display = 'block';
+    else document.getElementById('edit_item_form_'+id).style.display = 'none';
   }
 </script>
 <script>
