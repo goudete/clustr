@@ -25,4 +25,5 @@ urlpatterns = [
     path('create_addon_group/<int:menu_id>/<int:item_id>', views.create_addon_group),
     path('create_addon_item/<int:menu_id>/<int:group_id>', views.create_addon_item),
     path('edit_addon_item/<int:menu_id>/<int:addon_item_id>', views.edit_addon_item),
+    path('sales', views.sales, name = 'sales')
 ]

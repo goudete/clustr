@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm
 from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem
@@ -16,12 +16,14 @@ from .file_storage import FileStorage
 from django.core.files import File
 import os
 from cashier.models import CashierProfile
-from customers.models import Cart
+from customers.models import Cart, MenuItemCounter
 import stripe
 import pyqrcode
 import png
 from django.template.loader import render_to_string
 import json
+from datetime import datetime
+
 
 #  your views here.
 
@@ -644,3 +646,54 @@ def edit_addon_item(request, menu_id, addon_item_id):
         addon_item.price = request.POST['addon_item_price']
         addon_item.save()
     return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+
+def sales(request):
+    restaurant = Restaurant.objects.get(user = request.user)
+    print("method is:")
+    print(request.method)
+    if request.method == "POST":
+        print("here")
+        form = DatesForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            start_datetime_str = datetime.strptime(cd['start_date'] + cd['start_time'],
+                                "%Y-%m-%d%I:00 %p")
+            end_datetime_str = datetime.strptime(cd['end_date'] + cd['end_time'],
+                                "%Y-%m-%d%I:00 %p")
+            carts = Cart.objects.filter(restaurant=restaurant).filter(created_at__range=(start_datetime_str,end_datetime_str))
+            total_sales = sum([cart.total for cart in carts])
+            total_sales_with_tip = sum([cart.total_with_tip for cart in carts])
+            total_tip = total_sales_with_tip - total_sales
+            total_items = 0
+            for cart in carts:
+                print("total items:")
+                print(total_items)
+                cart_counters = MenuItemCounter.objects.filter(cart=cart)
+                total_items += sum([counter.quantity for counter in cart_counters])
+            total_cash = sum([cart.total for cart in carts if cart.cash_code != 'CARD'])
+            total_card = sum([cart.total for cart in carts if cart.cash_code == 'CARD'])
+            form = DatesForm()
+            #hanlde division by zero for percentages
+            if total_cash == 0:
+                cash_percentage = 'N/A'
+            else:
+                cash_percentage = round(100*total_cash/total_sales,2)
+            if total_card == 0:
+                card_percentage = 'N/A'
+            else:
+                card_percentage = round(100*total_card/total_sales,2)
+            if total_tip == 0:
+                tip_percentage = 'N/A'
+            else:
+                tip_percentage = round(100*total_tip/total_sales,2)
+            context = {'form':form, 'total_cash':total_cash, 'total_sales':total_sales, 'total_card':total_card,
+                        'cash_percentage':cash_percentage, 'card_percentage': card_percentage,
+                        'total_items': total_items, 'total_tip':total_tip,
+                        'tip_percentage': tip_percentage}
+            return render(request, 'restaurant/sales_extended.html',context)
+
+
+    restaurant = Restaurant.objects.get(user = request.user)
+    form = DatesForm
+    context = {'form':form}
+    return render(request,'restaurant/sales.html',context)
