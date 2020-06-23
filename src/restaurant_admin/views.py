@@ -311,6 +311,7 @@ def edit_menu(request, menu_id):
     if request.method == 'GET':
         items = MenuItem.objects.filter(menus = curr_menu)
         addon_dict = item_addon_dict(items)
+        all_addon_groups = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
         restaurant = Restaurant.objects.filter(user = request.user).first()
         # print('items queried')
         item_form = MenuItemForm()
@@ -330,7 +331,7 @@ def edit_menu(request, menu_id):
              if os.path.split(obj.key)[1].split('.')[1] == 'png':
                 s3Client = boto3.client('s3')
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
-        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
+        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'all_addon_groups':all_addon_groups, 'item_form': item_form, 'selct_options': selct_options,
                                 'url':url, 'existing_items': alphabetically_sorted})
     else:
         curr_menu.name = request.POST['name']
@@ -622,9 +623,15 @@ def ajax_receipt(request):
             return JsonResponse(data)
 
 
+def group_exists(name, menu_id):
+    if AddOnGroup.objects.filter(restaurant = Menu.objects.filter(id = menu_id).first().restaurant).filter(name = name).exists():
+        return True
+    return False
+
 def create_addon_group(request, menu_id, item_id):
-    if request.method == 'POST':
+    if request.method == 'POST' and not group_exists(request.POST['addon_group_name'], menu_id):
         group = AddOnGroup(name = request.POST['addon_group_name'])
+        group.restaurant = Menu.objects.filter(id = menu_id).first().restaurant
         group.save()
         group.menu_items.add(MenuItem.objects.filter(id = item_id).first())
         group.save()
@@ -639,6 +646,7 @@ def create_addon_item(request, menu_id, group_id):
         addon_item.save()
     return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
+
 def edit_addon_item(request, menu_id, addon_item_id):
     if request.method == 'POST':
         addon_item = AddOnItem.objects.filter(id = addon_item_id).first()
@@ -646,6 +654,15 @@ def edit_addon_item(request, menu_id, addon_item_id):
         addon_item.price = request.POST['addon_item_price']
         addon_item.save()
     return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+
+
+def add_existing_addon_group(request, menu_id, item_id, addon_group_id):
+    if request.method == 'POST':
+        addon_group = AddOnGroup.objects.filter(id = addon_group_id).first()
+        addon_group.menu_items.add(MenuItem.objects.filter(id = item_id).first())
+        addon_group.save()
+    return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+
 
 def sales(request):
     restaurant = Restaurant.objects.get(user = request.user)
