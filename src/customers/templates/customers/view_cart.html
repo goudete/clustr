@@ -71,6 +71,21 @@
               <span class="item_price_{{ forloop.counter }}"><h6>${{ item.price }}</h6></span>
             </div>
           </div>
+          <!-- addon items -->
+          {% if item.addon_items %}
+          {% for addon in item.addon_items.all %}
+          <div class="row mb-1">
+            <div class="col-8">
+              + {{ addon.name }}
+            </div>
+            <div class="col-4">
+              ${{ addon.price }}
+            </div>
+          </div>
+          {% endfor %}
+          {% endif %}
+          <!-- addon items end -->
+
           {% if item.custom_instructions %}
           <div class="row mb-1">
             <div class="col-1">
@@ -84,10 +99,6 @@
 
           <!-- Edit Item Code goes here  -->
           <div class="row mt-2">
-            <!-- Trash icon -->
-            <!-- <div class="col-2">
-              <a href="#" id="remove_item" role="button" aria-pressed="true" style="color:#000000"><i class="far fa-trash-alt fa-md"></i></a>
-            </div> -->
             <div class="col-10">
               <button class="minus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-minus-square fa-lg" style = "margin-left: 0cm;"></i></button>
                 <span class="item_quantity_{{ forloop.counter }}" id="item_quantity"><b>{{ item.quantity }}</b></span>

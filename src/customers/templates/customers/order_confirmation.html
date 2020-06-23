@@ -64,6 +64,22 @@
               <h6>${{ item.price }}</h6>
             </div>
           </div>
+
+          <!-- addon items -->
+          {% if item.addon_items %}
+          {% for addon in item.addon_items.all %}
+          <div class="row mb-1">
+            <div class="col-8">
+              + {{ addon.name }}
+            </div>
+            <div class="col-4">
+              ${{ addon.price }}
+            </div>
+          </div>
+          {% endfor %}
+          {% endif %}
+          <!-- end addon items -->
+
           {% if item.custom_instructions %}
           <div class="row mb-2">
             <div class="col-2 d-flex flex-row-reverse">

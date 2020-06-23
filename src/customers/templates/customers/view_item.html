@@ -23,6 +23,7 @@
   }
 
 </style>
+
 <nav class="navbar navbar-light bg-light">
   <a class="navbar-brand" href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
   <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -52,13 +53,66 @@
   <div class="row ml-1">
     <h6>${{ item.price }}</h6>
   </div>
+
   <!-- End  -->
 
   <hr>
-<!-- Custom Order Form -->
-<div class="row justify-content-center mt-4 mb-3">
-  <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" >
+
+  <div class="row justify-content-center mt-4 mb-3">
+    <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" id="target">
     {% csrf_token %}
+
+    <div class="radios">
+    <!-- Addon Group -->
+    {% if addon_dict %}
+    <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
+      {% for key, value in addon_dict.items %}
+      <div class="row mb-3">
+        <div class="col-1">
+
+        </div>
+        <div class="col-11">
+          <b>{{ key.name }}</b>
+        </div>
+      </div>
+        {% for v in value %}
+        <div class="row">
+          <div class="col-8">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="radio_addon_{{ key.name }}" value="{{ v.id }}" required>
+              <label class="form-check-label" for="radio_addon">
+                {{ v.name }}
+              </label>
+            </div>
+          </div>
+          <div class="col-4">
+            + ${{ v.price }}
+          </div>
+          <hr>
+        </div>
+        {% endfor %}
+      <!-- no addon -->
+      <div class="row mb-3">
+        <div class="col-8">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="radio_addon_{{ key.name }}" value="-1">
+            <label class="form-check-label" for="radio_addon">
+              Ninguno
+            </label>
+          </div>
+        </div>
+        <div class="col-4">
+          + $0.00
+        </div>
+      </div>
+      {% endfor %}
+    {% endif %}
+  <!-- End Addon Group -->
+  </div>
+
+  <!-- Custom Order Form -->
+    <input type="hidden" id="group_names_arr" value="{{ group_names }}">
+    <input type="hidden" id="item_id" value="{{ item.id }}" cart_id="{{ cart.id}}">
 
     <div class="row justify-content-center mb-2">
       <textarea class="form-control" name="custom_instructions" placeholder=" {% trans 'Custom Instructions...' %} " rows="3"></textarea>
@@ -96,6 +150,7 @@
 
 
 </div>
+
 
 
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.db import models
 from restaurant_admin.models import MenuItem
 from django.core.validators import MinValueValidator, MaxValueValidator
-from restaurant_admin.models import Restaurant
+from restaurant_admin.models import Restaurant, AddOnItem, AddOnGroup
 # Create your models here.
 
 """this model is synonymous with an order"""
@@ -28,7 +28,8 @@ class MenuItemCounter(models.Model):
     quantity = models.PositiveIntegerField(default = 1)
     cart = models.ForeignKey(Cart, on_delete = models.CASCADE)
     custom_instructions = models.CharField(null = True, blank= True, max_length = 255, default=None)
-    price = models.DecimalField(decimal_places = 2, max_digits = 12, validators=[MinValueValidator(0.0)])
+    price = models.DecimalField(decimal_places = 2, max_digits = 12,validators=[MinValueValidator(0.0)], default=0)
+    addon_items = models.ManyToManyField(AddOnItem, blank=True)
 
 class Feedback(models.Model):
     feedback = models.CharField(null = True, max_length = 255)

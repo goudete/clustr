@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter
-from restaurant_admin.models import Restaurant, SelectOption
+from restaurant_admin.models import Restaurant, SelectOption, AddOnGroup, AddOnItem
 from .forms import CustomOrderForm, CustomTipForm, EmailForm, FeedbackForm, PhoneForm
 import stripe
 import os
@@ -11,6 +11,7 @@ from decimal import Decimal
 from django.contrib import messages
 from django.core import serializers
 from kitchen.models import OrderTracker
+import re
 
 
 #this method is only for development, it shows all the menus you have on your local db
@@ -63,6 +64,35 @@ def about_page(request, cart_id, restaurant_id, menu_id):
     else:
         return redirect('/customers/about/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
+''' Helper Function to get groups associated with a MenuItem '''
+def get_groups(item):
+    return AddOnGroup.objects.filter(menu_items = item)
+
+'''helper method to get addon_items associated with an addon_group'''
+def get_items(grp):
+    return AddOnItem.objects.filter(group = grp)
+
+'''this method generates a dictionary like this:
+
+     dict = {
+             key = addon_group,
+             value = <set of addon_items in the addon_group>
+    }
+
+    where the key is the addon_group and the value is its related addon_items'''
+
+def item_addon_dict(item):
+    dict = {}
+    # list = []
+    addon_groups = get_groups(item)
+    for addon_group in addon_groups:
+        addon_items = get_items(addon_group)
+        dict[addon_group] = addon_items
+        # list.append({addon_group: addon_items})
+    # dict[item] = list
+    # print(dict)
+    return dict
+
 
 """ for this template, make sure the item has a button to add to the cart, with a specified quantity,
 send the item and specified quantity to the add_item url"""
@@ -73,11 +103,31 @@ def view_item(request, cart_id, restaurant_id, menu_id, item_id):
         curr_cart = Cart.objects.get(id = cart_id)
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-        return render(request, 'customers/view_item.html', {'item': item, 'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form':form})
+
+        addon_dict = item_addon_dict(item)
+
+        return render(request, 'customers/view_item.html', {'item': item, 'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form':form, 'addon_dict': addon_dict})
     else:
         #if method is a post, then just redirect to this page as a get
         return redirect('/customers/view_item/{c_id}/{r_id}/{m_id}/{i_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id, i_id = item_id))
 
+'''Gets ids of selected addon items when a new item is added to cart'''
+def get_selected_addons_ids(request):
+    addons = []
+    for key, values in request.POST.items():
+        if key.startswith('radio_addon_'):
+            if values != -1:
+                addons.append(values)
+    return addons
+
+''' Gets  AddOnItem objects with given ids'''
+def get_addon_objects(addons):
+    addon_objects = []
+    for a in addons:
+        addon_ob = AddOnItem.objects.filter(id = a).first()
+        if addon_ob:
+            addon_objects.append(addon_ob)
+    return addon_objects
 
 """ this method will add a new item to a cart if the cart didnt already contain the item,
 otherwise it will increase/decrease the quantity of an item in a cart
@@ -85,6 +135,11 @@ this method expects a POST request to contain the quantity of the item being add
 it also changes the total price of a cart accordingly"""
 def add_item(request, cart_id, restaurant_id, menu_id, item_id):
     if request.method == 'POST':
+        addons = get_selected_addons_ids(request)
+        if addons:
+            addon_objects = get_addon_objects(addons)
+            print(addon_objects)
+
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_item = MenuItem.objects.filter(id = item_id).first()
 
@@ -100,33 +155,52 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
             order = form.save(commit = False)
             order.cart = curr_cart
             order.item = curr_item
+            order.save()
+            # if addonitems, save addonitems to the modelitemcounter model and get addon items price
+            addon_price = 0
+            if addons:
+                # add addon_objects to model
+                order.addon_items.add(*addon_objects)
+                #get addon items price
+                for addon in addon_objects:
+                    addon_price += addon.price
+
             #handle tip
             if curr_cart.tip != 0:
                 if curr_cart.custom_tip:
                     order.price = order.quantity*order.item.price
                     order.save()
-                    curr_cart.total += order.price
-                    curr_cart.total_with_tip += order.price
+                    curr_cart.total += order.price + addon_price
+                    curr_cart.total_with_tip += order.price + addon_price
                     curr_cart.save()
                 else:
                     tip_percent = round(curr_cart.tip / curr_cart.total, 2) #calculate tip percentage
                     order.price = order.quantity*order.item.price
                     order.save()
-                    curr_cart.total += order.price
+                    curr_cart.total += order.price + addon_price
                     curr_cart.tip = round(curr_cart.total * tip_percent, 2)
                     curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
                     curr_cart.save()
-
+            #no tip
             else:
                 order.price = order.quantity*order.item.price
                 order.save()
-                curr_cart.total += order.price
+                curr_cart.total += order.price + addon_price
                 curr_cart.save()
             return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
         #else same item already exists in cart
         else:
             item_counter = item_counters.first()
+
+            # if addonitems, save addonitems to the modelitemcounter model
+            addon_price = 0
+            if addons:
+                # add addon_objects to model
+                item_counter.addon_items.add(*addon_objects)
+                #get addon items price
+                for addon in addon_objects:
+                    addon_price += addon.price
 
             #handle tip
             if curr_cart.tip != 0:
@@ -137,8 +211,8 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
                     item_counter.price = item_counter.quantity*item_counter.item.price
                     item_counter.save()
                     #update cart total price
-                    curr_cart.total = old_total + item_counter.price
-                    curr_cart.total_with_tip = item_counter.price + curr_cart.tip
+                    curr_cart.total = old_total + item_counter.price + addon_price
+                    curr_cart.total_with_tip = item_counter.price + curr_cart.tip + addon_price
                     curr_cart.save()
                 else:
                     tip_percent = round(curr_cart.tip / curr_cart.total, 2) #calculate tip percentage
@@ -149,7 +223,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
                     item_counter.price = item_counter.quantity*item_counter.item.price
                     item_counter.save()
                     #update cart total price
-                    curr_cart.total = old_total + item_counter.price
+                    curr_cart.total = old_total + item_counter.price + addon_price
                     curr_cart.tip = round(curr_cart.total * tip_percent, 2)
                     curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
                     curr_cart.save()
@@ -161,7 +235,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
                 item_counter.price = item_counter.quantity*item_counter.item.price
                 item_counter.save()
                 #update cart total price
-                curr_cart.total = old_total + item_counter.price
+                curr_cart.total = old_total + item_counter.price + addon_price
                 curr_cart.save()
         #redirect to menu
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
@@ -373,16 +447,9 @@ def payment(request, cart_id, restaurant_id, menu_id):
     if cart.is_paid == True:
         ''' If payed, just redirect to order confirmation'''
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
-    #this needs to be a post!!! cannot risk someone accidentally getting here from a get request
+
     if request.method == 'POST':
-        """
-        It never makes it here, after the stripe form gets submitted, the redirect has to happen in Javascript
-        The following commented out code will be handled in order_confirmation
-        """
-        # cart = Cart.objects.filter(id = cart_id).first()
-        # cart.is_paid = True
-        # cart.save()
-        #print cart items to kitchen printer
+
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:
         cart = Cart.objects.filter(id = cart_id).first()
@@ -498,15 +565,6 @@ def order_confirmation(request, cart_id):
         #if this is a post, just send back to the view cart page
         return redirect('/customers/view_cart/{c_id}'.format(c_id = cart_id))
 
-# def ajax_send_receipt(request):
-#     cart_id = request.GET.get('cart_id', None)
-#     receipt_html = request.GET.get('receipt_html', None)
-#     curr_cart = Cart.objects.filter(id = cart_id).first()
-#     curr_cart.receipt_html = receipt_html
-#     print(receipt_html)
-#     curr_cart.save()
-#
-#     return JsonResponse({})
 
 '''Handles Feedback form in order_confirmation. '''
 def feedback(request, cart_id):
