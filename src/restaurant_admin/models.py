@@ -47,6 +47,7 @@ class SelectOption(models.Model):
 
 class AddOnGroup(models.Model):
     name = models.CharField(_('Name'), default='', max_length=255)
+    restaurant = models.ForeignKey(Restaurant, null = True, on_delete = models.CASCADE)
     menu_items = models.ManyToManyField(MenuItem)
 
 class AddOnItem(models.Model):

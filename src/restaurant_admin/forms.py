@@ -128,3 +128,24 @@ class MenuItemFormItemPage(MenuItemForm):
         self.fields['description'].widget.attrs.update(style='width: 450px;')
         self.fields['course'].widget.attrs.update(style='width: 450px;')
         self.fields['price'].widget.attrs.update(style='width: 450px;')
+
+class DatesForm(forms.Form): #form for user inputing start and end date
+    start_date = forms.CharField(max_length=100, required = True,
+    widget=forms.DateInput(attrs={'id':'datepicker', 'class': 'require-if-active', 'data-require-pair': '#include_date'})
+    )
+    start_time = forms.CharField(max_length=100, required = True,
+    widget=forms.TimeInput(attrs = {'id': 'timepicker', 'class': 'require-if-active', 'data-require-pair': '#include_time'})
+    )
+
+    end_date = forms.CharField(max_length=100, required = True,
+    widget=forms.DateInput(attrs={'id':'datepicker2', 'class': 'require-if-active', 'data-require-pair': '#include_date'})
+    )
+    end_time = forms.CharField(max_length=100, required = True,
+    widget=forms.TimeInput(attrs = {'id': 'timepicker2', 'class': 'require-if-active', 'data-require-pair': '#include_time'})
+    )
+    def __init__(self, *args, **kwargs):
+        super(DatesForm, self).__init__(*args, **kwargs)
+        self.fields['start_date'].required = True
+        self.fields['start_time'].required = True
+        self.fields['end_date'].required = True
+        self.fields['end_time'].required = True
