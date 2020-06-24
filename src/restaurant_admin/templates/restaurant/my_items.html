@@ -199,7 +199,12 @@ input:checked + .slider:before {
                             <div class="row justify-content-center mt-3 mb-2">
                               <div class = 'col'>
                                 <label for = 'photo'>{% trans 'Item Photo' %}</label>
-                                <input type = 'file' accept="image/*" id = 'photo' name = "photo" required>
+                                <div class="input-group" id = 'photo'>
+                                  <div class="custom-file">
+                                    <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                                    <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                                  </div>
+                                </div>
                               </div>
                             </div>
 
@@ -310,9 +315,14 @@ input:checked + .slider:before {
                                   <br>
                                   <div class = 'row justify-content-center'>
                                     <!-- <div class="col-8 mt-2"> -->
-                                      <label style="margin-right: 20px;" for = 'photo'>{% trans 'Photo' %}</label>
+                                      <label style="margin-right: 20px;" for = 'photo2'>{% trans 'Photo' %}</label>
                                     <!-- </div> -->
-                                    <input type = 'file' accept="image/*" id = 'photo' name = "photo">
+                                    <div class="input-group" id = 'photo2'>
+                                      <div class="custom-file">
+                                        <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                                        <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
+                                      </div>
+                                    </div>
                                   </div>
                                   <br>
                                   <div class="form-group row">
@@ -387,7 +397,20 @@ $('#add_modal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
   })
 </script>
-
+<script>
+    $('#inputGroupFile04').on('change',function(){
+        //get the file name
+        var fileName = $(this).val();
+        //replace the "Choose a file" label
+        $(this).next('.custom-file-label').html(fileName);
+    })
+    $('#inputGroupFile05').on('change',function(){
+        //get the file name
+        var fileName = $(this).val();
+        //replace the "Choose a file" label
+        $(this).next('.custom-file-label').html(fileName);
+    })
+</script>
 <!-- ajax search js -->
 <script>
   const user_input = $("#user-input")

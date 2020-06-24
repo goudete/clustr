@@ -91,8 +91,13 @@
 
                         <div class = 'row justify-content-center mt-3'>
                           <b><label for = 'logo'>{% trans 'Restaurant Logo' %}</label><br></b>
-                          <div class = 'col'>
-                            <input type = 'file' id = 'logo' name = 'logo'>
+                          <div class = 'col' id = 'logo'>
+                            <div class="input-group">
+                              <div class="custom-file">
+                                <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                                <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
@@ -153,8 +158,13 @@
 
                     <div class = 'row justify-content-center mt-5'>
                         <div class = 'col'>
-                          <label for="photo">{% trans 'Photo' %}</label>
-                          <input type="file" name = "photo" id="photo" required>
+                          <label for="photo2">{% trans 'Photo' %}</label>
+                          <div class="input-group" id = 'photo2'>
+                            <div class="custom-file">
+                              <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                              <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                            </div>
+                          </div>
                         </div>
                     </div>
 
@@ -224,6 +234,20 @@
     function closeMenuForm(){
       document.getElementById('menu_form').style.display = 'none';
     }
+  </script>
+  <script>
+      $('#inputGroupFile04').on('change',function(){
+          //get the file name
+          var fileName = $(this).val();
+          //replace the "Choose a file" label
+          $(this).next('.custom-file-label').html(fileName);
+      })
+      $('#inputGroupFile05').on('change',function(){
+          //get the file name
+          var fileName = $(this).val();
+          //replace the "Choose a file" label
+          $(this).next('.custom-file-label').html(fileName);
+      })
   </script>
 </html>
 {% endblock %}
