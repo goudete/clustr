@@ -273,7 +273,7 @@ input:checked + .slider:before {
                                       <label for='name'>{% trans 'Name' %}</label>
                                     </div>
                                     <div class="col-6">
-                                      <label for='description'>{% trans 'Description' %}</label>
+                                      <label for='description'>{% trans 'Photo' %}</label>
                                     </div>
                                   </div>
                                   <div class = 'row'>
@@ -281,7 +281,12 @@ input:checked + .slider:before {
                                       <input type = 'text' id = 'name' name = 'name' value = "{{item.name}}">
                                     </div>
                                     <div class="col-6">
-                                      <textarea rows = '4' cols = '23' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
+                                      <div class="input-group" id = 'photo2'>
+                                        <div class="custom-file">
+                                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                                          <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                   <div class = 'row'>
@@ -310,16 +315,11 @@ input:checked + .slider:before {
                                     </div>
                                   </div>
                                   <br>
+                                  <div class="row justify-content-center">
+                                    <label style="margin-right: 20px;" for = 'description'>{% trans 'Description' %}</label>
+                                  </div>
                                   <div class = 'row justify-content-center'>
-                                    <!-- <div class="col-8 mt-2"> -->
-                                      <label style="margin-right: 20px;" for = 'photo2'>{% trans 'Photo' %}</label>
-                                    <!-- </div> -->
-                                    <div class="input-group" id = 'photo2'>
-                                      <div class="custom-file">
-                                        <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
-                                        <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
-                                      </div>
-                                    </div>
+                                    <textarea rows = '4' cols = '60' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
                                   </div>
                                   <br>
                                   <div class="form-group row">
@@ -336,7 +336,6 @@ input:checked + .slider:before {
                                      </label>
                                     </div>
                                 </div>
-                                  <br>
                                   <br>
                                   <div class = 'row justify-content-center'>
                                     <div style="text-align: centerl=;" class = 'row justify-content-center'>

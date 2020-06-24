@@ -76,10 +76,10 @@ class MenuItemForm(forms.ModelForm):
         self.fields['course'].required = True
         self.fields['price'].required = True
         #sizing stuff
-        self.fields['name'].widget.attrs.update(style='width: 200px;')
-        self.fields['description'].widget.attrs.update(style='width: 200px;')
-        self.fields['course'].widget.attrs.update(style='width: 200px;')
-        self.fields['price'].widget.attrs.update(style='width: 200px;')
+        self.fields['name'].widget.attrs.update(style='width: 450px;')
+        self.fields['description'].widget.attrs.update(style='width: 450px;')
+        self.fields['course'].widget.attrs.update(style='width: 450px;')
+        self.fields['price'].widget.attrs.update(style='width: 450px;')
 
     class Meta:
         model = MenuItem
