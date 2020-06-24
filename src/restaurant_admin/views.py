@@ -23,7 +23,7 @@ import png
 from django.template.loader import render_to_string
 import json
 from datetime import datetime
-
+import heapq
 
 #  your views here.
 
@@ -311,7 +311,6 @@ def edit_menu(request, menu_id):
     if request.method == 'GET':
         items = MenuItem.objects.filter(menus = curr_menu)
         addon_dict = item_addon_dict(items)
-        all_addon_groups = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
         restaurant = Restaurant.objects.filter(user = request.user).first()
         # print('items queried')
         item_form = MenuItemForm()
@@ -331,7 +330,7 @@ def edit_menu(request, menu_id):
              if os.path.split(obj.key)[1].split('.')[1] == 'png':
                 s3Client = boto3.client('s3')
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
-        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'all_addon_groups':all_addon_groups, 'item_form': item_form, 'selct_options': selct_options,
+        return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
                                 'url':url, 'existing_items': alphabetically_sorted})
     else:
         curr_menu.name = request.POST['name']
@@ -623,15 +622,9 @@ def ajax_receipt(request):
             return JsonResponse(data)
 
 
-def group_exists(name, menu_id):
-    if AddOnGroup.objects.filter(restaurant = Menu.objects.filter(id = menu_id).first().restaurant).filter(name = name).exists():
-        return True
-    return False
-
 def create_addon_group(request, menu_id, item_id):
-    if request.method == 'POST' and not group_exists(request.POST['addon_group_name'], menu_id):
+    if request.method == 'POST':
         group = AddOnGroup(name = request.POST['addon_group_name'])
-        group.restaurant = Menu.objects.filter(id = menu_id).first().restaurant
         group.save()
         group.menu_items.add(MenuItem.objects.filter(id = item_id).first())
         group.save()
@@ -646,7 +639,6 @@ def create_addon_item(request, menu_id, group_id):
         addon_item.save()
     return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
-
 def edit_addon_item(request, menu_id, addon_item_id):
     if request.method == 'POST':
         addon_item = AddOnItem.objects.filter(id = addon_item_id).first()
@@ -655,14 +647,12 @@ def edit_addon_item(request, menu_id, addon_item_id):
         addon_item.save()
     return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
 
-
 def add_existing_addon_group(request, menu_id, item_id, addon_group_id):
     if request.method == 'POST':
         addon_group = AddOnGroup.objects.filter(id = addon_group_id).first()
         addon_group.menu_items.add(MenuItem.objects.filter(id = item_id).first())
         addon_group.save()
     return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
-
 
 def sales(request):
     restaurant = Restaurant.objects.get(user = request.user)
@@ -672,6 +662,7 @@ def sales(request):
         print("here")
         form = DatesForm(request.POST)
         if form.is_valid():
+            """This block of code gets data like the total sales, total cash/card sales etc."""
             cd = form.cleaned_data
             start_datetime_str = datetime.strptime(cd['start_date'] + cd['start_time'],
                                 "%Y-%m-%d%I:00 %p")
@@ -682,13 +673,21 @@ def sales(request):
             total_sales_with_tip = sum([cart.total_with_tip for cart in carts])
             total_tip = total_sales_with_tip - total_sales
             total_items = 0
+            item_scores = {item : [0,0] for item in MenuItem.objects.filter(restaurant=restaurant)} #item : (sales,quantity)
             for cart in carts:
                 print("total items:")
                 print(total_items)
                 cart_counters = MenuItemCounter.objects.filter(cart=cart)
                 total_items += sum([counter.quantity for counter in cart_counters])
-            total_cash = sum([cart.total for cart in carts if cart.cash_code != 'CARD'])
-            total_card = sum([cart.total for cart in carts if cart.cash_code == 'CARD'])
+                for counter in cart_counters:
+                    item_scores[counter.item][0] += counter.price
+                    item_scores[counter.item][1] += counter.quantity
+            top5_sales = sorted(item_scores.items(),key=lambda item: item[1][0], reverse=True)[:5]
+            top5_sales = [(i+1,tup[0].name,tup[1][0]) for i,tup in enumerate(top5_sales)]
+            top5_quantity = sorted(item_scores.items(),key=lambda item: item[1][1], reverse=True)[:5]
+            top5_quantity = [(i+1,tup[0].name,tup[1][1]) for i,tup in enumerate(top5_quantity)]
+            total_cash = sum([cart.total for cart in carts if len(cart.stripe_order_id) == 0])
+            total_card = sum([cart.total for cart in carts if len(cart.stripe_order_id) > 0])
             form = DatesForm()
             #hanlde division by zero for percentages
             if total_cash == 0:
@@ -703,10 +702,13 @@ def sales(request):
                 tip_percentage = 'N/A'
             else:
                 tip_percentage = round(100*total_tip/total_sales,2)
+            """This block ranks items by sales/quantity sold"""
+
             context = {'form':form, 'total_cash':total_cash, 'total_sales':total_sales, 'total_card':total_card,
                         'cash_percentage':cash_percentage, 'card_percentage': card_percentage,
                         'total_items': total_items, 'total_tip':total_tip,
-                        'tip_percentage': tip_percentage}
+                        'tip_percentage': tip_percentage,'period_start':start_datetime_str,'period_end':end_datetime_str,
+                        'top5_sales':top5_sales,'top5_quantity':top5_quantity}
             return render(request, 'restaurant/sales_extended.html',context)
 
 

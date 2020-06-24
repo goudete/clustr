@@ -131,14 +131,16 @@ class MenuItemFormItemPage(MenuItemForm):
 
 class DatesForm(forms.Form): #form for user inputing start and end date
     start_date = forms.CharField(max_length=100, required = True,
-    widget=forms.DateInput(attrs={'id':'datepicker', 'class': 'require-if-active', 'data-require-pair': '#include_date'})
+    widget=forms.DateInput(attrs={'id':'datepicker', 'class': 'require-if-active',
+                                  'data-require-pair': '#include_date','placeholder':'dd-mm-yyyy'})
     )
     start_time = forms.CharField(max_length=100, required = True,
     widget=forms.TimeInput(attrs = {'id': 'timepicker', 'class': 'require-if-active', 'data-require-pair': '#include_time'})
     )
 
     end_date = forms.CharField(max_length=100, required = True,
-    widget=forms.DateInput(attrs={'id':'datepicker2', 'class': 'require-if-active', 'data-require-pair': '#include_date'})
+    widget=forms.DateInput(attrs={'id':'datepicker2', 'class': 'require-if-active',
+                                  'data-require-pair': '#include_date','placeholder':'dd-mm-yyyy'})
     )
     end_time = forms.CharField(max_length=100, required = True,
     widget=forms.TimeInput(attrs = {'id': 'timepicker2', 'class': 'require-if-active', 'data-require-pair': '#include_time'})
