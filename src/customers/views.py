@@ -11,7 +11,7 @@ from decimal import Decimal
 from django.contrib import messages
 from django.core import serializers
 from kitchen.models import OrderTracker
-import re
+import phonenumbers
 
 
 #this method is only for development, it shows all the menus you have on your local db
@@ -492,7 +492,6 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
             curr_user_email = form.cleaned_data['email_input']
             curr_cart.email = curr_user_email
             curr_cart.save()
-            print('user_email:', curr_cart.email)
         if request.POST['phone'] != "":
             tracker = OrderTracker.objects.filter(cart = curr_cart).first()
             tracker.phone_number = request.POST['phone']
@@ -519,15 +518,16 @@ def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
             curr_user_email = form.cleaned_data['email_input']
             curr_cart.email = curr_user_email
             curr_cart.save()
-            print('user_email:', curr_cart.email)
+            # print('user_email:', curr_cart.email)
         phone_num = PhoneForm(request.POST)
-        print(phone_num.errors)
-        if request.POST['phone'] != "" and phone_num.is_valid():
+
+        if request.POST['phone_number'] != "" and phone_num.is_valid():
             tracker = OrderTracker.objects.filter(cart = curr_cart).first()
-            tracker.phone_number = request.POST['phone']
+            number = request.POST['phone_number']
+            tracker.phone_number = number
             tracker.save()
             return redirect('/customers/cash_code/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
-        elif request.POST['phone'] != "" and not phone_num.is_valid():
+        else:
             return render(request, 'customers/cash_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_num})
         return redirect('/customers/cash_code/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 

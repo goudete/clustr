@@ -1,6 +1,5 @@
 {% extends 'customers/base.html'%}
 {% load i18n %}
-{% load crispy_forms_tags %}
 {% block content %}
 <div class="container-fluid">
   <div class="row mt-5">
@@ -25,12 +24,19 @@
 
         <div class="form-group mx-sm-3 mb-2 mt-4">
           <div class="input-group mb-3">
+            <label for="phone_">{% trans "Receive Text Message When Order is Ready?" %}</label>
             <!-- <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1">+52</span>
             </div> -->
-            <label for="phone_input">{% trans "Receive Text Message When Order is Ready?" %}</label>
-            {{phone.phone|as_crispy_field}}
+            <input type="text" class="form-control" name="phone_number" id="phone_number" placeholder="+525555555555">
           </div>
+          {% if phone.errors %}
+            {% for err in phone %}
+              {% for error in err.errors %}
+                {{ error }}
+              {% endfor %}
+            {% endfor %}
+          {% endif %}
 
         </div>
 

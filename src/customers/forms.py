@@ -21,19 +21,24 @@ class EmailForm(forms.Form):
 
 
 class PhoneForm(forms.Form):
-    def validate_phone_number(self):
-        num = self.cleaned_data.get('phone')
-        if phonenumbers.is_valid_number(num):
-            return num
-        else:
-            raise forms.ValidationError(_("Invalid Phone Number"))
+    phone_number = PhoneNumberField(required = False)
 
-    phone = PhoneNumberField(required = False)
+    # def clean_phone_number(self):
+    #     num = self.cleaned_data.get('phone_number')
+    #     num = phonenumbers.parse('+52' + num, "MX")
+    #     print('num: ', num)
+    #     if not phonenumbers.is_valid_number(num):
+    #         raise forms.ValidationError(_("Invalid Phone Number"), code='invalid')
+    #     else:
+    #         print('valid number: ', num)
+    #         return num
 
-    def __init__(self, *args, **kwargs):
-        super(PhoneForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
+
+
+    # def __init__(self, *args, **kwargs):
+    #     super(PhoneForm, self).__init__(*args, **kwargs)
+    #     self.helper = FormHelper()
+    #     self.helper.form_show_labels = False
 
 
 class FeedbackForm(forms.ModelForm):

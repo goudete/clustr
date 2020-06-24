@@ -221,7 +221,7 @@ msgstr "Quiénes somos"
 #: customers/templates/customers/card_email_receipt.html:13
 #: customers/templates/customers/cash_email_receipt.html:13
 msgid "Email receipt and Order notifications"
-msgstr "Recibo por Correo Electrónico y Notificaciones de tu Orden"
+msgstr "Recibo por Correo Electrónico y Notificaciones de tu Orden por Mensaje de Texto"
 
 #: customers/templates/customers/card_email_receipt.html:21
 #: customers/templates/customers/cash_email_receipt.html:21
@@ -231,7 +231,7 @@ msgstr "Correo Electrónico"
 #: customers/templates/customers/card_email_receipt.html:27
 #: customers/templates/customers/cash_email_receipt.html:27
 msgid "Receive Text Message When Order is Ready?"
-msgstr "Quieres recibir un mensaje cuando este tu orden?"
+msgstr "Ingresa tu teléfono empezando con +52"
 
 #: customers/templates/customers/card_email_receipt.html:40
 #: customers/templates/customers/cash_email_receipt.html:40
