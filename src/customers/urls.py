@@ -25,5 +25,4 @@ urlpatterns = [
     path('ajax/ajax_confirm_cash_payment', views.ajax_confirm_cash_payment, name='confirm_cash_payment'),
     path('ajax/ajax_receipt', ajax_receipt, name = 'ajax_receipt'),
     path('ajax/receipt_page', receipt_page, name = 'receipt_page'),
-    # path('ajax/addon_item', views.ajax_addon_item, name = 'addon_item'),
 ]
