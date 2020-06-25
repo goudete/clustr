@@ -30,12 +30,10 @@ environ.Env.read_env(env_file)
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = env("SECRET_KEY")
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = env("DEBUG")
-DEBUG = os.environ['DEBUG']
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ['cluster-mvp.herokuapp.com', '127.0.0.1']
 
@@ -155,16 +153,12 @@ LANGUAGES = [
 
 
 #Stripe Settings
-# STRIPE_PUBLISHABLE_KEY = env('STRIPE_API_KEY')
-STRIPE_PUBLISHABLE_KEY = os.environ['STRIPE_PUBLISHABLE_KEY']
-# STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
-STRIPE_SECRET_KEY = os.environ['STRIPE_SECRET_KEY']
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_API_KEY')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
 #twilio settings
-# TWILIO_SID = env('TWILIO_SID')
-TWILIO_SID = os.environ['TWILIO_SID']
-# TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
-TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
+TWILIO_SID = env('TWILIO_SID')
+TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
 
 
 # Static files (CSS, JavaScript, Images)
@@ -179,14 +173,11 @@ AWS_S3_FILE_OVERWRITE = True
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 
-# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 
-# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend','cashier.auth_backend.PasswordlessAuthBackend']
@@ -195,6 +186,5 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend','cashier.
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "clustrfood@gmail.com"
-# EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
