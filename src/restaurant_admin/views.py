@@ -317,6 +317,7 @@ def edit_menu(request, menu_id):
         selct_options = SelectOption.objects.filter(restaurant = restaurant)
         existing_items = MenuItem.objects.filter(restaurant = restaurant)
         alphabetically_sorted = sorted(existing_items, key = lambda x: x.name)
+        all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
         # print('select options queried')
         #generate pre-signed url to download the QR code
         s3 = boto3.resource('s3') #setup to get from AWS
@@ -331,7 +332,7 @@ def edit_menu(request, menu_id):
                 s3Client = boto3.client('s3')
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url':url, 'existing_items': alphabetically_sorted})
+                                'url':url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -625,6 +626,7 @@ def ajax_receipt(request):
 def create_addon_group(request, menu_id, item_id):
     if request.method == 'POST':
         group = AddOnGroup(name = request.POST['addon_group_name'])
+        group.restaurant = Menu.objects.filter(id = menu_id).first().restaurant
         group.save()
         group.menu_items.add(MenuItem.objects.filter(id = item_id).first())
         group.save()
@@ -686,8 +688,8 @@ def sales(request):
             top5_sales = [(i+1,tup[0].name,tup[1][0]) for i,tup in enumerate(top5_sales)]
             top5_quantity = sorted(item_scores.items(),key=lambda item: item[1][1], reverse=True)[:5]
             top5_quantity = [(i+1,tup[0].name,tup[1][1]) for i,tup in enumerate(top5_quantity)]
-            total_cash = sum([cart.total for cart in carts if len(cart.stripe_order_id) == 0])
-            total_card = sum([cart.total for cart in carts if len(cart.stripe_order_id) > 0])
+            total_cash = sum([cart.total for cart in carts if cart.cash_code  != None])
+            total_card = sum([cart.total for cart in carts if cart.cash_code == None])
             form = DatesForm()
             #hanlde division by zero for percentages
             if total_cash == 0:
