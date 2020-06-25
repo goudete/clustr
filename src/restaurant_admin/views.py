@@ -626,6 +626,7 @@ def ajax_receipt(request):
 def create_addon_group(request, menu_id, item_id):
     if request.method == 'POST':
         group = AddOnGroup(name = request.POST['addon_group_name'])
+        group.restaurant = Menu.objects.filter(id = menu_id).first().restaurant
         group.save()
         group.menu_items.add(MenuItem.objects.filter(id = item_id).first())
         group.save()
