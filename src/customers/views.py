@@ -12,6 +12,10 @@ from django.contrib import messages
 from django.core import serializers
 from kitchen.models import OrderTracker
 import phonenumbers
+import datetime
+from django.utils.translation import gettext as _
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import get_template, render_to_string
 
 
 #this method is only for development, it shows all the menus you have on your local db
@@ -497,6 +501,23 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
             curr_user_email = form.cleaned_data['email_input']
             curr_cart.email = curr_user_email
             curr_cart.save()
+            if curr_user_email != None:
+                current_date = datetime.date.today()
+                logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(curr_cart.restaurant.id))
+                item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
+
+                subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, curr_user_email
+                msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
+                html_template = get_template("emails/receipt/receipt.html").render({
+                                                            'date':current_date,
+                                                            'receipt_number':curr_cart.id,
+                                                            'path':curr_cart.restaurant.photo_path,
+                                                            'order_id':curr_cart.id,
+                                                            'item_counters': item_counters,
+                                                            'cart': curr_cart
+                                                })
+                msg.attach_alternative(html_template, "text/html")
+                msg.send()
 
         phone_num = PhoneForm(request.POST)
         if request.POST['phone_number'] != ""  and phone_num.is_valid():
