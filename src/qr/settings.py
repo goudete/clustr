@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'stripe',
     'django_extensions',
     'phonenumber_field',
+    'comms'
 ]
 
 MIDDLEWARE = [
