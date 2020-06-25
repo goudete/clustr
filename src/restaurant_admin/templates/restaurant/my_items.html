@@ -159,15 +159,17 @@ input:checked + .slider:before {
             <!-- modal that pops up when item is to be created-->
             <div class="modal fade bd-example-modal-lg" id="add_modal" tabindex="-1" role="dialog">
               <div class="modal-dialog modal-lg" role="document">
+                <div class = 'modal-content'>
                   <div class="modal-body">
                     <!--hidden form to add new item -->
-                    <div class = 'row justify-content-center'>
-                      <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'>
+                    <!-- <div class = 'row justify-content-center'> -->
+                      <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
 
-                          <div class ='row justify-content-center'>
-                            <h3 class="card-title">{% trans "Create New Item" %}</h3>
-                          </div>
-                        <div class="card-body d-flex justify-content-center">
+                        <div class ='row justify-content-center'>
+                          <h3>{% trans "Create New Item" %}</h3>
+                        </div>
+
+                        <div class="row justify-content-center">
                           <form action= "/restaurant_admin/add_item_no_menu" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
 
@@ -217,9 +219,10 @@ input:checked + .slider:before {
                             </div>
                           </form>
                         </div>
-                      </div>
-                  </div>
+                      <!-- </div> -->
+                  <!-- </div> -->
               </div>
+            </div>
           </div>
         </div>
           <!-- </div> -->
@@ -256,16 +259,17 @@ input:checked + .slider:before {
               <!-- modal that pops up when item is to be edited-->
               <div class="modal fade bd-example-modal-lg" id="edit_modal{{item.id}}" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
+                  <div class = 'modal-content'>
                     <div class="modal-body">
                       <!--hidden form to edit new item -->
-                      <div class = 'row justify-content-center'>
-                        <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'>
+                      <!-- <div class = 'row justify-content-center'> -->
+                        <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
 
                             <div class ='row justify-content-center'>
                               <h3 class="card-title">{% trans "Edit Item" %}</h3>
                             </div>
-                            <div class = 'card-body'>
-                              <div class="card-body d-flex justify-content-center">
+                            <!-- <div class = 'card-body'> -->
+                              <div class="row justify-content-center">
                                 <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' method = 'post' enctype = 'multipart/form-data'>
                                   {% csrf_token %}
                                   <div class = 'row'>
@@ -349,10 +353,11 @@ input:checked + .slider:before {
                                   </div>
                                 </form>
                               </div>
-                            </div>
-                        </div>
-                    </div>
+                            <!-- </div> -->
+                        <!-- </div> -->
+                    <!-- </div> -->
                 </div>
+              </div>
             </div>
           </div>
               {% endfor %}

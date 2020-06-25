@@ -128,11 +128,12 @@
 
             <div class="modal fade bd-example-modal-lg" id="create_menu" tabindex="-1" role="dialog">
               <div class="modal-dialog modal-lg" role="document">
+                <div class = 'modal-content'>
                   <div class="modal-body">
-                    <div class = 'row justify-content-center'>
-                      <div class = 'card mt-5 mb-5' id = 'menu_form' style = 'width:40rem;' >
+                    <!-- <div class = 'row justify-content-center'> -->
+                      <!-- <div class = 'card mt-5 mb-5' id = 'menu_form' style = 'width:40rem;' > -->
 
-                        <div class ='card-header'>
+                        <!-- <div class ='card-header'> -->
                           <!-- X out of the card button -->
                           <div class = 'row justify-content-begin'>
                             <a id = 'xOut' onclick = 'closeMenuForm()' style = 'cursor: pointer; color: red'>
@@ -147,9 +148,9 @@
                           <div class = 'row justify-content-center'>
                             <h3>{% trans 'Create New Menu' %}<h3>
                           </div>
-                        </div>
+                        <!-- </div> -->
 
-                        <div class = 'card-body'>
+                        <div class = 'row justify-content-center'>
                           <form method = 'post' action = '/restaurant_admin/add_menu' enctype="multipart/form-data">
                             {% csrf_token %}
 
@@ -179,9 +180,10 @@
 
                           </form>
                         </div>
-                      </div>
-                    </div>
+                      <!-- </div> -->
+                    <!-- </div> -->
                   </div>
+                </div>
                 </div>
               </div>
 

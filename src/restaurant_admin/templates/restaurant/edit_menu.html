@@ -159,68 +159,70 @@ input:checked + .slider:before {
   </div>
 
   <!-- modal that pops up when item is to be created-->
-  <div class="modal fade bd-example-modal-lg" id="add_item_modal" tabindex="-1" role="dialog">
+  <div class="modal fade bd-example-modal-lg" id="add_item_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-body">
-          <!--hidden form to add new item -->
-          <div class = 'row justify-content-center'>
-            <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'>
+      <div class = 'modal-content'>
+          <div class="modal-body">
+            <!--hidden form to add new item -->
+            <!-- <div class = 'row justify-content-center'> -->
+              <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 50rem;" id = 'new_item_form'> -->
 
                 <div class ='row justify-content-center'>
                   <h3 class="card-title">{% trans "Create New Item" %}</h3>
                 </div>
-              <div class="card-body d-flex justify-content-center">
-                <form action= "/restaurant_admin/add_item/{{menu.id}}" method="post" enctype="multipart/form-data">
-                  {% csrf_token %}
+                <div class="row justify-content-center">
+                  <form action= "/restaurant_admin/add_item/{{menu.id}}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-                  <div class="row justify-content-center mt-2 mb-2">
-                    <div class = 'col'>
-                      {{ item_form.name|as_crispy_field }}
+                    <div class="row justify-content-center mt-2 mb-2">
+                      <div class = 'col'>
+                        {{ item_form.name|as_crispy_field }}
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="row justify-content-center mt-2 mb-2">
-                    <div class = 'col'>
-                      {{ item_form.description|as_crispy_field }}
+                    <div class="row justify-content-center mt-2 mb-2">
+                      <div class = 'col'>
+                        {{ item_form.description|as_crispy_field }}
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="row justify-content-center mt-2 mb-2">
-                    <div class = 'col'>
-                      {{ item_form.course|as_crispy_field }}
+                    <div class="row justify-content-center mt-2 mb-2">
+                      <div class = 'col'>
+                        {{ item_form.course|as_crispy_field }}
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="row justify-content-center mt-2 mb-2">
-                    <div class = 'col'>
-                      {{ item_form.price|as_crispy_field }}
+                    <div class="row justify-content-center mt-2 mb-2">
+                      <div class = 'col'>
+                        {{ item_form.price|as_crispy_field }}
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="row justify-content-center mt-3 mb-2">
-                    <div class = 'col'>
-                      <label for = 'photo'>{% trans 'Item Photo' %}</label>
-                      <div class="input-group" id = 'photo'>
-                        <div class="custom-file">
-                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                          <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                    <div class="row justify-content-center mt-3 mb-2">
+                      <div class = 'col'>
+                        <label for = 'photo'>{% trans 'Item Photo' %}</label>
+                        <div class="input-group" id = 'photo'>
+                          <div class="custom-file">
+                            <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                            <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <!-- Buttons -->
-                  <div class="row justify-content-center mt-3 mb-2">
-                    <div class = 'col'>
-                      <div class="btn-group">
-                          <button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+                    <!-- Buttons -->
+                    <div class="row justify-content-center mt-3 mb-2">
+                      <div class = 'col'>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-        </div>
+                  </form>
+                </div>
+              <!-- </div> -->
+          <!-- </div> -->
+      </div>
     </div>
   </div>
   </div>
@@ -265,16 +267,18 @@ input:checked + .slider:before {
               <!-- modal that pops up when item is to be edited-->
               <div class="modal fade bd-example-modal-lg" id="edit_modal{{item.id}}" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
+                  <div class = 'modal-content'>
                     <div class="modal-body">
                       <!--hidden form to edit new item -->
-                      <div class = 'row justify-content-center'>
-                        <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'>
+                      <!-- <div class = 'row justify-content-center'> -->
+                        <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
 
-                            <div class ='row justify-content-center'>
-                              <h3 class="card-title">{% trans "Edit Item" %}</h3>
-                            </div>
-                            <div class = 'card-body'>
-                              <div class="card-body d-flex justify-content-center">
+                          <div class ='row justify-content-center'>
+                            <h3 class="card-title">{% trans "Edit Item" %}</h3>
+                          </div>
+
+                            <!-- <div class = 'card-body'> -->
+                              <div class="row justify-content-center">
                                 <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' method = 'post' enctype = 'multipart/form-data'>
                                   {% csrf_token %}
                                   <div class = 'row'>
@@ -292,8 +296,8 @@ input:checked + .slider:before {
                                     <div class="col-6">
                                       <div class="input-group" id = 'photo2'>
                                         <div class="custom-file">
-                                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
-                                          <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
+                                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile06" aria-describedby="inputGroupFileAddon06">
+                                          <label class="custom-file-label" for="inputGroupFile06">{%trans 'Choose file' %}</label>
                                         </div>
                                       </div>
                                     </div>
@@ -358,10 +362,11 @@ input:checked + .slider:before {
                                   </div>
                                 </form>
                               </div>
-                            </div>
-                        </div>
-                    </div>
+                            <!-- </div> -->
+                        <!-- </div> -->
+                    <!-- </div> -->
                 </div>
+              </div>
             </div>
           </div>
             </div>
