@@ -489,8 +489,8 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
         return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
     else:
         curr_cart = Cart.objects.filter(id = cart_id).first()
-        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-        curr_menu = Menu.objects.filter(id = menu_id).first()
+        # curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        # curr_menu = Menu.objects.filter(id = menu_id).first()
 
         form = EmailForm(request.POST)
         if form.is_valid():
@@ -505,8 +505,8 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
             tracker.phone_number = number
             tracker.save()
             return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
-        else:
-            return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
+        # else:
+        #     return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
 
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
