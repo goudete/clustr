@@ -317,6 +317,7 @@ def edit_menu(request, menu_id):
         selct_options = SelectOption.objects.filter(restaurant = restaurant)
         existing_items = MenuItem.objects.filter(restaurant = restaurant)
         alphabetically_sorted = sorted(existing_items, key = lambda x: x.name)
+        all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
         # print('select options queried')
         #generate pre-signed url to download the QR code
         s3 = boto3.resource('s3') #setup to get from AWS
@@ -331,7 +332,7 @@ def edit_menu(request, menu_id):
                 s3Client = boto3.client('s3')
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url':url, 'existing_items': alphabetically_sorted})
+                                'url':url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
