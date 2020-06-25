@@ -52,7 +52,7 @@ def mark_order_done(request, restaurant_id, tracker_id):
             client = Client(settings.TWILIO_SID, settings.TWILIO_AUTH_TOKEN)
             message = client.messages.create(
                               from_='+14845099889',
-                              body='Esta lista tu orden de Local Tres!',
+                              body='Your Order is Ready!',
                               to=str(tracker.phone_number)
                           )
     return redirect('/kitchen/{r_id}'.format(r_id = restaurant_id))
