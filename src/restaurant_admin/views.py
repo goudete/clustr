@@ -517,15 +517,15 @@ def kitchen_no(request):
 def my_items(request):
     restaurant = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
-    categories = MenuItem.objects.values_list('course', flat=True).distinct()
+    categories = MenuItem.objects.filter(restaurant=restaurant).values_list('course', flat=True).distinct()
     category_items = {}
     if url_parameter:
         print("we here")
         for category in categories:
-            category_items[category]  = MenuItem.objects.filter(course = category).filter(name__icontains=url_parameter)
+            category_items[category]  = MenuItem.objects.filter(restaurant=restaurant).filter(course = category).filter(name__icontains=url_parameter)
     else:
         for category in categories:
-            category_items[category]  = MenuItem.objects.filter(course = category)
+            category_items[category]  = MenuItem.objects.filter(restaurant=restaurant).filter(course = category)
     form = MenuItemFormItemPage()
 
     #get all possible categories of menu
