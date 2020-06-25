@@ -41,10 +41,7 @@ def cashPaymentView(request):
             backend = PasswordlessAuthBackend()
             user = backend.get_user(request.user.id)
             restaurant = user.cashierprofile.restaurant
-            menus = Menu.objects.filter(restaurant=restaurant)
-            items = []
-            for menu in menus:
-                items += list(MenuItem.objects.filter(menu=menu))
+            items = MenuItem.objects.filter(restaurant=restaurant)
             alphabetically_sorted = sorted(items, key = lambda x: x.name)
             context = {'cart':curr_cart,'item_counters':item_counters, 'cash_code':order_code,'items':alphabetically_sorted,
                        'name': user.cashierprofile.name,'path':logo_photo_path}
@@ -162,13 +159,7 @@ def ajax_add_item(request):
     number_items = int(request.GET.get('number_items', None))
     curr_cart = Cart.objects.filter(cash_code=cash_code).first()
     restaurant = restaurant = request.user.cashierprofile.restaurant
-    print(restaurant)
-
-    menus = Menu.objects.filter(restaurant=restaurant)
-    for menu in menus:
-        if len(MenuItem.objects.filter(menu=menu,name=item_name)) > 0:
-            menu_item = MenuItem.objects.filter(menu=menu,name=item_name).first()
-
+    menu_item = MenuItem.objects.filter(restaurant=restaurant).filter(name=item_name).first()
     new_item_counter = MenuItemCounter(item=menu_item, quantity=number_items,cart=curr_cart,
                                        price = menu_item.price*number_items)
     new_item_counter.save()
