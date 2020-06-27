@@ -251,7 +251,7 @@ def remove_menu(request, menu_id):
     curr_menu = Menu.objects.filter(id = menu_id).first()
     #if the method is a get, then it sends them to a confirmation page making sure they want to delete the menu
     if request.method == 'GET':
-        items = MenuItem.objects.filter(menu = curr_menu) #query all the items, show the user so they know that they'll be deleted
+        items = MenuItem.objects.filter(menus = curr_menu) #query all the items, show the user so they know that they'll be deleted
         return render(request, 'restaurant/confirm_remove.html', {'menu':curr_menu, 'items': items})
     #else delete the menu
     else:
@@ -399,7 +399,7 @@ def remove_item(request, menu_id, item_id):
     #if the method is a get, then it sends them to a confirmation page making sure they want to delete the item
     if request.method == 'GET':
         items = MenuItem.objects.filter(menus = curr_menu) #query all the items, show the user so they know that they'll be deleted
-        return render(request, 'restaurant/confirm_remove.html', {'menu':None, 'items': curr_item})
+        return render(request, 'restaurant/confirm_remove.html', {'menu':None, 'items': curr_item, 'url_id': curr_menu})
     #else delete the item
     else:
         curr_item.delete()
