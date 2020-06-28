@@ -193,6 +193,8 @@ input[type=number]::-webkit-outer-spin-button {
                           <button class="plus_item" title="Add" style="margin-right: 0.2cm"><i class="fas fa-plus"></i></button>
                           <button class="minus_item" title="Add" style="margin-right: 0cm"><i class="fas fa-minus" style = "margin-left: 0cm;"></i></button>
                         </td>
+                        <!-- extra hidden td to store the id of the MenuItemCounter -->
+                        <td class = 'widefield'><input class = 'idvalue' type = 'text' value = {{item_counter.id}} hidden = 'true'  style = "display : none"></td>
                     </tr>
                     {% endfor %}
                       <tr>
@@ -336,6 +338,9 @@ input[type=number]::-webkit-outer-spin-button {
           var current_item_total = parseFloat($(this).closest("tr").children("td")[3].innerHTML.substr(1));
           var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
           var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
+          var item_counter_id = $($(this).closest("tr").children("td")[5]).find("input").val();
+          console.log("Item id");
+          console.log(item_counter_id);
           //previous block handles just the front-end on the table. Now we use ajax to update the
           //Cart object in the backend.
           var cash_code = document.getElementById('cash_code').value;
@@ -345,6 +350,7 @@ input[type=number]::-webkit-outer-spin-button {
           url: 'ajax/ajax_change_order_quantity',
           data: {
             'item_name': $(this).closest("tr").children("td").children("em")[0].innerHTML,
+            'item_counter_id': item_counter_id,
             'cash_code': cash_code,
             'indicator': indicator
           },
@@ -370,11 +376,12 @@ input[type=number]::-webkit-outer-spin-button {
             }
             var item_price = parseFloat($(this).closest("tr").children("td")[2].innerHTML.substr(1));
             var current_item_total = parseFloat($(this).closest("tr").children("td")[3].innerHTML.substr(1));
-            $(this).closest("tr").children("td")[3].innerHTML ="$".concat(String((current_item_total - item_price).toFixed(2))); //update total for item (2 decimal places)
-            var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
-            $('#order_total')[0].innerHTML = "$".concat(String((current_order_total - item_price).toFixed(2))); //update order total
-            var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
-            $('#order_subtotal')[0].innerHTML = "$".concat(String((current_order_subtotal - item_price).toFixed(2))); //update order subttotal
+            var item_counter_id = $($(this).closest("tr").children("td")[5]).find("input").val();
+            // $(this).closest("tr").children("td")[3].innerHTML ="$".concat(String((current_item_total - item_price).toFixed(2))); //update total for item (2 decimal places)
+            // var current_order_total = parseFloat($('#order_total')[0].innerHTML.substr(1));
+            // $('#order_total')[0].innerHTML = "$".concat(String((current_order_total - item_price).toFixed(2))); //update order total
+            // var current_order_subtotal = parseFloat($('#order_subtotal')[0].innerHTML.substr(1));
+            // $('#order_subtotal')[0].innerHTML = "$".concat(String((current_order_subtotal - item_price).toFixed(2))); //update order subttotal
 
             //previous block handles just the front-end on the table. Now we use ajax to update the
             //Cart object in the backend.
@@ -385,6 +392,7 @@ input[type=number]::-webkit-outer-spin-button {
             url: 'ajax/ajax_change_order_quantity',
             data: {
               'item_name': $(this).closest("tr").children("td").children("em")[0].innerHTML,
+              'item_counter_id':item_counter_id,
               'cash_code': cash_code,
               'indicator': indicator
             },
@@ -426,6 +434,11 @@ input[type=number]::-webkit-outer-spin-button {
                 var html_string = "<button class='plus_item' title='Add' style='margin-right: 0.5cm'><i class='fas fa-plus'></i></button><button class='minus_item' title='Add' style='margin-right: 0cm'><i class='fas fa-minus' style = 'margin-left: 0cm;'></i></button>";
                 var newCell5  = newRow.insertCell(4);
                 newCell5.innerHTML = html_string;
+
+                var html_string2 = "<input class = 'field' type = 'text' value = '" + data.item_counter_id +  "' hidden = 'true'  style = 'display : none'>"
+                var newCell6  = newRow.insertCell(5);
+                newCell6.innerHTML = html_string2;
+
                 $('#order_subtotal')[0].innerHTML = "$".concat(String(data.new_total)); //update order subttotal
                 $('#order_total')[0].innerHTML = "$".concat(String(data.new_total_with_tip)); //update order total
 

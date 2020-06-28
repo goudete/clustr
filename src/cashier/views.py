@@ -116,48 +116,49 @@ def loginCashier(request):
     return render(request,'cashier_login.html',{'form':form})
 
 def ajax_change_order_quantity(request):
+    backend = PasswordlessAuthBackend()
+    user = backend.get_user(request.user.id)
+    restaurant = user.cashierprofile.restaurant
     item_name = request.GET.get('item_name', None).strip(' ')
-    print("item_name:")
-    print(item_name)
+    item_counter_id = request.GET.get('item_counter_id', None)
     cash_code = request.GET.get('cash_code', None)
     indicator = request.GET.get('indicator', None) #1 if we are increasing quantity, 0 if we are decreasing
     print(item_name)
     print(cash_code)
-    curr_cart = Cart.objects.filter(cash_code=cash_code).first()
-    item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
-    for item_counter in item_counters:
-        if item_counter.item.name == item_name:
-            if indicator == '1':
-                item_counter.quantity = item_counter.quantity + 1
-                item_counter.price += item_counter.item.price
-                curr_cart.total += item_counter.item.price
-                curr_cart.total_with_tip += item_counter.item.price
-                new_price = item_counter.price
-                new_quantity = item_counter.quantity
-            else:
-                item_counter.quantity = item_counter.quantity - 1
-                item_counter.price -= item_counter.item.price
-                curr_cart.total -= item_counter.item.price
-                curr_cart.total_with_tip -= item_counter.item.price
-                new_price = item_counter.price
-                new_quantity = item_counter.quantity
-            if item_counter.quantity == 0:
-                item_counter.delete()
-            else:
-                item_counter.save()
-            curr_cart.save()
-            break
-            print("new quantity")
-            print(new_quantity)
+    curr_cart = Cart.objects.filter(restaurant=restaurant).filter(cash_code=cash_code).first()
+    item_counter = MenuItemCounter.objects.get(pk = item_counter_id)
+
+    if indicator == '1':
+        item_counter.quantity = item_counter.quantity + 1
+        item_counter.price += item_counter.item.price
+        curr_cart.total += item_counter.item.price
+        curr_cart.total_with_tip += item_counter.item.price
+        new_price = item_counter.price
+        new_quantity = item_counter.quantity
+    else:
+        item_counter.quantity = item_counter.quantity - 1
+        item_counter.price -= item_counter.item.price
+        curr_cart.total -= item_counter.item.price
+        curr_cart.total_with_tip -= item_counter.item.price
+        new_price = item_counter.price
+        new_quantity = item_counter.quantity
+    if item_counter.quantity == 0:
+        item_counter.delete()
+    else:
+        item_counter.save()
+    curr_cart.save()
     return JsonResponse({'new_quantity':new_quantity,'new_price':new_price,
                          'new_total': curr_cart.total,'new_total_with_tip':curr_cart.total_with_tip,
                          'tip_amount':round(curr_cart.total*curr_cart.tip,2)})
 
 def ajax_add_item(request):
+    backend = PasswordlessAuthBackend()
+    user = backend.get_user(request.user.id)
+    restaurant = user.cashierprofile.restaurant
     item_name = request.GET.get('item_name', None).strip(' ')
     cash_code = request.GET.get('cash_code', None)
     number_items = int(request.GET.get('number_items', None))
-    curr_cart = Cart.objects.filter(cash_code=cash_code).first()
+    curr_cart = Cart.objects.filter(restaurant=restaurant).filter(cash_code=cash_code).first()
     restaurant = restaurant = request.user.cashierprofile.restaurant
     menu_item = MenuItem.objects.filter(restaurant=restaurant).filter(name=item_name).first()
     new_item_counter = MenuItemCounter(item=menu_item, quantity=number_items,cart=curr_cart,
@@ -168,7 +169,7 @@ def ajax_add_item(request):
     curr_cart.save()
     data = {'item_name':item_name,'number_items':number_items,'price':menu_item.price,
             'total':menu_item.price*number_items,'new_total':curr_cart.total,
-            'new_total_with_tip':curr_cart.total_with_tip}
+            'new_total_with_tip':curr_cart.total_with_tip, 'item_counter_id':new_item_counter.id}
     return JsonResponse(data)
 
 def cashier_logout(request):
