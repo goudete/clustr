@@ -22,9 +22,11 @@
                   </svg>
                 </a>
                 <!-- <p class="card-text">{{item.description}}</p> -->
+                {% if item.photo_path %}
                 <div style="max-width: 100%; max-height: 100%;">
                   <img class="rounded mx-auto d-block" src="{% static item.photo_path %}" height=75 width=75>
                 </div>
+                {% endif %}
                 <br>
                   <strong style="text-align: center; margin-left: 25%">${{item.price}}</strong>
             </div>
