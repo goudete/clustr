@@ -148,7 +148,7 @@ input:checked + .slider:before {
                 </h2>
               </div>
               <div class="col-6 align-right">
-            		<form class="form-inline">
+            		<form class="form-inline " onkeydown="return event.key != 'Enter';">
                   {% csrf_token %}
             		<i id="search_icon" class="fas fa-search" aria-hidden="true"></i>
                 {% trans "Search" as search_trans %}

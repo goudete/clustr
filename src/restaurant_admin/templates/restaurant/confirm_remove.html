@@ -2,17 +2,17 @@
 {% load i18n %}
 {% load static %}
 {% block content %}
-<body style="background-image: url('{% static 'imgs/delete_background.jpg' %}'); background-size:cover; background-color: rgba(255,255,255,0.3); background-blend-mode: lighten; background-position: center;">
+<body>
   <div class = 'container'>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <div class = 'card mt-5 mb-5'>
       <div class = 'card-header'>
         {% if menu %}
           <h3>{% trans 'Are You Sure You Want to Delete ' %}{{menu.name}}?</h3>
-          <a href = "/restaurant_admin/my_menus"><h5>{% trans 'Cancel' %}</h5></a>
+          <a href = "/restaurant_admin/edit_menu/{{menu.id}}"><h5>{% trans 'Cancel' %}</h5></a>
         {% else %}
           <h3>{% trans 'Are You Sure You Want to Delete ' %}{{items.name}}?</h3>
-          <a href = "/restaurant_admin/edit_menu/{{ items.menu.id }}">{% trans 'Cancel' %}</a>
+          <a href = "/restaurant_admin/edit_menu/{{url_id.id}}">{% trans 'Cancel' %}</a>
         {% endif %}
       </div>
       <div class = 'card-body'>
