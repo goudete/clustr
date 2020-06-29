@@ -84,6 +84,13 @@
             <i class="c-sidebar-nav-icon cil-industry"></i> {% trans "Kitchen Login" %}
           </a>
         </li>
+
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" href="/restaurant_admin/answer_about">
+            <i class="c-sidebar-nav-icon cil-cog"></i> {% trans "My Settings" %}
+          </a>
+        </li>
+
         <li class="c-sidebar-nav-divider"></li>
         <li class="c-sidebar-nav-title">{% trans "Help" %}</li>
         <li class="c-sidebar-nav-item">
@@ -123,10 +130,8 @@
             <div class="dropdown-menu dropdown-menu-right pt-0">
               <div class="dropdown-header bg-light py-2"><strong>{{ request.user.user_name }}</strong></div>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="https://dashboard.stripe.com/login">
               <i class="c-sidebar-nav-icon cil-file mr-2 mb-2"></i> {% trans "Bank Info" %}</a>
-              <a class="dropdown-item" href="/restaurant_admin/answer_about">
-              <i class="c-sidebar-nav-icon cil-contact mr-2 mb-2"></i> {% trans "Profile" %}</a>
               <a class="dropdown-item" href="/restaurant_admin/logout">
               <i class="c-sidebar-nav-icon cil-account-logout mr-2 mb-2"></i> {% trans "Logout" %}</a>
             </div>

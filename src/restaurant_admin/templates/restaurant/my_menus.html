@@ -63,7 +63,7 @@
           <!-- the alert card if they havent put their logo and about info -->
           {% if me.info_input == False %}
             <div class = 'row justify-content-center mb-2'>
-              <div class="card mb-3" style = 'width: 20rem;'>
+              <div class="card mb-3" style = 'width: 30rem;'>
                 <div class = 'card-body'>
                   <div class = 'row justify-content-center'>
                     <div class = 'col'>
@@ -80,23 +80,41 @@
                       <form action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
                         {% csrf_token %}
                         <div class = 'row justify-content-center'>
-                          <b><label for="no">{% trans 'Your Menu Tagline' %}</label><br></b>
+                          <b><label for="tagline">{% trans 'Your Menu Tagline' %}</label></b>
+                        </div>
+                        <div class = 'row justify-content-center'>
                           <input type = 'text' id = 'tagline' name = 'tagline' placeholder = "{% trans 'a short description ....' %}">
                         </div>
 
                         <div class = 'row justify-content-center mt-3'>
-                          <b><label for="about">{% trans 'About Your Restaurant' %}</label><br></b>
+                          <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
+                        </div>
+                        <div class = 'row justify-content-center'>
                           <textarea rows = '4' cols = '23' id = 'about' name = 'about' placeholder = "{% trans 'We specialize in ....' %}"></textarea>
                         </div>
 
                         <div class = 'row justify-content-center mt-3'>
-                          <b><label for = 'logo'>{% trans 'Restaurant Logo' %}</label><br></b>
-                          <div class = 'col' id = 'logo'>
-                            <div class="input-group">
-                              <div class="custom-file">
-                                <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                                <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
-                              </div>
+                          <b><label for = 'dine-in1'>{% trans 'Do You Currently Offer Dine In?' %}</label></b>
+                        </div>
+                        <div class = 'row justify-content-center'>
+                          <div class = 'col-2'>
+                            <label for = 'dine-in1'>{% trans 'No' %}</label>
+                            <input type = 'radio' name = 'dine-in' id = 'dine-in1' value = 'no' checked>
+                          </div>
+                          <div class = 'col-2'>
+                            <label for = 'dine-in2'>{% trans 'Yes' %}</label>
+                            <input type = 'radio' name = 'dine-in' id = 'dine-in2' value = 'yes'>
+                          </div>
+                        </div>
+
+                        <div class = 'row justify-content-center mt-3'>
+                          <b><label for = 'inputGroupFile04'>{% trans 'Restaurant Logo' %}</label></b>
+                        </div>
+                        <div class = 'row justify-content-center'>
+                          <div class="input-group">
+                            <div class="custom-file">
+                              <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                              <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
                             </div>
                           </div>
                         </div>

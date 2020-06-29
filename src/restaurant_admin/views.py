@@ -154,6 +154,12 @@ else:
 2nd it renders a page for them to view/edit their about info
 3rd sends a post request to this view
 """
+#helper function for saving dine in vs togo
+def is_dine_in(resp):
+    if resp == 'yes':
+        return True
+    return False
+
 def answer_about(request):
     #query restaurant
     curr_rest = Restaurant.objects.filter(user = request.user).first()
@@ -175,6 +181,11 @@ def answer_about(request):
         #check for about
         if request.POST['about'] != "":
             curr_rest.about = request.POST['about']
+        #check for dine in vs togo only
+        if is_dine_in(request.POST['dine-in']):
+            curr_rest.dine_in = True
+        else:
+            curr_rest.dine_in = False
         #save
         curr_rest.info_input = True
         curr_rest.save()
