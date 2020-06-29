@@ -526,7 +526,7 @@ def my_items(request):
     else:
         for category in categories:
             category_items[category]  = MenuItem.objects.filter(restaurant=restaurant).filter(course = category)
-    form = MenuItemFormItemPage()
+    form = MenuItemForm()
 
     #get all possible categories of menu
     print("categories length")
@@ -551,31 +551,70 @@ def add_item_no_menu(request):
         return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
     #otherwise the user created a new item, and it must be added to the menu
     else:
-        item = MenuItemForm(request.POST).save(commit = False)
-        ##------------ADDED BY LUIS
-        item.restaurant = request.user.restaurant
-        # menu = Menu(name="Global Menu",restaurant = request.user.restaurant, photo_path ="N/A", created_at = "2020-06-09 13:11:55.68267+00")
-        # menu.save()
-        # item.menu = menu
-        ##------------
-        #check if they uploaded new photo
-        photo = request.FILES.get('photo', False)
-        if photo:
-            #save photo to AWS
-            doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                        item_number = 'item'+str(item.id))
-            file_storage = FileStorage()
-            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-            file_storage.save(doc_path, doc)
-            item.photo_path = doc_path
+        item_form = MenuItemForm(request.POST)
+        if form.is_valid():
+            item.restaurant = request.user.restaurant
+            photo = request.FILES.get('photo', False)
+            if photo:
+                #save photo to AWS
+                doc = request.FILES['photo'] #get file
+                files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+                                                                            item_number = 'item'+str(item.id))
+                file_storage = FileStorage()
+                mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+                doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+                file_storage.save(doc_path, doc)
+                item.photo_path = doc_path
+                item.save()
+            #item.menu = None
             item.save()
-        #item.menu = None
+            print('redirecting')
+            #redirect back to edit menu page
+            return redirect('/restaurant_admin/my_items')
+        else:
+            pass
+
+def ajax_add_item(request):
+    form = MenuItemForm(request.POST, request.FILES)
+    print(request.POST['name'])
+    print("form")
+    print(form)
+    print("request Post:")
+    print(request.POST)
+    #if form isnt valid we send the errors to the JS script in template
+    if not form.is_valid():
+        print("form was not valid. these are the errors")
+        print(form.errors)
+
+        return JsonResponse({
+            'success': False,
+            'err_code': 'invalid_form',
+            'err_msg': form.errors,
+        })
+
+    #Actions if form is valid ...
+    item = MenuItemForm(request.POST).save(commit = False)
+    item.restaurant = request.user.restaurant
+    photo = request.FILES.get('photo', False)
+    print("files")
+    print(request.FILES)
+    if photo:
+        #save photo to AWS
+        doc = request.FILES['photo'] #get file
+        files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+                                                                    item_number = 'item'+str(item.id))
+        file_storage = FileStorage()
+        mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+        doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+        file_storage.save(doc_path, doc)
+        item.photo_path = doc_path
         item.save()
-        print('redirecting')
-        #redirect back to edit menu page
-        return redirect('/restaurant_admin/my_items')
+    #item.menu = None
+    item.save()
+    return JsonResponse({'success':True})
+    print('redirecting')
+    #redirect back to edit menu page
+    return redirect('/restaurant_admin/my_items')
 
 def receipt_page(request):
     if request.method == 'GET':

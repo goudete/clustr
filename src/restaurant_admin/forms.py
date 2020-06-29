@@ -76,14 +76,21 @@ class MenuItemForm(forms.ModelForm):
         self.fields['course'].required = True
         self.fields['price'].required = True
         #sizing stuff
-        self.fields['name'].widget.attrs.update(style='width: 450px;')
-        self.fields['description'].widget.attrs.update(style='width: 450px;')
-        self.fields['course'].widget.attrs.update(style='width: 450px;')
-        self.fields['price'].widget.attrs.update(style='width: 450px;')
+        self.fields['name'].widget.attrs.update(style='width: 450px;',id='add_item_name')
+        self.fields['description'].widget.attrs.update(style='width: 450px;',id='add_item_description')
+        self.fields['course'].widget.attrs.update(style='width: 450px;',id='add_item_course')
+        self.fields['price'].widget.attrs.update(style='width: 450px;',id='add_item_price')
 
     class Meta:
         model = MenuItem
         fields = ('name', 'description', 'course', 'price')
+
+    def clean_name(self):
+        name_passed = self.cleaned_data.get("name")
+        if len(MenuItem.objects.filter(name=name_passed))>0:
+            raise forms.ValidationError("You have already created an item with this name")
+        return name_passed
+
 
 class CashierForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

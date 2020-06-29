@@ -170,7 +170,7 @@ input:checked + .slider:before {
                         </div>
 
                         <div class="row justify-content-center">
-                          <form action= "/restaurant_admin/add_item_no_menu" method="post" enctype="multipart/form-data">
+                          <form action= "/restaurant_admin/add_item_no_menu" method="post" enctype="multipart/form-data" id = "create_item_form">
                             {% csrf_token %}
 
                             <div class="row justify-content-center mt-2 mb-2">
@@ -178,10 +178,17 @@ input:checked + .slider:before {
                                 {{ item_form.name|as_crispy_field }}
                               </div>
                             </div>
-
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "name_errors" class="errors">
+                              </div>
+                            </div>
                             <div class="row justify-content-center mt-2 mb-2">
                               <div class = 'col'>
                                 {{ item_form.description|as_crispy_field }}
+                              </div>
+                            </div>
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "description_errors" class="errors">
                               </div>
                             </div>
 
@@ -190,10 +197,18 @@ input:checked + .slider:before {
                                 {{ item_form.course|as_crispy_field }}
                               </div>
                             </div>
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "course_errors" class="errors">
+                              </div>
+                            </div>
 
                             <div class="row justify-content-center mt-2 mb-2">
                               <div class = 'col'>
                                 {{ item_form.price|as_crispy_field }}
+                              </div>
+                            </div>
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "price_errors" class="errors">
                               </div>
                             </div>
 
@@ -208,12 +223,16 @@ input:checked + .slider:before {
                                 </div>
                               </div>
                             </div>
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "photo_errors" class="errors">
+                              </div>
+                            </div>
 
                             <!-- Buttons -->
                             <div class="row justify-content-center mt-3 mb-2">
                               <div class = 'col'>
                                 <div class="btn-group">
-                                    <button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+                                    <button type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -452,6 +471,59 @@ $('#add_modal').on('shown.bs.modal', function () {
       // setTimeout returns the ID of the function to be executed
       scheduled_function = setTimeout(ajax_call, delay_by_in_ms, "/my_items", request_parameters)
   })
+</script>
+<!-- ajax add item js -->
+<script type="text/javascript">
+  $(document).on('click', '#add_item_submit', function(e) {
+    $("#add_item_submit").attr("disabled", true);
+    var formelement = $(this);
+   //you want to start with emptying error divs and blocking the default behavior:
+   $('.errors').empty();
+    e.preventDefault();
+    console.log($('#add_item_description').val());
+    // var data = {
+    //     name: $('#add_item_name').val(),
+    //     description: $('#add_item_description').val(),
+    //     course: $('#add_item_course').val(),
+    //     price: $('#add_item_price').val(),
+    //     csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+    // };
+    var data = $('#create_item_form').serialize();
+    var formData = new FormData($('#create_item_form')[0]);
+    var file = $('#inputGroupFile04')[0].files[0];
+    //formData.append('image',file);
+    console.log(file);
+    console.log(data);
+    // data.push({key:'image', value: file});
+
+    $.ajax({
+        url: 'ajax/ajax_add_item',
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (data){
+            if (data.success){
+                console.log("success");
+                alert("Item Created");
+                $("#add_item_submit").attr("disabled", false);
+            }
+            else if (data.err_code === 'invalid_form'){
+                console.log(data.err_msg);
+                for(var key in data.err_msg){
+                    console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
+                    console.log(key);
+                    var error_div = $('#' + key + '_errors');
+                    error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
+                }
+                var error_msg = $("<span />").text(data.err_msg.name[0]);
+                var name_input = $('#add_item_name');
+                // error_msg.insertAfter(name_input);
+
+            }
+        },
+    });
+ })
 </script>
 
 {% endblock %}
