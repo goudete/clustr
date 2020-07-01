@@ -21,8 +21,8 @@ class Restaurant(models.Model):
     info_input = models.BooleanField(default = False)
     #stripe account id
     stripe_account_id = models.CharField(null = True, default = '', max_length = 255)
-    #field if the restaurant does dine-in
     dine_in = models.BooleanField(default = False)
+
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)

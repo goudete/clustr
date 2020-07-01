@@ -195,13 +195,43 @@
       </div>
     </div>
 
+    <!-- To Go or Dine In -->
+    {% if restaurant.dine_in %}
+    <data id="restaurant_dine_in" value="{{ restaurant.dine_in }}"></data>
+
+      <div class="card shadow p-3 bg-white rounded mt-3">
+        <div class="card-body">
+          <div class="row pl-3">
+            <h5 class="cart-title">{% trans "To Go or Dine In?" %}</h5>
+          </div>
+          <hr>
+          <form method="post" action="customers/dine_in_option/{{ cart.id }}" id="dine_in_form">
+            {% csrf_token %}
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="dine_in_radio" value="TOGO" checked>
+              <label class="form-check-label" for="dine_in_radio">
+                To Go
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="dine_in_radio" value="DINEIN">
+              <label class="form-check-label" for="dine_in_radio">
+                Dine In
+              </label>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+    <!-- End To Go or Dine In -->
+
     <!-- Footer -->
     <footer class="page-footer pt-4">
         <div class="row justify-content-center mb-3">
           <!-- <div class="col-12"> -->
           {% if items|length == 0 %}
           {% else%}
-            <a href="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">{% trans "Place Order" %}</a>
+            <a href="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true" id="place_order_button">{% trans "Place Order" %}</a>
           {% endif %}
           <!-- </div> -->
         </div>
@@ -260,7 +290,7 @@
     $(document).on("click", ".minus_item", function(){
       var index = String(this.value);
       var item = document.getElementById("item_name_" + index).textContent;
-      console.log('ITEM:' + item)
+      // console.log('ITEM:' + item)
         $.ajax({
         type: "GET",
         url: "{% url 'decrease_quantity' %}",
@@ -294,6 +324,32 @@
         }
       });
     });
+
+    //Dealing with Dine in or To go
+    // var form = $("#dine_in_form")
+    var dine_in = $("#restaurant_dine_in").val()
+      if (dine_in === "True"){
+
+        $( "#place_order_button" ).click(function() {
+          var checked = $("input[name='dine_in_radio']:checked").val();
+          $.ajax({
+          type: "POST",
+          url: "{% url 'dine_in_option' %}",
+          data: {
+            'checked': checked,
+            'cart_id': {{ cart.id }},
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+          },
+          dataType: 'json',
+          success: function (data) {
+            console.log("success");
+            //If data.quantity == 0, call remove_item view and remove div that contains item
+
+          }
+        });
+
+        });
+      }
   });
 
 </script>

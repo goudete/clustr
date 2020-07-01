@@ -9,16 +9,23 @@
         float: left;
         margin-top: 0px;
       }
+      .order-card{
+        width:350px;
+      }
+
+      #bell_audio {
+        display:none;
+      }
     </style>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
   </head>
 
   <body>
-    <div class="container">
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
-
-          <!-- <div class ='card-header'> -->
-            <div class = 'row justify-content-center mb-2'>
+    <div class="container mb-5">
+            <div class = 'row justify-content-center mt-5 mb-2'>
               <h2>
                 <b>
                   {% trans "Active Orders" %}
@@ -26,8 +33,14 @@
               </h2>
             </div>
 
+            <audio id="bell_audio" controls="controls">
+              <source src="https://qr-media-sound.s3-us-west-2.amazonaws.com/media/ring.mp3" muted="muted">
+            </audio>
 
-          <!-- <div class = 'card-body'> -->
+          <div id="dict_length" style="display: none;">{{ dict|length }}</div>
+          <input type="hidden" id="restaurant_id" value="{{ restaurant.id }}">
+
+
             {% if dict|length == 0 %}
             <div class = 'row justify-content-center mt-5'>
               <h3>{% trans 'No Active Orders' %}</h3>
@@ -36,19 +49,30 @@
             <div id = 'menu_container' class = 'row justify-content-center mt-5'>
 
                 {% for tracker, list in dict.items %}
-                  <div class = 'card mr-2 mt-2' style = 'width:20rem;'>
-                    <div class = 'card-body'>
+                  <div class="order-card card shadow p-3 bg-white rounded mr-2 ml-2 mb-2 mt-2">
+                    <div class="card-body">
 
-                      <div class = 'row justify-content-center mb-2'>
-                          <b style = 'color:black;'><h3>{{tracker.cart.cash_code}}</h3></b>
+                      <div class = 'row justify-content-center mb-1'>
+                          <b style = 'color:black;'><h4>{% trans "Order #: " %}{{tracker.cart.id}}</h4></b>
                       </div>
+                      {% if tracker.cart.dine_in %}
+                        <div class="row justify-content-center">
+                          <h5>{% trans "Dine In" %}</h5>
+                        </div>
+                      {% else %}
+                        <div class="row justify-content-center">
+                          <h5>{% trans "To Go" %}</h5>
+                        </div>
+                      {% endif %}
 
                       {% for item in list %}
-                        <div class = 'row justify-content-center'>
-                            <h7>-{{item.quantity}} {{item.item.name}}</h7>
+                        <div class = 'row'>
+                          <div class="col ml-3">
+                            <h7>- {{item.quantity}} {{item.item.name}}</h7>
+                          </div>
                         </div>
                         {% if item.custom_instructions %}
-                        <div class = 'row justify-content-center'>
+                        <div class = 'row'>
                           <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
                         </div>
                         {% endif %}
@@ -57,7 +81,7 @@
                         </div>
                       {% endfor %}
 
-                      <div class = 'row justify-content-center mt-2'>
+                      <div class = 'row justify-content-center mt-5'>
                         <a style = 'cursor:pointer;' onclick = "editOrderTracker({{tracker.id}})">
                           <svg class="bi bi-pencil" width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
@@ -83,20 +107,48 @@
             {% endif %}
           <!-- </div> -->
         <!-- </div> -->
-
+      <div id="active_order_counter"></div>
     </div>
   </body>
   <script>
     function editOrderTracker(a){
-      console.log(document.getElementById('tracker'+a).style.display);
       if(document.getElementById('tracker'+a).style.display == 'block') document.getElementById('item'+a).style.display = 'none';
       else document.getElementById('tracker'+a).style.display = 'block';
     }
-    // $(document).ready(function(){
-    window.setInterval(function(){
-      location.reload();
-    }, 10000);
-    // });
+
+
+    //SOUND NOTIFICATION
+    var dict_length_str = $("#dict_length").text();
+    var dict_length = parseInt(dict_length_str)
+    var rest_id = $("#restaurant_id").val()
+    var audio = document.getElementById("bell_audio")
+
+    setInterval(CheckIfNewOrder, 10000);
+
+    function CheckIfNewOrder(){
+      //ajax call here
+      $.ajax({
+      type: "GET",
+      url: "{% url 'check_new_orders' %}",
+      data: {
+        'rest_id': rest_id,
+        'dict_length': dict_length,
+      },
+      dataType: 'json',
+      success: function (data) {
+        if (data.new_orders === true){
+          audio.play();
+
+          setTimeout(function () {
+            location.reload();
+          }, 2000);
+        }
+        else{
+          console.log('no change')
+        }
+      }
+    });
+    }
 
   </script>
 </html>

@@ -439,6 +439,28 @@ def calculate_tip(request, cart_id, restaurant_id, menu_id, tip):
         curr_cart.save()
         return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items, 'restaurant': curr_rest, 'menu': curr_menu})
 
+'''If a restaurant is offering the option of Dine In, this view receives a POST request from
+    a form in view_cart. Handles User's choice of Dine In vs To Go'''
+def is_dine_in(resp):
+    if resp == 'DINEIN':
+        return True
+    return False
+
+def dine_in_option(request):
+    cart_id = request.POST.get('cart_id', None)
+    radio_selection = request.POST.get('checked', None)
+
+    if is_dine_in(radio_selection):
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_cart.dine_in = True
+        curr_cart.save()
+    print('SUCCESS: ')
+
+    data = {}
+    return JsonResponse(data)
+
+
+
 """ This method creates a PaymentIntent (Stripe API), saves the paymentintent id to the cart model and renders
     payment.html. All Stripe stuff is handled in the JS scripts in the payment template. If the cart is
     already paid, it redirects to order_confirmation
@@ -446,6 +468,7 @@ def calculate_tip(request, cart_id, restaurant_id, menu_id, tip):
 def payment(request, cart_id, restaurant_id, menu_id):
     #1st check if this bill has already been paid, someone could accidentally come here and pay something that they're not meant to
     cart = Cart.objects.filter(id = cart_id).first()
+    # print("DINE IN OPTION: ", cart.dine_in)
     if cart.is_paid == True:
         ''' If payed, just redirect to order confirmation'''
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
