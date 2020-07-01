@@ -3,6 +3,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+{% load widget_tweaks %}
 <html>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
@@ -87,7 +88,11 @@ input:checked + .slider:before {
       animation-direction: alternate;
     }
 </style>
-
+<style>
+.test {
+  color: red;
+}
+</style>
   <body>
     <div class="container">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -289,7 +294,7 @@ input:checked + .slider:before {
                             </div>
                             <!-- <div class = 'card-body'> -->
                               <div class="row justify-content-center">
-                                <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' method = 'post' enctype = 'multipart/form-data'>
+                                <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
                                   {% csrf_token %}
                                   <div class = 'row'>
                                     <div class="col-6">
@@ -301,7 +306,8 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <input type = 'text' id = 'name' name = 'name' value = "{{item.name}}">
+                                      <input type = 'text' id = 'name' name = 'name' placeholder = "{{item.name}}">
+                                      <!-- {{ edit_form.name | as_crispy_field }} -->
                                     </div>
                                     <div class="col-6">
                                       <div class="input-group" id = 'photo2'>
@@ -313,6 +319,14 @@ input:checked + .slider:before {
                                     </div>
                                   </div>
                                   <div class = 'row'>
+                                    <div class="col-6">
+                                      <div id = "name_errors_edit{{item.id}}" class="errors">
+                                      </div>
+                                    </div>
+                                    <div class="col-6">
+                                      <div id = "photo_errors_edit{{item.id}}" class="errors">
+                                      </div>
+                                    </div>
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
@@ -325,6 +339,7 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
+                                      <!-- {{ edit_form.course|as_crispy_field }} -->
                                       <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.course}}">
                                       <datalist id = 'options'>
                                         {% for option in selct_options %}
@@ -334,7 +349,19 @@ input:checked + .slider:before {
                                     </div>
 
                                     <div class="col-6">
-                                      <input type = 'number' step = '0.01' id = 'price' name = 'price' value = {{item.price}}>
+                                      <input type = 'number' step = '0.01' id = 'price' name = 'price' placeholder = '{{item.price}}'>
+                                      <!-- {{ edit_form.price|as_crispy_field }} -->
+                                    </div>
+                                  </div>
+                                  <br>
+                                  <div class = 'row'>
+                                    <div class="col-6">
+                                      <div id = "course_errors_edit{{item.id}}" class="errors">
+                                      </div>
+                                    </div>
+                                    <div class="col-6">
+                                      <div id = "price_errors_edit{{item.id}}" class="errors">
+                                      </div>
                                     </div>
                                   </div>
                                   <br>
@@ -342,7 +369,8 @@ input:checked + .slider:before {
                                     <label style="margin-right: 20px;" for = 'description'>{% trans 'Description' %}</label>
                                   </div>
                                   <div class = 'row justify-content-center'>
-                                    <textarea rows = '4' cols = '60' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
+                                    <textarea rows = '6' cols = '60' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
+                                    <!-- {{ edit_form.description|as_crispy_field }} -->
                                   </div>
                                   <br>
                                   <div class="form-group row">
@@ -363,10 +391,10 @@ input:checked + .slider:before {
                                   <div class = 'row justify-content-center'>
                                     <div style="text-align: centerl=;" class = 'row justify-content-center'>
                                       <div class="btn-group mt-2">
-                                          <button type="submit" class="btn btn-primary">{% trans "Update" %}</button>
+                                          <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
                                       </div>
                                       <div class = 'col mt-4'>
-                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/{{menu.id}}/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Item' %}</a>
                                       </div>
                                     </div>
                                   </div>
@@ -472,30 +500,15 @@ $('#add_modal').on('shown.bs.modal', function () {
       scheduled_function = setTimeout(ajax_call, delay_by_in_ms, "/my_items", request_parameters)
   })
 </script>
-<!-- ajax add item js -->
+<!-- ajax create item js -->
 <script type="text/javascript">
   $(document).on('click', '#add_item_submit', function(e) {
     $("#add_item_submit").attr("disabled", true);
-    var formelement = $(this);
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     e.preventDefault();
-    console.log($('#add_item_description').val());
-    // var data = {
-    //     name: $('#add_item_name').val(),
-    //     description: $('#add_item_description').val(),
-    //     course: $('#add_item_course').val(),
-    //     price: $('#add_item_price').val(),
-    //     csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
-    // };
-    var data = $('#create_item_form').serialize();
     var formData = new FormData($('#create_item_form')[0]);
-    var file = $('#inputGroupFile04')[0].files[0];
-    //formData.append('image',file);
-    console.log(file);
-    console.log(data);
-    // data.push({key:'image', value: file});
-
+    formData.append('origin','my_items');
     $.ajax({
         url: 'ajax/ajax_add_item',
         type: "POST",
@@ -516,14 +529,53 @@ $('#add_modal').on('shown.bs.modal', function () {
                     var error_div = $('#' + key + '_errors');
                     error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
                 }
-                var error_msg = $("<span />").text(data.err_msg.name[0]);
-                var name_input = $('#add_item_name');
-                // error_msg.insertAfter(name_input);
-
+                $("#add_item_submit").attr("disabled", false);
             }
         },
     });
  })
 </script>
-
+<!-- ajax edit item js -->
+<script type="text/javascript">
+  $(document).on('click', '.edit_item_submit', function(e) {
+    e.preventDefault();
+    var item_id = $(this).attr("name")
+    console.log("id");
+    console.log(item_id);
+    $("#edit_item_submit" + item_id).attr("disabled", true);
+   //you want to start with emptying error divs and blocking the default behavior:
+   $('.errors').empty();
+    var formData = new FormData($('#edit_item_form' + item_id)[0]);
+    formData.append('origin','my_items');
+    formData.append('item_id',item_id);
+    $.ajax({
+        url: 'ajax/ajax_edit_item',
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (data){
+            if (data.success){
+                console.log("success");
+                alert("Item Updated");
+                $("#edit_item_submit" + item_id).attr("disabled", false);
+            }
+            else if (data.err_code === 'invalid_form'){
+                console.log(data.err_msg);
+                for(var key in data.err_msg){
+                    console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
+                    console.log(key);
+                    var error_div = $('#' + key + '_errors_edit' + item_id);
+                    console.log(error_div);
+                    console.log(data.err_msg[key][0]);
+                    console.log("we trynna append div");
+                    error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
+                    console.log(error_div);
+                }
+                $("#edit_item_submit" + item_id).attr("disabled", false);
+            }
+        },
+    });
+ })
+</script>
 {% endblock %}

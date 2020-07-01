@@ -16,7 +16,7 @@ urlpatterns = [
     path('edit_menu/<int:menu_id>', views.edit_menu),
     path('remove_menu/<int:menu_id>', views.remove_menu),
     path('add_item/<int:menu_id>', views.add_item),
-    path('remove_item/<int:menu_id>/<int:item_id>', views.remove_item),
+    path('remove_item/<int:menu_id>/<str:origin>/<int:item_id>', views.remove_item),
     path('view_item/<int:menu_id>/<int:item_id>', views.view_item),
     path('edit_item/<int:item_id>/<str:origin>/<int:menu_id>', views.edit_item),
     path('my_items',views.my_items, name = 'my_items'),
@@ -27,5 +27,6 @@ urlpatterns = [
     path('edit_addon_item/<int:menu_id>/<int:addon_item_id>', views.edit_addon_item),
     path('add_existing_group/<int:menu_id>/<int:item_id>/<int:addon_group_id>', views.add_existing_addon_group),
     path('sales', views.sales, name = 'sales'),
-    path('ajax/ajax_add_item',views.ajax_add_item, name="ajax_add_item")
+    path('ajax/ajax_add_item',views.ajax_add_item, name="ajax_add_item"),
+    path('ajax/ajax_edit_item',views.ajax_edit_item, name="ajax_edit_item")
 ]

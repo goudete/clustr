@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm
 from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem
@@ -402,19 +402,25 @@ def add_item(request, menu_id):
         return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id))
 
 
-def remove_item(request, menu_id, item_id):
-    if not validate_id_number(request, menu_id):
-        return HttpResponse('you are not authorized to view this')
-    curr_menu = Menu.objects.filter(id = menu_id).first()
-    curr_item = MenuItem.objects.filter(id = item_id).first()
-    #if the method is a get, then it sends them to a confirmation page making sure they want to delete the item
-    if request.method == 'GET':
-        items = MenuItem.objects.filter(menus = curr_menu) #query all the items, show the user so they know that they'll be deleted
-        return render(request, 'restaurant/confirm_remove.html', {'menu':None, 'items': curr_item, 'url_id': curr_menu})
-    #else delete the item
-    else:
-        curr_item.delete()
-        return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+def remove_item(request, menu_id, origin, item_id):
+    if origin == 'edit_menu': #delete request came from edit menu page
+        if not validate_id_number(request, menu_id):
+            return HttpResponse('you are not authorized to view this')
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+        curr_item = MenuItem.objects.filter(id = item_id).first()
+        #if the method is a get, then it sends them to a confirmation page making sure they want to delete the item
+        if request.method == 'GET':
+            items = MenuItem.objects.filter(menus = curr_menu) #query all the items, show the user so they know that they'll be deleted
+            return render(request, 'restaurant/confirm_remove.html', {'menu':None, 'items': curr_item, 'url_id': curr_menu})
+        #else delete the item
+        else:
+            curr_item.delete()
+            return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+    else: #delete request came from my_items page
+        item = MenuItem.objects.get(id=item_id)
+        item.delete()
+        return redirect('/restaurant_admin/my_items')
+
 
 
 def edit_item(request, item_id, origin, menu_id):
@@ -462,6 +468,53 @@ def edit_item(request, item_id, origin, menu_id):
             return redirect('/restaurant_admin/edit_menu/' + str(menu_id))
         elif origin == 'my_items':
             return redirect('/restaurant_admin/my_items')
+
+def ajax_edit_item(request):
+    form = EditMenuItemForm(request.POST, request.FILES)
+    print("request:")
+    print(request.POST)
+    #if form isnt valid we send the errors to the JS script in template
+    if not form.is_valid():
+        print("form was not valid. these are the errors")
+        print(form.errors)
+
+        return JsonResponse({
+            'success': False,
+            'err_code': 'invalid_form',
+            'err_msg': form.errors,
+        })
+
+    #Actions if form is valid ...
+    item = MenuItem.objects.get(id=request.POST['item_id'])
+    #for every field that was filled in, we update the according attribute
+    if len(request.POST['name']) > 0:
+        item.name = request.POST['name']
+    if len(request.POST['course']) > 0:
+        item.course = request.POST['course']
+    if len(request.POST['description']) > 0:
+        item.description = request.POST['description']
+    if len(request.POST['price']) > 0:
+        item.price = request.POST['price']
+    if 'is_in_stock' in request.POST:
+            item.is_in_stock = True
+    else:
+        item.is_in_stock = False
+    photo = request.FILES.get('photo', False)
+    if photo:
+        #save photo to AWS
+        doc = request.FILES['photo'] #get file
+        files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+                                                                    item_number = 'item'+str(item.id))
+        file_storage = FileStorage()
+        mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+        doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+        file_storage.save(doc_path, doc)
+        item.photo_path = doc_path
+    item.save()
+    return JsonResponse({'success':True})
+    print('redirecting')
+    #redirect back to edit menu page
+    return redirect('/restaurant_admin/my_items')
 
 
 def view_item(request, menu_id, item_id):
@@ -538,6 +591,7 @@ def my_items(request):
         for category in categories:
             category_items[category]  = MenuItem.objects.filter(restaurant=restaurant).filter(course = category)
     form = MenuItemForm()
+    edit_form = EditMenuItemForm()
 
     #get all possible categories of menu
     print("categories length")
@@ -554,7 +608,7 @@ def my_items(request):
         data_dict = {"html_from_view": html}
 
         return JsonResponse(data=data_dict, safe=False)
-    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'category_items':category_items})
+    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'category_items':category_items,'edit_form':edit_form})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
@@ -587,11 +641,8 @@ def add_item_no_menu(request):
 
 def ajax_add_item(request):
     form = MenuItemForm(request.POST, request.FILES)
-    print(request.POST['name'])
-    print("form")
-    print(form)
-    print("request Post:")
-    print(request.POST)
+    print("origin:")
+    print(request.POST['origin'])
     #if form isnt valid we send the errors to the JS script in template
     if not form.is_valid():
         print("form was not valid. these are the errors")
@@ -605,6 +656,7 @@ def ajax_add_item(request):
 
     #Actions if form is valid ...
     item = MenuItemForm(request.POST).save(commit = False)
+    print(item)
     item.restaurant = request.user.restaurant
     photo = request.FILES.get('photo', False)
     print("files")
@@ -619,8 +671,13 @@ def ajax_add_item(request):
         doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
         item.photo_path = doc_path
-        item.save()
-    #item.menu = None
+        #item.save()
+    item.save()
+    if request.POST['origin'] == 'edit_menu': #if from edit menu page add to menu
+        print("yp we here")
+        menu = Menu.objects.get(id=request.POST['menu_id'])
+        print(menu)
+        item.menus.add(menu)
     item.save()
     return JsonResponse({'success':True})
     print('redirecting')
