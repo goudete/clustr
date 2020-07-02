@@ -8,11 +8,12 @@
  <meta name="viewport" content="width=device-width, initial-scale=1">
 
  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
  <!-- CoreUI CSS -->
  <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui@3.0.0-rc.0/dist/css/coreui.min.css" crossorigin="anonymous">
  <link rel="stylesheet" href="https://unpkg.com/@coreui/icons@1.0.0/css/all.min.css">
- <title>CLUSTER LLC</title>
+ <title>shift.</title>
 
  <!-- Loading static files -->
  <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -47,7 +48,7 @@
     <div class="c-sidebar c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
       <div class="c-sidebar-brand d-lg-down-none pt-1">
         <a class="navbar-brand" href="/restaurant_admin/my_menus">
-          Logo Here
+          shift.
         </a>
       </div>
 
@@ -68,26 +69,25 @@
 
         <li class="c-sidebar-nav-item">
           <a class="c-sidebar-nav-link" href="/restaurant_admin/sales">
-            <i class="c-sidebar-nav-icon cil-search"></i> {% trans "My Sales" %}
-            <!-- <span class="badge badge-primary">NEW</span> -->
+            <i class="c-sidebar-nav-icon cil-money"></i> {% trans "My Sales" %}
           </a>
         </li>
 
         <li class="c-sidebar-nav-item">
           <a class="c-sidebar-nav-link" href="/restaurant_admin/cashiers">
-            <i class="c-sidebar-nav-icon cil-industry"></i> {% trans "Cashiers" %}
+            <i class="c-sidebar-nav-icon cil-screen-desktop"></i> {% trans "Cashiers" %}
           </a>
         </li>
 
         <li class="c-sidebar-nav-item">
           <a class="c-sidebar-nav-link" href="/restaurant_admin/kitchen">
-            <i class="c-sidebar-nav-icon cil-industry"></i> {% trans "Kitchen Login" %}
+            <i class="c-sidebar-nav-icon cil-album"></i> {% trans "Kitchen Login" %}
           </a>
         </li>
 
         <li class="c-sidebar-nav-item">
           <a class="c-sidebar-nav-link" href="/restaurant_admin/answer_about">
-            <i class="c-sidebar-nav-icon cil-cog"></i> {% trans "My Settings" %}
+            <i class="c-sidebar-nav-icon cil-cog"></i> {% trans "Settings" %}
           </a>
         </li>
 
