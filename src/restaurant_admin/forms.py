@@ -158,3 +158,30 @@ class DatesForm(forms.Form): #form for user inputing start and end date
         self.fields['start_time'].required = True
         self.fields['end_date'].required = True
         self.fields['end_time'].required = True
+
+class EditMenuItemForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditMenuItemForm, self).__init__(*args, **kwargs)
+        self.fields['name'].required = False
+        self.fields['description'].required = False
+        self.fields['course'].required = False
+        self.fields['price'].required = False
+
+        self.fields['name'].widget.attrs.update(id='add_item_name')
+        self.fields['description'].widget.attrs.update(id='add_item_description',rows = '6', cols = '60')
+        self.fields['course'].widget.attrs.update(id='add_item_course')
+        self.fields['price'].widget.attrs.update(id='add_item_price')
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
+
+    class Meta:
+        model = MenuItem
+        fields = ('name', 'description', 'course', 'price')
+        required = ()
+
+    def clean_name(self):
+        name_passed = self.cleaned_data.get("name")
+        if len(MenuItem.objects.filter(name=name_passed))>0:
+            raise forms.ValidationError("You have already created an item with this name")
+        return name_passed
