@@ -1,7 +1,7 @@
 {% extends 'restaurant/base.html' %}
 {% load i18n %}
-{% load static %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block content %}
 {% load widget_tweaks %}
 <html>
@@ -180,18 +180,23 @@ input:checked + .slider:before {
 
                             <div class="row justify-content-center mt-2 mb-2">
                               <div class = 'col'>
-                                {{ item_form.name|as_crispy_field }}
+                                <label for = 'new_item_name'>{%trans 'Name*' %}</label><br>
+                                <input type = 'text' name = 'name' id = 'new_item_name' style = 'width: 450px;' required>
                               </div>
                             </div>
+
                             <div class="row justify-content-center mt-2 mb-2">
                               <div id = "name_errors" class="errors">
                               </div>
                             </div>
+
                             <div class="row justify-content-center mt-2 mb-2">
                               <div class = 'col'>
-                                {{ item_form.description|as_crispy_field }}
+                                <label for = 'new_item_description'>{% trans 'Description' %}</label><br>
+                                <textarea rows = '6' cols = '60' id = 'description' name = 'description' style = 'width: 450px;'></textarea>
                               </div>
                             </div>
+
                             <div class="row justify-content-center mt-2 mb-2">
                               <div id = "description_errors" class="errors">
                               </div>
@@ -199,9 +204,16 @@ input:checked + .slider:before {
 
                             <div class="row justify-content-center mt-2 mb-2">
                               <div class = 'col'>
-                                {{ item_form.course|as_crispy_field }}
+                                <label for = 'new_item_course'>{% trans 'Category*' %}</label><br>
+                                <input id = 'new_item_course' name = 'course' list = 'options' style = 'width: 450px;' required>
+                                <datalist id = 'options'>
+                                  {% for option in selct_options %}
+                                    <option value = "{{option.name}}">{{option.name}}</option>
+                                  {% endfor %}
+                                </datalist>
                               </div>
                             </div>
+
                             <div class="row justify-content-center mt-2 mb-2">
                               <div id = "course_errors" class="errors">
                               </div>
@@ -209,9 +221,11 @@ input:checked + .slider:before {
 
                             <div class="row justify-content-center mt-2 mb-2">
                               <div class = 'col'>
-                                {{ item_form.price|as_crispy_field }}
+                                <label for = 'new_item_price'>{% trans 'Price*' %}</label><br>
+                                <input type = 'number' name = 'price' id = 'new_item_price' step = '0.01' style = 'width: 450px;' required>
                               </div>
                             </div>
+
                             <div class="row justify-content-center mt-2 mb-2">
                               <div id = "price_errors" class="errors">
                               </div>
@@ -228,6 +242,7 @@ input:checked + .slider:before {
                                 </div>
                               </div>
                             </div>
+
                             <div class="row justify-content-center mt-2 mb-2">
                               <div id = "photo_errors" class="errors">
                               </div>
@@ -241,6 +256,7 @@ input:checked + .slider:before {
                                 </div>
                               </div>
                             </div>
+                            
                           </form>
                         </div>
                       <!-- </div> -->
@@ -307,7 +323,7 @@ input:checked + .slider:before {
                                   <div class = 'row'>
                                     <div class="col-6">
                                       <input type = 'text' id = 'name' name = 'name' placeholder = "{{item.name}}">
-                                      <!-- {{ edit_form.name | as_crispy_field }} -->
+
                                     </div>
                                     <div class="col-6">
                                       <div class="input-group" id = 'photo2'>
@@ -339,18 +355,18 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <!-- {{ edit_form.course|as_crispy_field }} -->
-                                      <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.course}}">
+
+                                      <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.category}}">
                                       <datalist id = 'options'>
                                         {% for option in selct_options %}
-                                          <option value = {{option}} {% if option.name == item.course %} selected{% endif %}>
+                                          <option value = "{{option.name}}">{{option.name}}</option>
                                         {% endfor %}
                                       </datalist>
                                     </div>
 
                                     <div class="col-6">
                                       <input type = 'number' step = '0.01' id = 'price' name = 'price' placeholder = '{{item.price}}'>
-                                      <!-- {{ edit_form.price|as_crispy_field }} -->
+
                                     </div>
                                   </div>
                                   <br>
@@ -370,7 +386,7 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row justify-content-center'>
                                     <textarea rows = '6' cols = '60' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
-                                    <!-- {{ edit_form.description|as_crispy_field }} -->
+
                                   </div>
                                   <br>
                                   <div class="form-group row">

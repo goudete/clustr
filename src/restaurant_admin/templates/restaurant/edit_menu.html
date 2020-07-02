@@ -196,7 +196,13 @@ input:checked + .slider:before {
 
                   <div class="row justify-content-center mt-2 mb-2">
                     <div class = 'col'>
-                      {{ item_form.course|as_crispy_field }}
+                      <label for = 'course'>{% trans 'Category*' %}</label><br>
+                      <input id = 'course' name = 'category' list = 'options' placeholder = "{{item.category}}" style = 'width: 450px;' required>
+                      <datalist id = 'options'>
+                        {% for option in selct_options %}
+                          <option value = "{{option.name}}">
+                        {% endfor %}
+                      </datalist>
                     </div>
                   </div>
                   <div class="row justify-content-center mt-2 mb-2">
@@ -342,10 +348,10 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.course}}">
+                                      <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.category}}">
                                       <datalist id = 'options'>
                                         {% for option in selct_options %}
-                                          <option value = {{option}} {% if option.name == item.course %} selected{% endif %}>
+                                          <option value = "{{option.name}}">
                                         {% endfor %}
                                       </datalist>
                                     </div>

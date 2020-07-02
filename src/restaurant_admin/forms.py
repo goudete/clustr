@@ -73,17 +73,17 @@ class MenuItemForm(forms.ModelForm):
         super(MenuItemForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
         self.fields['description'].required = False
-        self.fields['course'].required = True
+        self.fields['category'].required = True
         self.fields['price'].required = True
         #sizing stuff
         self.fields['name'].widget.attrs.update(style='width: 450px;',id='add_item_name')
         self.fields['description'].widget.attrs.update(style='width: 450px;',id='add_item_description')
-        self.fields['course'].widget.attrs.update(style='width: 450px;',id='add_item_course')
+        self.fields['category'].widget.attrs.update(style='width: 450px;',id='add_item_course')
         self.fields['price'].widget.attrs.update(style='width: 450px;',id='add_item_price')
 
     class Meta:
         model = MenuItem
-        fields = ('name', 'description', 'course', 'price')
+        fields = ('name', 'description', 'category', 'price')
 
     def clean_name(self):
         name_passed = self.cleaned_data.get("name")
@@ -128,12 +128,12 @@ class MenuItemFormItemPage(MenuItemForm):
         super(MenuItemForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
         self.fields['description'].required = True
-        self.fields['course'].required = True
+        self.fields['category'].required = True
         self.fields['price'].required = True
         #sizing stuff
         self.fields['name'].widget.attrs.update(style='width: 450px;')
         self.fields['description'].widget.attrs.update(style='width: 450px;')
-        self.fields['course'].widget.attrs.update(style='width: 450px;')
+        self.fields['category'].widget.attrs.update(style='width: 450px;')
         self.fields['price'].widget.attrs.update(style='width: 450px;')
 
 class DatesForm(forms.Form): #form for user inputing start and end date
@@ -164,12 +164,12 @@ class EditMenuItemForm(forms.ModelForm):
         super(EditMenuItemForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = False
         self.fields['description'].required = False
-        self.fields['course'].required = False
+        self.fields['category'].required = False
         self.fields['price'].required = False
 
         self.fields['name'].widget.attrs.update(id='add_item_name')
         self.fields['description'].widget.attrs.update(id='add_item_description',rows = '6', cols = '60')
-        self.fields['course'].widget.attrs.update(id='add_item_course')
+        self.fields['category'].widget.attrs.update(id='add_item_course')
         self.fields['price'].widget.attrs.update(id='add_item_price')
         self.helper = FormHelper()
         self.helper.form_show_labels = False
@@ -177,7 +177,7 @@ class EditMenuItemForm(forms.ModelForm):
 
     class Meta:
         model = MenuItem
-        fields = ('name', 'description', 'course', 'price')
+        fields = ('name', 'description', 'category', 'price')
         required = ()
 
     def clean_name(self):

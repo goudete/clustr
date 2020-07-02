@@ -157,6 +157,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
             order = form.save(commit = False)
             order.cart = curr_cart
             order.item = curr_item
+            order.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
             order.save()
             # if addonitems, save addonitems to the modelitemcounter model and get addon items price
             addon_price = 0

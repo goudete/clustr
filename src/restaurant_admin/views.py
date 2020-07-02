@@ -325,7 +325,8 @@ def edit_menu(request, menu_id):
         restaurant = Restaurant.objects.filter(user = request.user).first()
         # print('items queried')
         item_form = MenuItemForm()
-        selct_options = SelectOption.objects.filter(restaurant = restaurant)
+        selct_options = SelectOption.objects.filter(restaurant = curr_menu.restaurant)
+        print(selct_options)
         existing_items = MenuItem.objects.filter(restaurant = restaurant)
         alphabetically_sorted = sorted(existing_items, key = lambda x: x.name)
         all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
@@ -381,8 +382,9 @@ def add_item(request, menu_id):
             item.menus.add(Menu.objects.filter(id = menu_id).first())
             item.save()
             #check for new category
-            if new_category(request, item.course):
-                new_cat = SelectOption(name = item.course, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=Menu.objects.filter(id = menu_id).first())
+            if new_category(request, item.category):
+                print('creating new category with name ', item.category)
+                new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=Menu.objects.filter(id = menu_id).first())
                 new_cat.save()
             #check if they uploaded new photo
             photo = request.FILES.get('photo', False)
@@ -439,8 +441,8 @@ def edit_item(request, item_id, origin, menu_id):
         if request.POST['description'] != "":
             item.description = request.POST['description']
         #check if they put anything for category
-        if request.POST['course'] != "":
-            item.course = request.POST['course']
+        if request.POST['category'] != "":
+            item.category = request.POST['category']
         item.price = request.POST['price']
 
         #code to update is_in_stock status
@@ -489,8 +491,8 @@ def ajax_edit_item(request):
     #for every field that was filled in, we update the according attribute
     if len(request.POST['name']) > 0:
         item.name = request.POST['name']
-    if len(request.POST['course']) > 0:
-        item.course = request.POST['course']
+    if len(request.POST['category']) > 0:
+        item.category = request.POST['category']
     if len(request.POST['description']) > 0:
         item.description = request.POST['description']
     if len(request.POST['price']) > 0:
@@ -579,24 +581,24 @@ def kitchen_no(request):
         return render(request, 'restaurant/kitchen.html', {'restaurant':curr_rest})
 
 def my_items(request):
-    restaurant = Restaurant.objects.get(user = request.user)
+    curr_rest = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
-    categories = MenuItem.objects.filter(restaurant=restaurant).values_list('course', flat=True).distinct()
+    categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     if url_parameter:
         print("we here")
-        for category in categories:
-            category_items[category]  = MenuItem.objects.filter(restaurant=restaurant).filter(course = category).filter(name__icontains=url_parameter)
+        for cat in categories:
+            category_items[cat]  = MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat).filter(name__icontains=url_parameter)
     else:
-        for category in categories:
-            category_items[category]  = MenuItem.objects.filter(restaurant=restaurant).filter(course = category)
+        for cat in categories:
+            category_items[cat]  = MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat)
     form = MenuItemForm()
-    edit_form = EditMenuItemForm()
+    # edit_form = EditMenuItemForm()
 
     #get all possible categories of menu
-    print("categories length")
-    print(len(categories))
-    print(category_items)
+    # print("categories length")
+    # print(len(categories))
+    # print(category_items)
 
     if request.is_ajax(): #this is for search
         print("ajax")
@@ -608,7 +610,13 @@ def my_items(request):
         data_dict = {"html_from_view": html}
 
         return JsonResponse(data=data_dict, safe=False)
-    return render(request, 'restaurant/my_items.html', {'menus': [], 'item_form': form, 'me': restaurant,'category_items':category_items,'edit_form':edit_form})
+    selct_options = SelectOption.objects.filter(restaurant = curr_rest)
+    print(selct_options)
+
+    # 'item_form': form
+    # 'edit_form':edit_form
+    # 'menus': []
+    return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items, 'selct_options':selct_options, 'item_form': form})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
@@ -679,6 +687,12 @@ def ajax_add_item(request):
         print(menu)
         item.menus.add(menu)
     item.save()
+    #check for new category
+    if new_category(request, item.category):
+        print('creating new category with name ', item.category)
+        new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=Menu.objects.filter(id = request.POST['menu_id']).first())
+        new_cat.save()
+
     return JsonResponse({'success':True})
     print('redirecting')
     #redirect back to edit menu page

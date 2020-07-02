@@ -216,7 +216,7 @@
             <div id = 'menu_container' class = 'row justify-content-center mt-5'>
 
                 {% for menu in menus %}
-                <div class = 'card mr-2 mt-2'>
+                <div class = 'card mr-2 mt-2' style = 'width: 26rem;'>
                   <div class = 'card-body'>
 
                     <div class = 'row justify-content-center mb-2'>
@@ -227,7 +227,11 @@
                         {% if menu.photo_path is not none %}
                           <img src = "{% static menu.photo_path %}" border=3 height=400 width=400>
                         {% else %}
-                          <h5>{% trans 'No Photo' %}</h5>
+                        <div style = 'width: 25rem; height: 25rem;'>
+                          <div class = 'row justify-content-center mt-5'>
+                            <h5>{% trans 'No Photo' %}</h5>
+                          </div>
+                        </div>
                         {% endif %}
                     </div>
 

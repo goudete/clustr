@@ -29,6 +29,7 @@ class Cart(models.Model):
 it has a MenuItem, quantity of that MenuItem, custom instructions for order
 and an associated Cart"""
 class MenuItemCounter(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE)
     item = models.ForeignKey(MenuItem, on_delete = models.CASCADE)
     quantity = models.PositiveIntegerField(default = 1)
     cart = models.ForeignKey(Cart, on_delete = models.CASCADE)
