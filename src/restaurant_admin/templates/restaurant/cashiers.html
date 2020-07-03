@@ -54,30 +54,6 @@
 
                     <div class = 'row justify-content-center mt-2'>
                       <div class = 'col'>
-                        {{user_form.username|as_crispy_field}}
-                      </div>
-                    </div>
-
-                    <div class = 'row justify-content-center mt-2'>
-                      <div class = 'col'>
-                        {{user_form.email|as_crispy_field}}
-                      </div>
-                    </div>
-
-                    <div class = 'row justify-content-center mt-2'>
-                      <div class = 'col'>
-                        {{user_form.password1|as_crispy_field}}
-                      </div>
-                    </div>
-
-                    <div class = 'row justify-content-center mt-2'>
-                      <div class = 'col'>
-                        {{user_form.password2|as_crispy_field}}
-                      </div>
-                    </div>
-
-                    <div class = 'row justify-content-center mt-2'>
-                      <div class = 'col'>
                         {{form.name|as_crispy_field}}
                       </div>
                     </div>
@@ -98,6 +74,12 @@
                   </form>
                 </div>
               </div>
+            </div>
+
+            <div class = 'row justify-content-center'>
+              <a href = '/cashier/cashier_login/{{me.id}}'>
+                <h5>{% trans 'Cashier Login' %}</h5>
+              </a>
             </div>
           <!-- </div> -->
 

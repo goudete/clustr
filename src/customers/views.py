@@ -49,7 +49,7 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         categories = SelectOption.objects.filter(menu = curr_menu)
         category_items = {}
         for category in categories:
-            category_items[category.name]  = MenuItem.objects.filter(course = category.name)
+            category_items[category.name]  = MenuItem.objects.filter(category = category.name)
 
         return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
     else:
