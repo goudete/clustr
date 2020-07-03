@@ -7,10 +7,11 @@
 
   <head>
     <style>
-      #xOut {
+      /* #xOut {
         float: left;
         margin-top: 0px;
-      }
+      } */
+
     </style>
   </head>
 
@@ -23,36 +24,37 @@
 
           <!-- the alert card if they havent picked to handle payments or not -->
           {% if me.answered_pay_question == False %}
-            <div class = 'row justify-content-center mb-2'>
-              <div class="card text-white bg-warning mb-3" style = 'width: 20rem;'>
+            <div class = 'row justify-content-center mt-4'>
+              <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
                 <div class = 'card-body'>
-                  <div class = 'row justify-content-center'>
-                    <div class = 'col'>
-                      <h5>{% trans 'Would You Like Us to Handle the Payment Process for You?' %}</h5>
-                    </div>
+
+                  <div class="card-title">
+                    <h4>{% trans 'Would You Like to Accept Payments?' %}</h4>
                   </div>
-                  <div class = 'row justify-content-center mt-2'>
+
+                  <div class = 'row justify-content-center mt-5'>
                     <div class = 'col'>
                       <form action = '/restaurant_admin/answer_question' method = 'post'>
                         {% csrf_token %}
-                        <div class = 'row'>
-                          <div class = 'col'>
-                            <input type="radio" id="no" name="answer" value="no">
-                            <label for="no">{% trans 'No' %}</label><br>
-                          </div>
-                          <div class = 'col ml-3'>
-                            <input type="radio" id="yes" name="answer" value="yes">
-                            <label for="yes">{% trans 'Yes' %}</label><br>
-                          </div>
+
+                        <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" id="no" name="answer" value="no" class="custom-control-input">
+                          <label class="custom-control-label" for="no">{% trans 'No' %}</label>
                         </div>
 
-                        <div class = 'row justify-content-center'>
-                          <div class = 'col'>
-                            <button class = 'rounded' type = 'submit'>{% trans 'Submit' %}</button>
-                          </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" id="yes" name="answer" value="yes" class="custom-control-input">
+                          <label class="custom-control-label" for="yes">{% trans 'Yes' %}</label>
                         </div>
+
+                        <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
 
                       </form>
+
+                      <hr>
+
+                      <p class="card-text">{% trans "We charge a fixed fee and a percentage of the transaction each time you accept a credit or debit card payment (3.6% + 3 MXN). The price is the same for all cards. There’s no additional fee for international cards or failed charges. We pay out on a rolling daily basis to the account you indicate." %}</p>
+                      <a href="https://stripe.com/es-mx/pricing" class="card-link">{% trans "More Information" %}</a>
                     </div>
                   </div>
                 </div>
@@ -62,73 +64,69 @@
 
           <!-- the alert card if they havent put their logo and about info -->
           {% if me.info_input == False %}
-            <div class = 'row justify-content-center mb-2'>
-              <div class="card mb-3" style = 'width: 30rem;'>
-                <div class = 'card-body'>
-                  <div class = 'row justify-content-center'>
-                    <div class = 'col'>
-                      <h5>{% trans 'Tell Us About Your Restaurant' %}</h5>
-                    </div>
+          <div class = 'row justify-content-center mb-4 mt-4'>
+            <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
+              <div class="card-body">
+                <div class = 'row'>
+                  <div class = 'col'>
+                    <h4>{% trans 'Tell Us About Your Restaurant' %}</h4>
                   </div>
-                  <div class = 'row justify-content-center'>
-                    <div class = 'col'>
-                      <h7>{% trans 'this information will help your customers understand your vision' %}</h7>
-                    </div>
-                  </div>
-                  <div class = 'row justify-content-center mt-3'>
-                    <div class = 'col'>
-                      <form action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
-                        {% csrf_token %}
-                        <div class = 'row justify-content-center'>
-                          <b><label for="tagline">{% trans 'Your Menu Tagline' %}</label></b>
-                        </div>
-                        <div class = 'row justify-content-center'>
-                          <input type = 'text' id = 'tagline' name = 'tagline' placeholder = "{% trans 'a short description ....' %}">
-                        </div>
+                </div>
 
-                        <div class = 'row justify-content-center mt-3'>
-                          <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
-                        </div>
-                        <div class = 'row justify-content-center'>
-                          <textarea rows = '4' cols = '23' id = 'about' name = 'about' placeholder = "{% trans 'We specialize in ....' %}"></textarea>
-                        </div>
+                <div class = 'row justify-content-center mt-3'>
+                  <div class = 'col'>
+                    <form action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
+                      {% csrf_token %}
 
-                        <div class = 'row justify-content-center mt-3'>
+                      <div class="form-group">
+                        <b><label for="tagline">{% trans 'Your Menu Tagline' %}</label></b>
+                        <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
+                        <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your Restaurant name to the customer" %}</small>
+                      </div>
+
+                      <div class="form-group">
+                        <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
+                        <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
+                        <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
+                      </div>
+
+                      <div class = 'row mt-3'>
+                        <div class="col">
                           <b><label for = 'dine-in1'>{% trans 'Do You Currently Offer Dine In?' %}</label></b>
                         </div>
-                        <div class = 'row justify-content-center'>
-                          <div class = 'col-2'>
-                            <label for = 'dine-in1'>{% trans 'No' %}</label>
-                            <input type = 'radio' name = 'dine-in' id = 'dine-in1' value = 'no' checked>
-                          </div>
-                          <div class = 'col-2'>
-                            <label for = 'dine-in2'>{% trans 'Yes' %}</label>
-                            <input type = 'radio' name = 'dine-in' id = 'dine-in2' value = 'yes'>
-                          </div>
-                        </div>
+                      </div>
 
-                        <div class = 'row justify-content-center mt-3'>
+                      <div class="form-check">
+                        <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in1' value = 'no' {% if not me.dine_in %}checked{% endif %}>
+                        <label for = 'dine-in1'>{% trans 'No' %}</label>
+                      </div>
+
+                      <div class="form-check">
+                        <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in2' value = 'yes' {% if me.dine_in %}checked{% endif %}>
+                        <label for = 'dine-in2'>{% trans 'Yes' %}</label>
+                      </div>
+
+                      <div class = 'row mt-3'>
+                        <div class="col">
                           <b><label for = 'inputGroupFile04'>{% trans 'Restaurant Logo' %}</label></b>
                         </div>
-                        <div class = 'row justify-content-center'>
-                          <div class="input-group">
-                            <div class="custom-file">
-                              <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                              <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
-                            </div>
+                      </div>
+
+                        <div class="input-group">
+                          <div class="custom-file">
+                            <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                            <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
                           </div>
                         </div>
 
-                        <div class = 'row justify-content-center mt-3'>
-                          <button class = 'rounded' type = 'submit'>{% trans 'Submit' %}</button>
-                        </div>
+                      <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
 
-                      </form>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
           {% endif %}
 
             <div class = 'row justify-content-center mb-2'>

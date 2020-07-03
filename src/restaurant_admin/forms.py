@@ -13,10 +13,10 @@ class UserForm(UserCreationForm):
         super(UserForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
         #input sizing
-        self.fields['username'].widget.attrs.update(style='width: 200px;')
-        self.fields['email'].widget.attrs.update(style='width: 200px;')
-        self.fields['password1'].widget.attrs.update(style='width: 200px;')
-        self.fields['password2'].widget.attrs.update(style='width: 200px;')
+        # self.fields['username'].widget.attrs.update(style='width: 200px;')
+        # self.fields['email'].widget.attrs.update(style='width: 200px;')
+        # self.fields['password1'].widget.attrs.update(style='width: 200px;')
+        # self.fields['password2'].widget.attrs.update(style='width: 200px;')
 
 
     def clean_email(self):
@@ -45,7 +45,7 @@ class RestaurantForm(forms.ModelForm):
         super(RestaurantForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
         #stuff about input sizes
-        self.fields['name'].widget.attrs.update(style='width: 200px;')
+        # self.fields['name'].widget.attrs.update(style='width: 200px;')
 
     class Meta:
         model = Restaurant
