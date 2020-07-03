@@ -537,29 +537,20 @@ def view_item(request, menu_id, item_id):
 def register_cashier(request):
     #if method is a post, then the user submitted a registration from
     if request.method == 'POST':
-        form = UserForm(request.POST)
+        # form = UserForm(request.POST)
         cashier_form = CashierForm(request.POST)
-        if form.is_valid() and cashier_form.is_valid():
-            new_user = form.save()
+        if cashier_form.login_number(request.POST['login_number'], Restaurant.objects.filter(user = request.user).first().id):
             cashier = cashier_form.save(commit=False)
-            cashier.user = new_user
             cashier.restaurant = Restaurant.objects.filter(user = request.user).first()
             cashier.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            email = form.cleaned_data.get('email')
-            new_user = authenticate(request, username=username, password=password)
-            if new_user is not None:
-                print('success')
             return redirect('/restaurant_admin/cashiers')
-        context = {'form' : cashier_form, 'user_form' : form, 'cashiers': CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())}
+        context = {'form' : cashier_form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())}
         return render(request, 'restaurant/cashiers.html', context)
     #if method is get, then user is filling out form
     else:
         form = CashierForm()
-        user_form = UserForm()
         cashiers = CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
-        context = {'form' : form, 'user_form' : user_form, 'cashiers': cashiers}
+        context = {'form' : form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': cashiers}
         return render(request, 'restaurant/cashiers.html', context)
 
 

@@ -18,17 +18,15 @@ import datetime
 from django.template.loader import get_template, render_to_string
 
 # Create your views here.
-def baseView(request):
-    backend = PasswordlessAuthBackend()
-    user = backend.get_user(request.user.id)
-    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
-    return render(request,'base2.html',{'name':user.cashierprofile.name,
+def baseView(request, log_no):
+    backend = CashierProfile.objects.get(id = log_no)
+    logo_photo_path = backend.restaurant.photo_path
+    return render(request,'base2.html',{'cashier':backend,
                                         'path':logo_photo_path})
 
-def cashPaymentView(request):
-    backend = PasswordlessAuthBackend()
-    user = backend.get_user(request.user.id)
-    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
+def cashPaymentView(request, log_no):
+    backend = CashierProfile.objects.get(id = log_no)
+    logo_photo_path = backend.restaurant.photo_path
     print("we in the wrong view")
     if request.method == "POST":
         form = SubmitOrderCode(request.POST)
@@ -38,13 +36,13 @@ def cashPaymentView(request):
             print(order_code)
             curr_cart = Cart.objects.filter(cash_code=order_code).first()
             item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
-            backend = PasswordlessAuthBackend()
-            user = backend.get_user(request.user.id)
-            restaurant = user.cashierprofile.restaurant
+            # backend = PasswordlessAuthBackend()
+            # user = backend.get_user(request.user.id)
+            restaurant = backend.restaurant
             items = MenuItem.objects.filter(restaurant=restaurant)
             alphabetically_sorted = sorted(items, key = lambda x: x.name)
             context = {'cart':curr_cart,'item_counters':item_counters, 'cash_code':order_code,'items':alphabetically_sorted,
-                       'name': user.cashierprofile.name,'path':logo_photo_path}
+                       'name': backend.name,'path':logo_photo_path, 'cashier':backend}
             return render(request,'review_order2.html',context)
         else:
             print("here")
@@ -52,7 +50,7 @@ def cashPaymentView(request):
     form = SubmitOrderCode()
     return render(request,'cash_payment.html',{'form':form})
 
-def reviewOrderView(request):
+def reviewOrderView(request, log_no):
     if request.method == "POST":
         jdp = json.dumps(request.POST) #get request into json form
         jsn = json.loads(jdp)
@@ -63,7 +61,9 @@ def reviewOrderView(request):
             curr_cart = Cart.objects.filter(cash_code=cash_code).first()
 
             current_date = datetime.date.today()
-            logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(request.user.cashierprofile.restaurant.id))
+            print(log_no)
+            cashier = CashierProfile.objects.get(id = log_no)
+            logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(cashier.restaurant.id))
             item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
 
             email = curr_cart.email
@@ -72,7 +72,7 @@ def reviewOrderView(request):
             html_template = get_template("emails/receipt/receipt.html").render({
                                                         'date':current_date,
                                                         'receipt_number':curr_cart.id,
-                                                        'path':request.user.cashierprofile.restaurant.photo_path,
+                                                        'path':cashier.restaurant.photo_path,
                                                         'order_id':curr_cart.id,
                                                         'item_counters': item_counters,
                                                         'cart': curr_cart
@@ -82,25 +82,24 @@ def reviewOrderView(request):
 
             curr_cart.is_paid = True
             curr_cart.save()
-            return HttpResponseRedirect('/cashier/base')
+            return HttpResponseRedirect('/cashier/base/{log}'.format(log = log_no))
         elif "cancel_order" in request.POST: #cashier cacelled order, we delete order object
             curr_cart = Cart.objects.filter(cash_code=cash_code).first()
             curr_cart.is_cancelled = True
             curr_cart.save()
-            return HttpResponseRedirect('/cashier/base')
-    return render(request,'review_order2.html')
+            return HttpResponseRedirect('/cashier/base/{log}'.format(log = log_no))
+    return render(request,'review_order2.html', {'cashier': CashierProfile.objects.get(id = log_no)})
 
-def orderHistoryView(request):
-    backend = PasswordlessAuthBackend()
-    user = backend.get_user(request.user.id)
-    logo_photo_path = request.user.cashierprofile.restaurant.photo_path
+def orderHistoryView(request, log_no):
+    backend = CashierProfile.objects.get(id = log_no)
+    logo_photo_path = backend.restaurant.photo_path
 
-    carts = Cart.objects.filter(restaurant = request.user.cashierprofile.restaurant)
+    carts = Cart.objects.filter(restaurant = backend.restaurant)
     return render(request,'order_history.html',{'carts':carts,
                                                 'path':logo_photo_path,
-                                                'name':user.cashierprofile.name})
+                                                'name':backend.name})
 
-def loginCashier(request):
+def loginCashier(request, rest_id):
     form = CashierLoginForm
     if request.method == "POST":
         form = CashierLoginForm(request.POST)
@@ -108,17 +107,19 @@ def loginCashier(request):
             cd = form.cleaned_data
             cashier_code = cd['cashier_code']
             backend = PasswordlessAuthBackend()
-            cashier = backend.authenticate(request,login_number=cashier_code)
-            login(request,cashier.user,backend='cashier.auth_backend.PasswordlessAuthBackend')
-            print(request.user.is_authenticated)
+            cashier = backend.authenticate(request, rest_id, cashier_code)
+            if cashier == None:
+                return render(request,'cashier_login.html',{'form': CashierLoginForm})
+            # login(request,cashier.user,backend='cashier.auth_backend.PasswordlessAuthBackend')
+            # print(request.user.is_authenticated)
             #return render(request,'base2.html',{'name':cashier.name})
-            return HttpResponseRedirect('/cashier/base')
+            return HttpResponseRedirect('/cashier/base/{id}'.format(id = cashier.id))
     return render(request,'cashier_login.html',{'form':form})
 
-def ajax_change_order_quantity(request):
-    backend = PasswordlessAuthBackend()
-    user = backend.get_user(request.user.id)
-    restaurant = user.cashierprofile.restaurant
+def ajax_change_order_quantity(request, log_no):
+    backend = CashierProfile.objects.get(id = log_no)
+    # user = backend.get_user(request.user.id)
+    restaurant = backend.restaurant
     item_name = request.GET.get('item_name', None).strip(' ')
     item_counter_id = request.GET.get('item_counter_id', None)
     cash_code = request.GET.get('cash_code', None)
@@ -151,17 +152,17 @@ def ajax_change_order_quantity(request):
                          'new_total': curr_cart.total,'new_total_with_tip':curr_cart.total_with_tip,
                          'tip_amount':round(curr_cart.total*curr_cart.tip,2)})
 
-def ajax_add_item(request):
-    backend = PasswordlessAuthBackend()
-    user = backend.get_user(request.user.id)
-    restaurant = user.cashierprofile.restaurant
+def ajax_add_item(request, log_no):
+    backend = CashierProfile.objects.get(id = log_no)
+    # user = backend.get_user(request.user.id)
+    restaurant = backend.restaurant
     item_name = request.GET.get('item_name', None).strip(' ')
     cash_code = request.GET.get('cash_code', None)
     number_items = int(request.GET.get('number_items', None))
     curr_cart = Cart.objects.filter(restaurant=restaurant).filter(cash_code=cash_code).first()
-    restaurant = restaurant = request.user.cashierprofile.restaurant
+    # restaurant = restaurant = request.user.cashierprofile.restaurant
     menu_item = MenuItem.objects.filter(restaurant=restaurant).filter(name=item_name).first()
-    new_item_counter = MenuItemCounter(item=menu_item, quantity=number_items,cart=curr_cart,
+    new_item_counter = MenuItemCounter(item=menu_item, restaurant = restaurant, quantity=number_items,cart=curr_cart,
                                        price = menu_item.price*number_items)
     new_item_counter.save()
     curr_cart.total += new_item_counter.price
@@ -173,5 +174,5 @@ def ajax_add_item(request):
     return JsonResponse(data)
 
 def cashier_logout(request):
-    logout(request)
+    # logout(request)
     return redirect('/cashier/cashier_login') #return to login page
