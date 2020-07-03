@@ -204,8 +204,8 @@ input:checked + .slider:before {
 
                             <div class="row justify-content-center mt-2 mb-2">
                               <div class = 'col'>
-                                <label for = 'new_item_course'>{% trans 'Category*' %}</label><br>
-                                <input id = 'new_item_course' name = 'course' list = 'options' style = 'width: 450px;' required>
+                                <label for = 'new_item_category'>{% trans 'Category*' %}</label><br>
+                                <input id = 'new_item_category' name = 'category' list = 'options' style = 'width: 450px;' required>
                                 <datalist id = 'options'>
                                   {% for option in selct_options %}
                                     <option value = "{{option.name}}">{{option.name}}</option>
@@ -215,7 +215,7 @@ input:checked + .slider:before {
                             </div>
 
                             <div class="row justify-content-center mt-2 mb-2">
-                              <div id = "course_errors" class="errors">
+                              <div id = "category_errors" class="errors">
                               </div>
                             </div>
 
@@ -256,7 +256,7 @@ input:checked + .slider:before {
                                 </div>
                               </div>
                             </div>
-                            
+
                           </form>
                         </div>
                       <!-- </div> -->
@@ -346,7 +346,7 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <label for='course'>{% trans 'Category' %}</label>
+                                      <label for='category'>{% trans 'Category' %}</label>
                                     </div>
 
                                     <div class="col-6">
@@ -356,7 +356,7 @@ input:checked + .slider:before {
                                   <div class = 'row'>
                                     <div class="col-6">
 
-                                      <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.category}}">
+                                      <input id = 'category' name = 'category' list = 'options' placeholder = "{{item.category}}">
                                       <datalist id = 'options'>
                                         {% for option in selct_options %}
                                           <option value = "{{option.name}}">{{option.name}}</option>
@@ -372,7 +372,7 @@ input:checked + .slider:before {
                                   <br>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <div id = "course_errors_edit{{item.id}}" class="errors">
+                                      <div id = "category_errors_edit{{item.id}}" class="errors">
                                       </div>
                                     </div>
                                     <div class="col-6">

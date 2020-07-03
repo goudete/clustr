@@ -416,7 +416,7 @@ def remove_item(request, menu_id, origin, item_id):
             return render(request, 'restaurant/confirm_remove.html', {'menu':None, 'items': curr_item, 'url_id': curr_menu})
         #else delete the item
         else:
-            curr_item.delete()
+            curr_item.menus.remove(curr_menu)
             return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
     else: #delete request came from my_items page
         item = MenuItem.objects.get(id=item_id)
@@ -690,7 +690,7 @@ def ajax_add_item(request):
     #check for new category
     if new_category(request, item.category):
         print('creating new category with name ', item.category)
-        new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=Menu.objects.filter(id = request.POST['menu_id']).first())
+        new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
         new_cat.save()
 
     return JsonResponse({'success':True})
