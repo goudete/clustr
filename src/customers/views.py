@@ -46,10 +46,14 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
         #get all possible categories of menu
-        categories = SelectOption.objects.filter(menu = curr_menu)
+        categories = SelectOption.objects.filter(menus = curr_menu)
+        print("len categories:")
+        print(len(categories))
         category_items = {}
         for category in categories:
             category_items[category.name]  = MenuItem.objects.filter(category = category.name)
+        print("len category_items:")
+        print(len(category_items))
 
         return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
     else:
