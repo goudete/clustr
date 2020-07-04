@@ -654,14 +654,16 @@ $('#add_item').on('shown.bs.modal', function () {
   $(document).on('click', '.edit_item_submit', function(e) {
     e.preventDefault();
     var item_id = $(this).attr("name")
-    console.log("id");
-    console.log(item_id);
+    var menu_id = $('#menu_id').val();
+    console.log("menu id:");
+    console.log(menu_id);
     $("#edit_item_submit" + item_id).attr("disabled", true);
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     var formData = new FormData($('#edit_item_form' + item_id)[0]);
     formData.append('origin','edit_menu');
     formData.append('item_id',item_id);
+    formData.append('menu_id',menu_id);
     $.ajax({
         url: '/restaurant_admin/ajax/ajax_edit_item',
         type: "POST",

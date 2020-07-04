@@ -513,10 +513,19 @@ def ajax_edit_item(request):
         file_storage.save(doc_path, doc)
         item.photo_path = doc_path
     item.save()
+
+    if new_category(request, item.category):
+        if request.POST['origin'] == 'my_items':
+            new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat.save()
+        elif request.POST['origin'] == 'edit_menu':
+            new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat.save()
+            new_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
+            new_cat.save()
+    #redirect back to edit menu page
     return JsonResponse({'success':True})
     print('redirecting')
-    #redirect back to edit menu page
-    return redirect('/restaurant_admin/my_items')
 
 
 def view_item(request, menu_id, item_id):
@@ -680,9 +689,14 @@ def ajax_add_item(request):
     item.save()
     #check for new category
     if new_category(request, item.category):
-        print('creating new category with name ', item.category)
-        new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
-        new_cat.save()
+        if request.POST['origin'] == 'my_items':
+            new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat.save()
+        elif request.POST['origin'] == 'edit_menu':
+            new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat.save()
+            new_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
+            new_cat.save()
 
     return JsonResponse({'success':True})
     print('redirecting')
