@@ -23,7 +23,8 @@ import png
 from django.template.loader import render_to_string
 import json
 from datetime import datetime
-import heapq
+from django.utils import timezone
+
 
 #  your views here.
 
@@ -792,8 +793,11 @@ def sales(request):
         if form.is_valid():
             """This block of code gets data like the total sales, total cash/card sales etc."""
             cd = form.cleaned_data
-            start_datetime_str = datetime.strptime(cd['start_date'] + cd['start_time'],
-                                "%Y-%m-%d%I:00 %p")
+            print(cd['start_date'] + cd['start_time'])
+            start_datetime_str = datetime.strptime(cd['start_date'] + " " + cd['start_time'],
+                                "%Y-%m-%d %I:00 %p")
+            print(start_datetime_str)
+            start_datetime_str = start_datetime_str.replace(tzinfo = timezone.utc)
             end_datetime_str = datetime.strptime(cd['end_date'] + cd['end_time'],
                                 "%Y-%m-%d%I:00 %p")
             carts = Cart.objects.filter(restaurant=restaurant).filter(created_at__range=(start_datetime_str,end_datetime_str))
