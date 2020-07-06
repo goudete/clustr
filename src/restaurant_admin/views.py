@@ -167,15 +167,17 @@ def answer_about(request):
     #check request method
     if request.method == 'POST':
         #check for a logo
-        logo = request.FILES.get('logo', False)
-        if logo:
-            doc = request.FILES['logo'] #get file
-            files_dir = '{user}/photos/logo/'.format(user = "R" + str(request.user.id))
-            file_storage = FileStorage()
-            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "logo."+mime) #set path for file to be stored in
-            file_storage.save(doc_path, doc)
-            curr_rest.photo_path = doc_path
+
+        # logo = request.FILES.get('logo', False)
+        # if logo:
+        #     doc = request.FILES['logo'] #get file
+        #     files_dir = '{user}/photos/logo/'.format(user = "R" + str(request.user.id))
+        #     file_storage = FileStorage()
+        #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+        #     doc_path = os.path.join(files_dir, "logo."+mime) #set path for file to be stored in
+        #     file_storage.save(doc_path, doc)
+        #     curr_rest.photo_path = doc_path
+
         #check for a tagline
         if request.POST['tagline'] != "":
             curr_rest.info = request.POST['tagline']
@@ -213,23 +215,25 @@ def add_menu(request):
     #if the method is a post, then they have submitted a new menu
     else:
         menu = MenuForm(request.POST)
-        photo = request.FILES.get('photo', False)
-        #if file and name included
-        if menu.is_valid() and photo:
-            new_menu = menu.save(commit = False)
-            new_menu.restaurant = Restaurant.objects.get(user = request.user)
-            new_menu.save()
-            #save photo to AWS
-            doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
-            file_storage = FileStorage()
-            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-            file_storage.save(doc_path, doc)
-            new_menu.photo_path = doc_path
-            new_menu.save()
+
+        # photo = request.FILES.get('photo', False)
+        # #if file and name included
+        # if menu.is_valid() and photo:
+        #     new_menu = menu.save(commit = False)
+        #     new_menu.restaurant = Restaurant.objects.get(user = request.user)
+        #     new_menu.save()
+        #     #save photo to AWS
+        #     doc = request.FILES['photo'] #get file
+        #     files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
+        #     file_storage = FileStorage()
+        #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+        #     doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+        #     file_storage.save(doc_path, doc)
+        #     new_menu.photo_path = doc_path
+        #     new_menu.save()
+
         #if they didnt upload a file
-        elif menu.is_valid():
+        if menu.is_valid():
             new_menu = menu.save(commit = False)
             new_menu.restaurant = Restaurant.objects.get(user = request.user)
             new_menu.save()
@@ -308,17 +312,21 @@ def edit_menu(request, menu_id):
         return HttpResponse('you are not authorized to view this')
     curr_menu = Menu.objects.filter(id = menu_id).first()
     #check if they uploaded new photo
-    photo = request.FILES.get('photo', False)
-    if photo:
-        # print("issue is here")
-        #save photo to AWS
-        doc = request.FILES['photo'] #get file
-        files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(menu_id))
-        file_storage = FileStorage()
-        mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-        doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-        file_storage.save(doc_path, doc)
-        curr_menu.photo_path = doc_path
+
+
+    # photo = request.FILES.get('photo', False)
+    # if photo:
+    #     # print("issue is here")
+    #     #save photo to AWS
+    #     doc = request.FILES['photo'] #get file
+    #     files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(menu_id))
+    #     file_storage = FileStorage()
+    #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+    #     doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+    #     file_storage.save(doc_path, doc)
+    #     curr_menu.photo_path = doc_path
+
+
     #if method is a get, then the user is looking at the menu
     if request.method == 'GET':
         items = MenuItem.objects.filter(menus = curr_menu)
@@ -333,19 +341,21 @@ def edit_menu(request, menu_id):
         all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
         # print('select options queried')
         #generate pre-signed url to download the QR code
-        s3 = boto3.resource('s3') #setup to get from AWS
-        aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
-        # print('aws dir good')
-        bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
-        objs = bucket.objects.filter(Prefix=aws_dir) #get folder
-        url = "#"
-        # print('objs queried')
-        for obj in objs: #iterate over file objects in folder
-             if os.path.split(obj.key)[1].split('.')[1] == 'png':
-                s3Client = boto3.client('s3')
-                url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
+
+        # s3 = boto3.resource('s3') #setup to get from AWS
+        # aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
+        # # print('aws dir good')
+        # bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+        # objs = bucket.objects.filter(Prefix=aws_dir) #get folder
+        # url = "#"
+        # # print('objs queried')
+        # for obj in objs: #iterate over file objects in folder
+        #      if os.path.split(obj.key)[1].split('.')[1] == 'png':
+        #         s3Client = boto3.client('s3')
+        #         url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
+
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url':url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted})
+                                'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -388,19 +398,20 @@ def add_item(request, menu_id):
                 new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=Menu.objects.filter(id = menu_id).first())
                 new_cat.save()
             #check if they uploaded new photo
-            photo = request.FILES.get('photo', False)
-            if photo:
-                # print('PHOTO HERE!!!! BADD')
-                #save photo to AWS
-                doc = request.FILES['photo'] #get file
-                files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                            item_number = 'item'+str(item.id))
-                file_storage = FileStorage()
-                mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-                doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-                file_storage.save(doc_path, doc)
-                item.photo_path = doc_path
-                item.save()
+            # photo = request.FILES.get('photo', False)
+            # if photo:
+            #     # print('PHOTO HERE!!!! BADD')
+            #     #save photo to AWS
+            #     doc = request.FILES['photo'] #get file
+            #     files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+            #                                                                 item_number = 'item'+str(item.id))
+            #     file_storage = FileStorage()
+            #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+            #     doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+            #     file_storage.save(doc_path, doc)
+            #     item.photo_path = doc_path
+            #     item.save()
+
         #redirect back to edit menu page
         return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id))
 
@@ -452,20 +463,22 @@ def edit_item(request, item_id, origin, menu_id):
         else:
             item.is_in_stock = False
         item.save()
+
         #check if they uploaded new photo
-        photo = request.FILES.get('photo', False)
-        if photo:
-            #save photo to AWS
-            doc = request.FILES['photo'] #get file
-            files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                        item_number = 'item'+str(item.id))
-            file_storage = FileStorage()
-            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-            file_storage.save(doc_path, doc)
-            item.photo_path = doc_path
-            print(item.photo_path)
-            item.save()
+        # photo = request.FILES.get('photo', False)
+        # if photo:
+        #     #save photo to AWS
+        #     doc = request.FILES['photo'] #get file
+        #     files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+        #                                                                 item_number = 'item'+str(item.id))
+        #     file_storage = FileStorage()
+        #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+        #     doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+        #     file_storage.save(doc_path, doc)
+        #     item.photo_path = doc_path
+        #     print(item.photo_path)
+        #     item.save()
+
         #redirect depending on where the request came from
         if origin == 'edit_menu':
             return redirect('/restaurant_admin/edit_menu/' + str(menu_id))
@@ -502,17 +515,19 @@ def ajax_edit_item(request):
             item.is_in_stock = True
     else:
         item.is_in_stock = False
-    photo = request.FILES.get('photo', False)
-    if photo:
-        #save photo to AWS
-        doc = request.FILES['photo'] #get file
-        files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                    item_number = 'item'+str(item.id))
-        file_storage = FileStorage()
-        mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-        doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-        file_storage.save(doc_path, doc)
-        item.photo_path = doc_path
+
+    # photo = request.FILES.get('photo', False)
+    # if photo:
+    #     #save photo to AWS
+    #     doc = request.FILES['photo'] #get file
+    #     files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+    #                                                                 item_number = 'item'+str(item.id))
+    #     file_storage = FileStorage()
+    #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+    #     doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+    #     file_storage.save(doc_path, doc)
+    #     item.photo_path = doc_path
+
     item.save()
 
     if new_category(request, item.category):
@@ -628,18 +643,20 @@ def add_item_no_menu(request):
         item_form = MenuItemForm(request.POST)
         if form.is_valid():
             item.restaurant = request.user.restaurant
-            photo = request.FILES.get('photo', False)
-            if photo:
-                #save photo to AWS
-                doc = request.FILES['photo'] #get file
-                files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                            item_number = 'item'+str(item.id))
-                file_storage = FileStorage()
-                mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-                doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-                file_storage.save(doc_path, doc)
-                item.photo_path = doc_path
-                item.save()
+
+            # photo = request.FILES.get('photo', False)
+            # if photo:
+            #     #save photo to AWS
+            #     doc = request.FILES['photo'] #get file
+            #     files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+            #                                                                 item_number = 'item'+str(item.id))
+            #     file_storage = FileStorage()
+            #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+            #     doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+            #     file_storage.save(doc_path, doc)
+            #     item.photo_path = doc_path
+            #     item.save()
+
             #item.menu = None
             item.save()
             print('redirecting')
@@ -667,20 +684,22 @@ def ajax_add_item(request):
     item = MenuItemForm(request.POST).save(commit = False)
     print(item)
     item.restaurant = request.user.restaurant
-    photo = request.FILES.get('photo', False)
-    print("files")
-    print(request.FILES)
-    if photo:
-        #save photo to AWS
-        doc = request.FILES['photo'] #get file
-        files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
-                                                                    item_number = 'item'+str(item.id))
-        file_storage = FileStorage()
-        mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-        doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
-        file_storage.save(doc_path, doc)
-        item.photo_path = doc_path
-        #item.save()
+
+    # photo = request.FILES.get('photo', False)
+    # print("files")
+    # print(request.FILES)
+    # if photo:
+    #     #save photo to AWS
+    #     doc = request.FILES['photo'] #get file
+    #     files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
+    #                                                                 item_number = 'item'+str(item.id))
+    #     file_storage = FileStorage()
+    #     mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+    #     doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+    #     file_storage.save(doc_path, doc)
+    #     item.photo_path = doc_path
+    #     #item.save()
+
     item.save()
     if request.POST['origin'] == 'edit_menu': #if from edit menu page add to menu
         print("yp we here")
