@@ -11,7 +11,7 @@
           <h3>{% trans 'Are You Sure You Want to Delete ' %}{{menu.name}}?</h3>
           <a href = "/restaurant_admin/edit_menu/{{menu.id}}"><h5>{% trans 'Cancel' %}</h5></a>
         {% else %}
-          <h3>{% trans 'Are You Sure You Want to Delete ' %}{{items.name}}?</h3>
+          <h3>{% trans 'Are You Sure You Want to Remove ' %}{{items.name}} From This Menu? </h3>
           <a href = "/restaurant_admin/edit_menu/{{url_id.id}}">{% trans 'Cancel' %}</a>
         {% endif %}
       </div>
@@ -57,7 +57,11 @@
       <div class = 'card-footer'>
         <form action = "" method = 'post'>
           {% csrf_token %}
-          <button type = submit class = 'btn btn-danger'>{% trans 'Yes, Delete This' %}</button>
+          {% if menu %}
+          <button type = submit class = 'btn btn-danger'>{% trans 'Yes, Delete This Menu' %}</button>
+          {% else %}
+          <button type = submit class = 'btn btn-danger'>{% trans 'Yes, Remove This Item' %}</button>
+          {% endif %}
         </form>
       </div>
     </div>

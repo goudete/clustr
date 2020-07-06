@@ -59,7 +59,7 @@
   <div id="wrapper" class="animate">
     <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark">
       <!-- <span class="navbar-toggler-icon leftmenutrigger"></span> -->
-      <a class="navbar-brand" href=""><img src = "{% static path %}"height=30 width=30></a>
+      <a class="navbar-brand" href="">{% if path %}<img src = "{% static path %}"height=30 width=30>{% endif %}</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -67,15 +67,15 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav ml-md-auto d-md-flex">
           <li class="nav-item">
-            {% if name %}
-            <a class="nav-link" href="#">{% trans "Hi" %}, {{ name }}</a>
-            {% endif %}
+
+            <a class="nav-link" href="#">{% trans "Hi" %}, {{ cashier.name }}</a>
+
           </li>
           <!-- <li class="nav-item">
             <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
           </li> -->
           <li class="nav-item">
-            <a href = "logout" class="nav-link"><i class="fas fa-key"></i> Logout</a>
+            <a href = "/cashier/logout" class="nav-link"><i class="fas fa-key"></i> Logout</a>
           </li>
         </ul>
       </div>
@@ -111,7 +111,7 @@
             <div class="card-body">
               <h5 class="card-title" style = "text-align:center;">{% trans "Cash Payment" %}</h5>
               <div style = "text-align:center;">
-                <a href="{% url 'cash_payment' %}" class="btn btn-squared-default btn-success" >
+                <a href="/cashier/cash_payment/{{cashier.id}}" class="btn btn-squared-default btn-success" >
                     <br>
                     <br>
                      <i class="far fa-money-bill-alt fa-10x"></i>
@@ -125,7 +125,7 @@
             <div class="card-body">
               <h5 class="card-title" style = "text-align:center;">{% trans "Order History" %}</h5>
               <div style = "text-align:center;">
-                <a href="{% url 'order_history' %}" class="btn btn-squared-default btn-success" >
+                <a href="/cashier/order_history/{{cashier.id}}" class="btn btn-squared-default btn-success" >
                     <br>
                     <br>
                      <i class="fas fa-history fa-10x"></i>

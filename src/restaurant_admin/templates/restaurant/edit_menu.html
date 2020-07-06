@@ -196,8 +196,8 @@ input:checked + .slider:before {
 
                   <div class="row justify-content-center mt-2 mb-2">
                     <div class = 'col'>
-                      <label for = 'course'>{% trans 'Category*' %}</label><br>
-                      <input id = 'course' name = 'category' list = 'options' placeholder = "{{item.category}}" style = 'width: 450px;' required>
+                      <label for = 'category_add'>{% trans 'Category*' %}</label><br>
+                      <input id = 'category_add' name = 'category' list = 'options' placeholder = "{{item.category}}" style = 'width: 450px;' required>
                       <datalist id = 'options'>
                         {% for option in selct_options %}
                           <option value = "{{option.name}}">
@@ -206,7 +206,7 @@ input:checked + .slider:before {
                     </div>
                   </div>
                   <div class="row justify-content-center mt-2 mb-2">
-                    <div id = "course_errors" class="errors">
+                    <div id = "category_errors" class="errors">
                     </div>
                   </div>
 
@@ -304,7 +304,7 @@ input:checked + .slider:before {
                             </div>
                             <!-- <div class = 'card-body'> -->
                               <div class="row justify-content-center">
-                                <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
+                                <form action = '/restaurant_admin/edit_item/{{item.id}}/edit_menu/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
                                   {% csrf_token %}
                                   <div class = 'row'>
                                     <div class="col-6">
@@ -339,7 +339,7 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <label for='course'>{% trans 'Category' %}</label>
+                                      <label for='category_edit'>{% trans 'Category' %}</label>
                                     </div>
 
                                     <div class="col-6">
@@ -348,7 +348,7 @@ input:checked + .slider:before {
                                   </div>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.category}}">
+                                      <input id = 'category_edit' name = 'category' list = 'options' placeholder = "{{item.category}}">
                                       <datalist id = 'options'>
                                         {% for option in selct_options %}
                                           <option value = "{{option.name}}">
@@ -363,7 +363,7 @@ input:checked + .slider:before {
                                   <br>
                                   <div class = 'row'>
                                     <div class="col-6">
-                                      <div id = "course_errors_edit{{item.id}}" class="errors">
+                                      <div id = "category_errors_edit{{item.id}}" class="errors">
                                       </div>
                                     </div>
                                     <div class="col-6">
@@ -400,7 +400,7 @@ input:checked + .slider:before {
                                           <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
                                       </div>
                                       <div class = 'col mt-4'>
-                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/1/edit_menu/{{item.id}}'>{% trans 'Remove This Item' %}</a>
                                       </div>
                                     </div>
                                   </div>
@@ -654,14 +654,16 @@ $('#add_item').on('shown.bs.modal', function () {
   $(document).on('click', '.edit_item_submit', function(e) {
     e.preventDefault();
     var item_id = $(this).attr("name")
-    console.log("id");
-    console.log(item_id);
+    var menu_id = $('#menu_id').val();
+    console.log("menu id:");
+    console.log(menu_id);
     $("#edit_item_submit" + item_id).attr("disabled", true);
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     var formData = new FormData($('#edit_item_form' + item_id)[0]);
     formData.append('origin','edit_menu');
     formData.append('item_id',item_id);
+    formData.append('menu_id',menu_id);
     $.ajax({
         url: '/restaurant_admin/ajax/ajax_edit_item',
         type: "POST",
