@@ -3,15 +3,8 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
-<html>
 
-  <!-- <head>
-    <style>
 
-    </style>
-  </head> -->
-
-  <body>
     <div class="container">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
@@ -20,9 +13,7 @@
 
             <div class = 'row justify-content-center mb-2'>
               <h2>
-                <b>
                   {% trans "Your Cashiers" %}
-                </b>
                 <a onclick = 'cashierForm()' style = 'cursor: pointer;'>
                   <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
@@ -130,12 +121,12 @@
         <!-- </div> -->
 
     </div>
-  </body>
+
   <script>
     function cashierForm(){
       if(document.getElementById('cashier_form').style.display == 'block') document.getElementById('cashier_form').style.display = 'none'
       else document.getElementById('cashier_form').style.display = 'block'
     }
   </script>
-</html>
+
 {% endblock %}

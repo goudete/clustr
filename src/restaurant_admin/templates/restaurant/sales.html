@@ -4,66 +4,72 @@
 {% block content %}
 {% load crispy_forms_tags %}
 
-<html>
-<form action= "/restaurant_admin/sales" method="post">
-  {% csrf_token %}
-  <div class="col col-md-12">
-    <div class="row justify-content-center">
-      <!-- checkbox to include date -->
-      <div class = "col col-md-6" style="text-align: center">
-        <!--what pops down if you check the box -->
-        <div class="reveal_after_check">
-          {{ form.start_date|as_crispy_field }}
-          <div class = "invalid-feedback">
-            {% trans "Please Choose a Pickup Date" %}
+<div class="container">
+
+  <div class="row justify-content-center mb-3">
+    <h2>{% trans "Sales" %}</h2>
+  </div>
+
+  <form action= "/restaurant_admin/sales" method="post">
+    {% csrf_token %}
+    <div class="col col-md-12">
+      <div class="row justify-content-center">
+        <!-- checkbox to include date -->
+        <div class = "col col-md-6" style="text-align: center">
+          <!--what pops down if you check the box -->
+          <div class="reveal_after_check">
+            {{ form.start_date|as_crispy_field }}
+            <div class = "invalid-feedback">
+              {% trans "Please Choose a Pickup Date" %}
+            </div>
+          </div>
+        </div>
+        <!--checkbox to include a time -->
+        <div class = "col col-md-6" style="text-align: center">
+          <!-- what comes down if you check the box -->
+          <div class="reveal_after_check">
+            {{ form.start_time|as_crispy_field }}
+            <div class = "invalid-feedback">
+              {% trans "Please Choose a Pickup Time" %}
+            </div>
           </div>
         </div>
       </div>
-      <!--checkbox to include a time -->
-      <div class = "col col-md-6" style="text-align: center">
-        <!-- what comes down if you check the box -->
-        <div class="reveal_after_check">
-          {{ form.start_time|as_crispy_field }}
-          <div class = "invalid-feedback">
-            {% trans "Please Choose a Pickup Time" %}
+      <br>
+      <div class="row justify-content-center">
+        <!-- checkbox to include date -->
+        <div class = "col col-md-6" style="text-align: center">
+          <!--what pops down if you check the box -->
+          <div class="reveal_after_check">
+            {{ form.end_date|as_crispy_field }}
+            <div class = "invalid-feedback">
+              {% trans "Please Choose a Pickup Date" %}
+            </div>
+          </div>
+        </div>
+        <!--checkbox to include a time -->
+        <div class = "col col-md-6" style="text-align: center">
+          <!-- what comes down if you check the box -->
+          <div class="reveal_after_check">
+            {{ form.end_time|as_crispy_field }}
+            <div class = "invalid-feedback">
+              {% trans "Please Choose a Pickup Time" %}
+            </div>
           </div>
         </div>
       </div>
     </div>
     <br>
+    <br>
     <div class="row justify-content-center">
-      <!-- checkbox to include date -->
-      <div class = "col col-md-6" style="text-align: center">
-        <!--what pops down if you check the box -->
-        <div class="reveal_after_check">
-          {{ form.end_date|as_crispy_field }}
-          <div class = "invalid-feedback">
-            {% trans "Please Choose a Pickup Date" %}
-          </div>
-        </div>
-      </div>
-      <!--checkbox to include a time -->
-      <div class = "col col-md-6" style="text-align: center">
-        <!-- what comes down if you check the box -->
-        <div class="reveal_after_check">
-          {{ form.end_time|as_crispy_field }}
-          <div class = "invalid-feedback">
-            {% trans "Please Choose a Pickup Time" %}
-          </div>
-        </div>
-      </div>
+      <button name="submit_dates" type="submit" class="btn btn-primary mb-2">{% trans "Show Sales Data" %}</button>
     </div>
-  </div>
-  <br>
-  <br>
-  <div class="row justify-content-center">
-    <button name="submit_dates" type="submit" class="btn btn-primary mb-2">{% trans "Show Sales Data" %}</button>
-  </div>
-</form>
+  </form>
+</div>
+
 {% block salestuff %}
 
 {% endblock %}
-</html>
 
 <!-- for dropdown calendar -->
 
@@ -97,7 +103,6 @@
                                         }
           }});
       });
-</script>
 
 <!-- for time picker -->
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">

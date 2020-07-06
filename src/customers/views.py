@@ -16,6 +16,8 @@ import datetime
 from django.utils.translation import gettext as _
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template, render_to_string
+from django.utils import timezone
+
 
 
 #this method is only for development, it shows all the menus you have on your local db
@@ -49,7 +51,7 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         categories = SelectOption.objects.filter(menu = curr_menu)
         category_items = {}
         for category in categories:
-            category_items[category.name]  = MenuItem.objects.filter(course = category.name)
+            category_items[category.name]  = MenuItem.objects.filter(category = category.name)
 
         return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
     else:
@@ -140,7 +142,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
         addons = get_selected_addons_ids(request)
         if addons:
             addon_objects = get_addon_objects(addons)
-            print(addon_objects)
+            # print(addon_objects)
 
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_item = MenuItem.objects.filter(id = item_id).first()
@@ -256,8 +258,8 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
 def ajax_increase_quantity(request):
     cart_id = request.GET.get('cart_id', None)
     menu_item_name = request.GET.get('menu_item', None)
-    print('cart_id:', cart_id)
-    print('menu_item:', menu_item_name)
+    # print('cart_id:', cart_id)
+    # print('menu_item:', menu_item_name)
     item_counters = MenuItemCounter.objects.filter(cart = cart_id).all()
     curr_cart = Cart.objects.filter(id = cart_id).first()
 
@@ -307,8 +309,8 @@ def ajax_increase_quantity(request):
 def ajax_decrease_quantity(request):
     cart_id = request.GET.get('cart_id', None)
     menu_item_name = request.GET.get('menu_item', None)
-    print('cart_id:', cart_id)
-    print('menu_item:', menu_item_name)
+    # print('cart_id:', cart_id)
+    # print('menu_item:', menu_item_name)
     item_counters = MenuItemCounter.objects.filter(cart = cart_id).all()
     curr_cart = Cart.objects.filter(id = cart_id).first()
 
@@ -423,7 +425,7 @@ def calculate_tip(request, cart_id, restaurant_id, menu_id, tip):
         if form.is_valid():
             curr_cart.custom_tip = True
             custom_tip = form.cleaned_data['tip']
-            print("custom_tip", custom_tip)
+            # print("custom_tip", custom_tip)
             curr_cart.tip = custom_tip
             curr_cart.total_with_tip = curr_cart.total + custom_tip
             curr_cart.save()
@@ -455,7 +457,7 @@ def dine_in_option(request):
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_cart.dine_in = True
         curr_cart.save()
-    print('SUCCESS: ')
+    # print('SUCCESS: ')
 
     data = {}
     return JsonResponse(data)
@@ -618,9 +620,11 @@ def order_confirmation(request, cart_id):
     if request.method == 'GET':
         cart = Cart.objects.filter(id = cart_id).first()
         cart.is_paid = True
+        cart.paid_at = timezone.now()
         cart.save()
+        print('time: ', cart.paid_at)
         items = MenuItemCounter.objects.filter(cart = cart_id)
-        print('cash code:', cart.cash_code)
+
         return render(request, 'customers/order_confirmation.html', {'cart': cart, 'items': items})
     else:
         #if this is a post, just send back to the view cart page
@@ -637,8 +641,8 @@ def feedback(request, cart_id):
         feedback = form.save(commit = False)
         feedback.cart = cart
         feedback.save()
-        print(feedback.feedback)
-        print(feedback.cart)
+        # print(feedback.feedback)
+        # print(feedback.cart)
         messages.info(request, "Thank you for your feedback!")
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:

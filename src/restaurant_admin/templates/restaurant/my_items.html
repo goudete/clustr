@@ -87,6 +87,10 @@ input:checked + .slider:before {
       animation-timing-function:ease-in-out;
       animation-direction: alternate;
     }
+
+    .add_items_style{
+      font-size: 200%;
+    }
 </style>
 <style>
 .test {
@@ -140,19 +144,30 @@ input:checked + .slider:before {
           {% endif %}
 
             <div class = 'row mb-2'>
-              <div class = "col-6 align-right"
-                <h2>
-                  <b>
-                    {% trans "Add Items" %}
-                  </b>
+              <div class = "col-2 text-right"
+                  <h2><span class="add_items_style">{% trans "Add Items" %}</span></h2>
+              </div>
+              <div class="col-4">
+                <a href="#" data-toggle="popover" title=" {% trans 'Add Items' %} " data-content=" {% trans 'Menu Items are the basic building blocks of your Menus. Add new items and edit existing ones.' %} ">
+                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
+                    <circle cx="8" cy="4.5" r="1"/>
+                  </svg>
+                </a>
+              </div>
+
+              <!-- <div class="col-3">
+                  <h3>
                   <a style = 'cursor: pointer;'>
                     <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
                     </svg>
                   </a>
-                </h2>
-              </div>
-              <div class="col-6 align-right">
+                  </h3>
+              </div> -->
+
+              <div class="col-6 float-right">
             		<form class="form-inline " onkeydown="return event.key != 'Enter';">
                   {% csrf_token %}
             		<i id="search_icon" class="fas fa-search" aria-hidden="true"></i>
@@ -160,6 +175,16 @@ input:checked + .slider:before {
             		<input id="user-input" class="form-control form-control-sm ml-3 w-75" type="text" placeholder="{{search_trans}}" aria-label="{{search_trans}}">
             		</form>
             	</div>
+            </div>
+
+            <div class="row mb-5">
+              <div class="col-1 text-right">
+                <a style = 'cursor: pointer;'>
+                  <svg class="bi bi-plus-circle-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
             <!-- modal that pops up when item is to be created-->
             <div class="modal fade bd-example-modal-lg" id="add_modal" tabindex="-1" role="dialog">
@@ -256,7 +281,7 @@ input:checked + .slider:before {
                                 </div>
                               </div>
                             </div>
-                            
+
                           </form>
                         </div>
                       <!-- </div> -->
@@ -266,7 +291,7 @@ input:checked + .slider:before {
           </div>
         </div>
           <!-- </div> -->
-          <div class="container" id="replaceable-content">
+          <div id="replaceable-content">
               {% for category, items in category_items.items %}
               <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
                   <div class="navbar-header">
@@ -428,7 +453,7 @@ input:checked + .slider:before {
               {% endfor %}
         </div>
           <!-- </div> -->
-        <!-- </div> -->
+        </div>
 
   </body>
   <script>
@@ -592,6 +617,10 @@ $('#add_modal').on('shown.bs.modal', function () {
             }
         },
     });
+ })
+ //Activating Popovers
+ $(function () {
+   $('[data-toggle="popover"]').popover()
  })
 </script>
 {% endblock %}

@@ -52,28 +52,36 @@
                   <div class="order-card card shadow p-3 bg-white rounded mr-2 ml-2 mb-2 mt-2">
                     <div class="card-body">
 
-                      <div class = 'row justify-content-center mb-1'>
-                          <b style = 'color:black;'><h4>{% trans "Order #: " %}{{tracker.cart.id}}</h4></b>
+                      <div class = 'row mb-1'>
+                          <b style = 'color:black;'><h4>{% trans "Order #" %}{{tracker.cart.id}}</h4></b>
                       </div>
                       {% if tracker.cart.dine_in %}
-                        <div class="row justify-content-center">
-                          <h5>{% trans "Dine In" %}</h5>
+                        <div class="row">
+                          <h6>{% trans "Dine In" %}</h6>
                         </div>
                       {% else %}
-                        <div class="row justify-content-center">
-                          <h5>{% trans "To Go" %}</h5>
+                        <div class="row">
+                          <h6>{% trans "To Go" %}</h6>
                         </div>
                       {% endif %}
 
+                      <!-- when order was payed -->
+                        <div class="row mb-3">
+                          <h6>{% trans "Time: " %}{{ tracker.cart.paid_at }}</h6>
+                        </div>
+                      <!-- end time section -->
+
                       {% for item in list %}
                         <div class = 'row'>
-                          <div class="col ml-3">
+                          <div class="col ml-1">
                             <h7>- {{item.quantity}} {{item.item.name}}</h7>
                           </div>
                         </div>
                         {% if item.custom_instructions %}
                         <div class = 'row'>
+                          <div class="col ml-1">
                           <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
+                          </div>
                         </div>
                         {% endif %}
                         <div class = 'row mt-2 mb-2'>
