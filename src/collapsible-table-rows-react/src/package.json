@@ -1,0 +1,14 @@
+{
+  "name": "collapsible-table-rows-in-react",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "homepage": "https://codesandbox.io/s/0pqznm27q0",
+  "main": "index.js",
+  "dependencies": {
+    "react-dom": "16.0.0",
+    "react": "16.0.0",
+    "d3-interpolate": "1.1.5",
+    "d3-ease": "1.0.3"
+  }
+}

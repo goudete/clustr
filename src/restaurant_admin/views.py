@@ -682,8 +682,8 @@ def ajax_add_item(request):
 
     #Actions if form is valid ...
     item = MenuItemForm(request.POST).save(commit = False)
-    print(item)
-    item.restaurant = request.user.restaurant
+    curr_rest = request.user.restaurant
+    item.restaurant = curr_rest
 
     # photo = request.FILES.get('photo', False)
     # print("files")
@@ -710,13 +710,16 @@ def ajax_add_item(request):
     #check for new category
     if new_category(request, item.category):
         if request.POST['origin'] == 'my_items':
-            new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat = SelectOption(name = item.category, restaurant = curr_rest)
             new_cat.save()
         elif request.POST['origin'] == 'edit_menu':
-            new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
+            new_cat = SelectOption(name = item.category, restaurant = curr_rest)
             new_cat.save()
             new_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
             new_cat.save()
+    elif request.POST['origin'] == 'edit_menu': #category was an existing one
+        existing_cat = SelectOption.objects.filter(restaurant=curr_rest).filter(name=item.category).first()
+        existing_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
 
     return JsonResponse({'success':True})
     print('redirecting')

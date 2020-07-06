@@ -75,7 +75,7 @@ ROOT_URLCONF = 'qr.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'collapsible-table-rows-react/build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -168,7 +168,7 @@ LOGIN_REDIRECT_URL = 'restaurant_admin/my_menus'
 LOGOUT_REDIRECT_URL = 'restaurant_admin/logout_view'
 #AWS stuff
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR,'collapsible-table-rows-in-react/build/static')]
 #AWS stuff
 AWS_S3_FILE_OVERWRITE = True
 AWS_DEFAULT_ACL = None
