@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('restaurant_admin/', include('restaurant_admin.urls')),
@@ -23,4 +23,5 @@ urlpatterns = [
     path('cashier/',include('cashier.urls')),
     path('kitchen/', include('kitchen.urls')),
     path('comms/', include('comms.urls')),
+    path('react',TemplateView.as_view(template_name='index.html'))
 ]

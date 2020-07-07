@@ -200,7 +200,7 @@ input:checked + .slider:before {
                         </div>
 
                         <div class="row justify-content-center">
-                          <form action= "/restaurant_admin/add_item_no_menu" method="post" enctype="multipart/form-data" id = "create_item_form">
+                          <form method="post" enctype="multipart/form-data" id = "create_item_form">
                             {% csrf_token %}
 
                             <div class="row justify-content-center mt-2 mb-2">
@@ -277,7 +277,7 @@ input:checked + .slider:before {
                             <div class="row justify-content-center mt-3 mb-2">
                               <div class = 'col'>
                                 <div class="btn-group">
-                                    <button type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
+                                    <button type="submit" id="add_item_submit" class="btn btn-primary" data-dismiss="modal">{% trans "Create" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -432,7 +432,8 @@ input:checked + .slider:before {
                                   <div class = 'row justify-content-center'>
                                     <div style="text-align: centerl=;" class = 'row justify-content-center'>
                                       <div class="btn-group mt-2">
-                                          <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
+                                          <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}"
+                                          data-dismiss="modal" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
                                       </div>
                                       <div class = 'col mt-4'>
                                         <a style = 'color:red;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Item' %}</a>
@@ -541,6 +542,12 @@ $('#add_modal').on('shown.bs.modal', function () {
       scheduled_function = setTimeout(ajax_call, delay_by_in_ms, "/my_items", request_parameters)
   })
 </script>
+<script type="text/javascript">
+  $('#add_modal').on('hidden.bs.add_modal', function(){
+  //remove the backdrop
+  $('.modal-backdrop').remove();
+})
+</script>
 <!-- ajax create item js -->
 <script type="text/javascript">
   $(document).on('click', '#add_item_submit', function(e) {
@@ -558,8 +565,12 @@ $('#add_modal').on('shown.bs.modal', function () {
         processData: false,
         success: function (data){
             if (data.success){
-                console.log("success");
+                // $('#add_modal').modal('hide');
+                // $('body').removeClass('modal-open');
+                // $('.modal-backdrop').remove();
+                // console.log("success");
                 alert("Item Created");
+                // $('.modal-backdrop').remove();
                 $("#add_item_submit").attr("disabled", false);
             }
             else if (data.err_code === 'invalid_form'){
@@ -597,7 +608,6 @@ $('#add_modal').on('shown.bs.modal', function () {
         processData: false,
         success: function (data){
             if (data.success){
-                console.log("success");
                 alert("Item Updated");
                 $("#edit_item_submit" + item_id).attr("disabled", false);
             }
