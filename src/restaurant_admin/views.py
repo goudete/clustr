@@ -382,7 +382,7 @@ def add_item(request, menu_id):
     else:
         if "existing_item_select" in request.POST:
             item_name = request.POST.get("existing_item", None)
-            item = MenuItem.objects.get(name=item_name)
+            item = MenuItem.objects.filter(restaurant=request.user.restaurant).get(name=item_name)
             menu = Menu.objects.filter(id = menu_id).first()
             item.menus.add(menu)
             item.save()
