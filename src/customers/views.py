@@ -56,7 +56,7 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
             if len(q_set) > 0:
                 category_items[category.name]  = q_set
 
-        print(category_items)
+        # print(category_items)
         return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
     else:
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))

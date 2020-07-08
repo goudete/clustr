@@ -6,7 +6,9 @@
 <div class="container-fluid">
   <!-- Item image -->
   <div class="row">
+    {% if item.photo_path %}
     <img class="img-fluid rounded" src="{% static item.photo_path %}" alt="Responsive image">
+    {% endif %}
   </div>
   <!-- End item image -->
 
