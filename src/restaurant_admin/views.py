@@ -666,7 +666,11 @@ def add_item_no_menu(request):
             pass
 
 def ajax_add_item(request):
+    curr_rest = request.user.restaurant
     form = MenuItemForm(request.POST, request.FILES)
+    form.restaurant_id = curr_rest.id
+    print("current")
+    print(curr_rest.id)
     print("origin:")
     print(request.POST['origin'])
     #if form isnt valid we send the errors to the JS script in template
@@ -681,8 +685,9 @@ def ajax_add_item(request):
         })
 
     #Actions if form is valid ...
-    item = MenuItemForm(request.POST).save(commit = False)
-    curr_rest = request.user.restaurant
+    item = MenuItemForm(request.POST)
+    item.restaurant_id = curr_rest.id
+    item = item.save(commit = False)
     item.restaurant = curr_rest
 
     photo = request.FILES.get('photo', False)

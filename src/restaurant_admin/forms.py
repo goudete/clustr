@@ -69,6 +69,7 @@ class MenuForm(forms.ModelForm):
 
 #form for creating new menu item
 class MenuItemForm(forms.ModelForm):
+    restaurant_id = 0
     def __init__(self, *args, **kwargs):
         super(MenuItemForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
@@ -81,13 +82,18 @@ class MenuItemForm(forms.ModelForm):
         self.fields['category'].widget.attrs.update(style='width: 450px;',id='add_item_course')
         self.fields['price'].widget.attrs.update(style='width: 450px;',id='add_item_price')
 
+
+
     class Meta:
         model = MenuItem
         fields = ('name', 'description', 'category', 'price')
 
     def clean_name(self):
         name_passed = self.cleaned_data.get("name")
-        if len(MenuItem.objects.filter(name=name_passed))>0:
+        print("given id")
+        print(self.restaurant_id)
+        restaurant = Restaurant.objects.get(id=self.restaurant_id)
+        if len(MenuItem.objects.filter(restaurant=restaurant).filter(name=name_passed))>0:
             raise forms.ValidationError("You have already created an item with this name")
         return name_passed
 
