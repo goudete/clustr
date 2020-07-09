@@ -99,15 +99,15 @@ def payment_question(request):
             me.save()
             return redirect('/restaurant_admin/my_menus')
         else:
-            stripe.api_key = settings.STRIPE_SECRET_KEY
-            stripe.Account.create(
-              type="custom",
-              email=me.user.email,
-              requested_capabilities=[
-                "card_payments",
-                "transfers",
-              ],
-            )
+            # stripe.api_key = settings.STRIPE_SECRET_KEY
+            # stripe.Account.create(
+            #   type="custom",
+            #   email=me.user.email,
+            #   requested_capabilities=[
+            #     "card_payments",
+            #     "transfers",
+            #   ],
+            # )
             me.answered_pay_question = True
             me.handle_payment = True
             me.save()
@@ -140,9 +140,9 @@ def stripe_connect(request):
         curr_rest.stripe_account_id = account_id
         curr_rest.save()
         print('redirecting')
-        return redirect('/restaurant_admin/my_menus')
+        return redirect('https://cluster-mvp.herokuapp.com/restaurant_admin/my_menus')
     else:
-        return redirect('/restaurant_admin/my_menus')
+        return redirect('https://cluster-mvp.herokuapp.com/restaurant_admin/my_menus')
 
 
 """this method is for when a restaurant puts in their info about their restaurant
