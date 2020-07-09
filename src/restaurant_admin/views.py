@@ -31,6 +31,7 @@ from django.utils import timezone
 """this function just verifies that you are not trying to edit another restaurant's menu"""
 def validate_id_number(request, menu_id):
     menu = Menu.objects.get(id = menu_id)
+    print(menu.restaurant, Restaurant.objects.filter(user = request.user).first())
     if menu.restaurant == Restaurant.objects.filter(user = request.user).first():
         return True
     else:

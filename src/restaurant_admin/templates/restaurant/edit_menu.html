@@ -400,7 +400,7 @@ input:checked + .slider:before {
                                           <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
                                       </div>
                                       <div class = 'col mt-4'>
-                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/1/edit_menu/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/{{menu.id}}/edit_menu/{{item.id}}'>{% trans 'Remove This Item' %}</a>
                                       </div>
                                     </div>
                                   </div>
