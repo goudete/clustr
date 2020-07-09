@@ -1,66 +1,154 @@
-
 {% extends 'customers/base.html'%}
 {% load static %}
+{% load i18n %}
+
+
 {% block content %}
+<style>
+.thumbnail{
+  display: block;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+#thumb{
+  float: right;
+  max-height: 300px;
+
+}
+
+#item_img{
+  max-height: 250px;
+}
+
+div.scrollmenu {
+  /* background-color: #333; */
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+div.scrollmenu a:hover {
+  background-color: #D3D3D3;
+}
+
+</style>
+
 <!-- logo -->
 <div class="jumbotron">
-  <div class="container text-center">
-    <h1>{{ restaurant.name }}</h1>
-    <p>{{ restaurant.info }}</p>
-    <!-- <img src="..." class="img-fluid" alt="Responsive image"> -->
+  <div class="row justify-content-center">
+    <div class="thumbnail thumb">
+      {% if restaurant.photo_path %}
+      <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% endif %}
+    </div>
   </div>
 </div>
 <!-- end logo -->
 
 <div class="container-fluid">
+
+  <!-- Greeting ABout Modal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{% trans "Welcome to " %} {{ restaurant.name }}!</h5>
+        <!-- <h5 class="modal-title">{% trans "Welcome to LA Cafe!" %}</h5> -->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center">
+          <div class="thumbnail thumb">
+            {% if restaurant.photo_path %}
+            <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+            {% endif %}
+          </div>
+        </div>
+
+        <p>
+          {% trans "Browse our menu, order and pay right from your phone!" %}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="row justify-content-center mt-3">
+    <div class="col">
+      <p>{% trans "Note: This is only to preview your menu, it has no functionality" %}</p>
+    </div>
+  </div>
+
   <!-- Menu and About Buttons -->
-  <div class="row justify-content-center pt-4 pb-3">
+  <div class="row justify-content-center pt-4 pb-4">
     <div class="col">
       <div class="d-flex justify-content-end">
-        <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">Menu</a>
+        <a href="#" class="btn btn-dark btn-circle btn-sm" role="button">{% trans "Menu" %}</a>
       </div>
     </div>
     <div class="col">
-      <a href="#" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">About</a>
+      <a href=# class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">{% trans "About" %}</a>
     </div>
   </div>
+
   <!-- End Menu and About buttons -->
 
   <!-- Restaurant Name and info -->
-  <div class="row ml-1">
+  <div class="row ml-1 justify-content-center">
     <h5>{{ restaurant.name }}</h5>
   </div>
-  <div class="row ml-1">
+  <div class="row ml-1 mb-4 justify-content-center">
     <h6>{{ restaurant.info }}</h6>
   </div>
   <!-- End  -->
+
+  <!-- Button Categories Start -->
+  <div class="scrollmenu mb-5">
+    {% for category in categories %}
+        <button class="btn btn-light cat_button" name="{{ category.name }}">{{ category.name }}</button>
+    {% endfor %}
+  </div>
+  <!-- Button Categories End -->
 
   <!-- <hr> -->
 
   <!-- Menu Items -->
   <ul class="list-unstyled">
-    {% if items|length == 0 %}
-    <div class="row justify-content-center mt-5">
-      <h4>No Items on Menu!</h4>
-    </div>
-    {% else %}
-      {% for item in items %}
-      <div class="">
-        <a href="/restaurant_admin/view_item/{{ menu.id }}/{{ item.id }}">
-        <div class="media">
-          <div class="media-body">
-            <h6 class="mt-0 mb-1">{{ item.name }}</h6>
-            {{ item.description }} <br>
-            ${{ item.price}} <br>
-            {{ item.id }}
-          </div>
-          <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
-        </div>
-        </a>
-        <hr>
+    {% if category_items|length == 0 %}
+      <div class="row justify-content-center mt-5">
+        <h4>{% trans "No Items on Menu!" %}</h4>
       </div>
-
-      <!-- <hr> -->
+    {% else %}
+      {% for key, value in category_items.items %}
+        <div class="MenuItems" id="display_category_{{ key }}" style="display:none">
+        {% for v in value %}
+            <a href=# style="text-decoration:none; color:#000000">
+            <div class="media">
+              <div class="media-body">
+                <h5 class="mt-0 mb-2">{{ v.name }}</h5>
+                {% if v.description %}
+                <p>{{ v.description }}<br>
+                {% endif %}
+                ${{ v.price}}</p> <br>
+              </div>
+              {% if v.photo_path %}
+              <img src="{% static v.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
+              {% endif %}
+            </div>
+            </a>
+            <hr>
+        {% endfor %}
+        </div>
       {% endfor %}
     {% endif %}
   </ul>
@@ -68,11 +156,19 @@
 
   <!-- View Cart Button -->
   <div class="fixed-bottom">
+    {% if cart.total_with_tip %}
     <div class="row justify-content-center mb-3">
-      <!-- <div class="col-12"> -->
-        <a href="#" class="btn btn-dark btn-circle btn-xl active" role="button" aria-pressed="true">View Cart $</a>
-      <!-- </div> -->
+        <a href=# class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
     </div>
+    {% elif cart.total %}
+    <div class="row justify-content-center mb-3">
+        <a href=# class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total }}</a>
+    </div>
+    {% else %}
+    <div class="row justify-content-center mb-3">
+        <a href=# class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
+    </div>
+    {% endif %}
   </div>
   <!-- Cart Button ends -->
   <footer class="page-footer pt-4">
@@ -83,4 +179,29 @@
       </div>
   </footer>
 </div>
+
+<script>
+
+  $(document).ready(function () {
+    var category_name = $(".cat_button").attr("name");
+    $('#display_category_' + category_name).show()
+
+    if (sessionStorage.getItem('#myModal') !== 'true'){
+      $('#myModal').modal('show');
+
+      sessionStorage.setItem('#myModal', 'true');
+    }
+
+    $(".cat_button").click(function(){
+       $('.MenuItems').hide();
+      var category_name = $(this).attr("name");
+      $('#display_category_' + category_name).show(400);
+
+    });
+
+  });
+
+
+</script>
+
 {% endblock %}

@@ -256,9 +256,6 @@ def view_menu(request, menu_id):
     if request.method == 'GET':
         curr_menu = Menu.objects.filter(id = menu_id).first()
         curr_rest = curr_menu.restaurant
-        items = MenuItem.objects.filter(menu = curr_menu)
-        select_options = SelectOption.objects.filter(restaurant = curr_rest) #options for what an item can be classified as
-        return render(request, 'restaurant/menu.html', {'items': items, 'restaurant': curr_rest, 'menu': curr_menu, 'selct_options':select_options})
         #get all possible categories of menu
         categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
         category_items = {}
