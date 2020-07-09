@@ -620,7 +620,7 @@ def my_items(request):
         print("ajax")
         html = render_to_string(
             template_name="restaurant/replaceable_content.html",
-            context={"menus": [],'item_form':form,'me':restaurant,'category_items':category_items}
+            context={"menus": [],'item_form':form,'me':curr_rest,'category_items':category_items}
         )
 
         data_dict = {"html_from_view": html}
@@ -726,7 +726,18 @@ def ajax_add_item(request):
         existing_cat = SelectOption.objects.filter(restaurant=curr_rest).filter(name=item.category).first()
         existing_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
 
-    return JsonResponse({'success':True})
+    print("here")
+    categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
+    category_items = {}
+    for cat in categories:
+        category_items[cat]  = MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat)
+    form = MenuItemForm()
+    selct_options = SelectOption.objects.filter(restaurant = curr_rest)
+
+    context = {'me': curr_rest,'category_items': category_items,'item_form': form,'selct_options':selct_options}
+    # return redirect('/restaurant_admin/my_items').render()
+    return render(request, 'restaurant/my_items.html', context)
+    # return JsonResponse({'success':True})
     print('redirecting')
     #redirect back to edit menu page
     return redirect('/restaurant_admin/my_items')

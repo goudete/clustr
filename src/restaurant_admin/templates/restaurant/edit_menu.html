@@ -614,6 +614,7 @@ $('#add_item').on('shown.bs.modal', function () {
 <script type="text/javascript">
   $(document).on('click', '#add_item_submit', function(e) {
     $("#add_item_submit").attr("disabled", true);
+    $("#add_item_submit")[0].innerText = "Creando...";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     e.preventDefault();
@@ -629,12 +630,8 @@ $('#add_item').on('shown.bs.modal', function () {
         contentType: false,
         processData: false,
         success: function (data){
-            if (data.success){
-                console.log("success");
-                alert("Item Created");
-                $("#add_item_submit").attr("disabled", false);
-            }
-            else if (data.err_code === 'invalid_form'){
+            if (data.err_code === 'invalid_form'){
+              $("#add_item_submit")[0].innerText = "Crear";
                 console.log(data.err_msg);
                 for(var key in data.err_msg){
                     console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
@@ -644,6 +641,8 @@ $('#add_item').on('shown.bs.modal', function () {
                 }
                 var name_input = $('#add_item_name');
                 $("#add_item_submit").attr("disabled", false);
+            } else {
+              window.location.assign(window.location.pathname);
             }
         },
     });
@@ -658,6 +657,7 @@ $('#add_item').on('shown.bs.modal', function () {
     console.log("menu id:");
     console.log(menu_id);
     $("#edit_item_submit" + item_id).attr("disabled", true);
+    $("#edit_item_submit" + item_id)[0].innerText = "Actualizando...";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     var formData = new FormData($('#edit_item_form' + item_id)[0]);
@@ -671,12 +671,8 @@ $('#add_item').on('shown.bs.modal', function () {
         contentType: false,
         processData: false,
         success: function (data){
-            if (data.success){
-                console.log("success");
-                alert("Item Updated");
-                $("#edit_item_submit" + item_id).attr("disabled", false);
-            }
-            else if (data.err_code === 'invalid_form'){
+            if (data.err_code === 'invalid_form'){
+              $("#edit_item_submit" + item_id)[0].innerText = "Actualizar";
                 console.log(data.err_msg);
                 for(var key in data.err_msg){
                     console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
@@ -689,6 +685,9 @@ $('#add_item').on('shown.bs.modal', function () {
                     console.log(error_div);
                 }
                 $("#edit_item_submit" + item_id).attr("disabled", false);
+            }
+            else {
+              window.location.assign(window.location.pathname);
             }
         },
     });

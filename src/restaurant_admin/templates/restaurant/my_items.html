@@ -98,7 +98,7 @@ input:checked + .slider:before {
 }
 </style>
   <body>
-    <div class="container">
+    <div class="container" id="daddy_div">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
 
@@ -277,7 +277,7 @@ input:checked + .slider:before {
                             <div class="row justify-content-center mt-3 mb-2">
                               <div class = 'col'>
                                 <div class="btn-group">
-                                    <button type="submit" id="add_item_submit" class="btn btn-primary" data-dismiss="modal">{% trans "Create" %}</button>
+                                    <button type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -433,7 +433,7 @@ input:checked + .slider:before {
                                     <div style="text-align: centerl=;" class = 'row justify-content-center'>
                                       <div class="btn-group mt-2">
                                           <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}"
-                                          data-dismiss="modal" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
+                                         class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
                                       </div>
                                       <div class = 'col mt-4'>
                                         <a style = 'color:red;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Item' %}</a>
@@ -552,6 +552,7 @@ $('#add_modal').on('shown.bs.modal', function () {
 <script type="text/javascript">
   $(document).on('click', '#add_item_submit', function(e) {
     $("#add_item_submit").attr("disabled", true);
+    $("#add_item_submit")[0].innerText = "Creando...";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     e.preventDefault();
@@ -564,25 +565,39 @@ $('#add_modal').on('shown.bs.modal', function () {
         contentType: false,
         processData: false,
         success: function (data){
-            if (data.success){
-                // $('#add_modal').modal('hide');
-                // $('body').removeClass('modal-open');
-                // $('.modal-backdrop').remove();
-                // console.log("success");
-                alert("Item Created");
-                // $('.modal-backdrop').remove();
-                $("#add_item_submit").attr("disabled", false);
-            }
-            else if (data.err_code === 'invalid_form'){
-                console.log(data.err_msg);
-                for(var key in data.err_msg){
-                    console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
-                    console.log(key);
-                    var error_div = $('#' + key + '_errors');
-                    error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
-                }
-                $("#add_item_submit").attr("disabled", false);
-            }
+          if (data.err_code === 'invalid_form'){
+            $("#add_item_submit")[0].innerText = "Crear";
+              console.log(data.err_msg);
+              for(var key in data.err_msg){
+                  console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
+                  console.log(key);
+                  var error_div = $('#' + key + '_errors');
+                  error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
+              }
+              $("#add_item_submit").attr("disabled", false);
+          }
+          else{
+            // document.write(data);
+            // document.close();
+            window.location.assign(window.location.pathname);
+          }
+            // // if (data.success){
+            //   console.log("data.success");
+            //     // $('#add_modal').modal('hide');
+            //     // $('body').removeClass('modal-open');
+            //     // $('.modal-backdrop').remove();
+            //     // console.log("success");
+            //     // alert("Item Created");
+            //     // $('.modal-backdrop').remove();
+            //     $("#add_item_submit").attr("disabled", false);
+            //     //$("body").html(data);
+            //     // var newDoc = document.open("text/html", "replace");
+            //     // newDoc.write(data);
+            //     // newDoc.close();
+            //     document.write(data);
+            //     document.close();
+
+            // }
         },
     });
  })
@@ -595,6 +610,7 @@ $('#add_modal').on('shown.bs.modal', function () {
     console.log("id");
     console.log(item_id);
     $("#edit_item_submit" + item_id).attr("disabled", true);
+    $("#edit_item_submit" + item_id)[0].innerText = "Actualizando...";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     var formData = new FormData($('#edit_item_form' + item_id)[0]);
@@ -607,23 +623,23 @@ $('#add_modal').on('shown.bs.modal', function () {
         contentType: false,
         processData: false,
         success: function (data){
-            if (data.success){
-                alert("Item Updated");
-                $("#edit_item_submit" + item_id).attr("disabled", false);
-            }
-            else if (data.err_code === 'invalid_form'){
-                console.log(data.err_msg);
-                for(var key in data.err_msg){
-                    console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
-                    console.log(key);
-                    var error_div = $('#' + key + '_errors_edit' + item_id);
-                    console.log(error_div);
-                    console.log(data.err_msg[key][0]);
-                    console.log("we trynna append div");
-                    error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
-                    console.log(error_div);
-                }
-                $("#edit_item_submit" + item_id).attr("disabled", false);
+          if (data.err_code === 'invalid_form'){
+              $("#edit_item_submit" + item_id)[0].innerText = "Actualizar";
+              console.log(data.err_msg);
+              for(var key in data.err_msg){
+                  console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
+                  console.log(key);
+                  var error_div = $('#' + key + '_errors_edit' + item_id);
+                  console.log(error_div);
+                  console.log(data.err_msg[key][0]);
+                  console.log("we trynna append div");
+                  error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
+                  console.log(error_div);
+              }
+              $("#edit_item_submit" + item_id).attr("disabled", false);
+          }
+            else {
+                window.location.assign(window.location.pathname);
             }
         },
     });
