@@ -497,10 +497,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
               payment_method_types=['card'],
               amount=int((cart.total_with_tip*100)),
               currency='mxn',
-              stripe_account=curr_rest.stripe_account_id,
-
-               # Verify your integration in this guide by including this parameter
-              # metadata={'integration_check': 'accept_a_payment'},
+              # stripe_account=curr_rest.stripe_account_id,
             )
             cart.stripe_order_id = intent.id
             cart.save()
