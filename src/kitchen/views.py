@@ -34,7 +34,7 @@ def cart_query(restaurant_id):
 def see_orders(request, restaurant_id):
     restaurant = Restaurant.objects.filter(id = restaurant_id).first()
     trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
-    print('length of trackers: ', len(trackers))
+    # print('length of trackers: ', len(trackers))
     items = cart_query(restaurant_id)
     tracker_item_dict = {}
     for i in range(len(trackers)):
@@ -48,9 +48,14 @@ def see_orders(request, restaurant_id):
 
 """ helper function to find number of active orders """
 def get_active_orders(rest_id):
+    #should only get size from payed orders
     restaurant = Restaurant.objects.filter(id = rest_id).first()
     trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
-    server_dict_length = len(trackers)
+    paid_orders = []
+    for tracker in trackers:
+        if tracker.cart.is_paid:
+            paid_orders.append(tracker)
+    server_dict_length = len(paid_orders)
     return server_dict_length
 
 def check_new_orders(request):
@@ -82,7 +87,7 @@ def mark_order_done(request, restaurant_id, tracker_id):
             client = Client(settings.TWILIO_SID, settings.TWILIO_AUTH_TOKEN)
             message = client.messages.create(
                               from_='+14845099889',
-                              body='Your Order is Ready!',
+                              body='¡Tu orden de Local Tres esta lista!',
                               to=str(tracker.phone_number)
                           )
     return redirect('/kitchen/{r_id}'.format(r_id = restaurant_id))

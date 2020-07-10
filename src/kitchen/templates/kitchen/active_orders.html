@@ -49,6 +49,7 @@
             <div id = 'menu_container' class = 'row justify-content-center mt-5'>
 
                 {% for tracker, list in dict.items %}
+                  {% if tracker.cart.is_paid %}
                   <div class="order-card card shadow p-3 bg-white rounded mr-2 ml-2 mb-2 mt-2">
                     <div class="card-body">
 
@@ -109,6 +110,7 @@
 
                     </div>
                   </div>
+                  {% endif %}
                 {% endfor %}
 
             </div>
