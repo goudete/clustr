@@ -6,6 +6,50 @@
 
 
 <div class="container">
+
+  <div class="justify-content-center">
+    {% if me.handle_payment == False %}
+      <div class = 'row justify-content-center mt-4'>
+        <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
+          <div class = 'card-body'>
+
+            <div class="card-title">
+              <h4>{% trans 'Would You Like to Accept Payments?' %}</h4>
+            </div>
+
+            <div class = 'row justify-content-center mt-5'>
+              <div class = 'col'>
+                <form action = '/restaurant_admin/answer_question' method = 'post'>
+                  {% csrf_token %}
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="no" name="answer" value="no" class="custom-control-input">
+                    <label class="custom-control-label" for="no">{% trans 'No' %}</label>
+                  </div>
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="yes" name="answer" value="yes" class="custom-control-input">
+                    <label class="custom-control-label" for="yes">{% trans 'Yes' %}</label>
+                  </div>
+
+                  <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+
+                </form>
+
+                <hr>
+
+                <p class="card-text">{% trans "We charge a fixed fee and a percentage of the transaction each time you accept a credit or debit card payment (3.6% + 3 MXN). The price is the same for all cards. There’s no additional fee for international cards or failed charges. We pay out on a rolling daily basis to the account you indicate." %}</p>
+                <a href="https://stripe.com/es-mx/pricing" class="card-link">{% trans "More Information" %}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+
   <div class = 'row justify-content-center mt-4'>
     <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
       <div class="card-body">

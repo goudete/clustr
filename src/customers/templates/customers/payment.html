@@ -134,40 +134,25 @@
   </div>
   <!-- Cash Card Ends -->
 
-  <!-- Temporary Payment Card -->
-  <!-- <div class="card shadow p-3 bg-white rounded mb-4">
-    <div class="card-body">
-      <div class="row pb-2">
-        <div class="col-2">
-          <svg class="bi bi-aspect-ratio" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5v-9zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
-            <path fill-rule="evenodd" d="M2 4.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H3v2.5a.5.5 0 0 1-1 0v-3zm12 7a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H13V8.5a.5.5 0 0 1 1 0v3z"/>
-          </svg>
-        </div>
-        <div class="col-10">
-          <h4 class="cart-title pb-2">{% trans "Cash" %}</h4>
-        </div>
-      </div>
-      <button class="button" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{menu.id}} "id="submit_cash">
-        Pagar
-      </button>
-    </div>
-  </div> -->
-  <!-- End Temporary Payment Card -->
+
 <span id="publishable_key" key-value="{{ publishable }}"></span>
+<span id="connected_account_id" connected-id="{{ curr_rest.stripe_account_id }}"></span>
 
 </div>
 
 <!-- Stripe Javascript begins -->
 <script>
 
- var publishable = document.getElementById('publishable_key').getAttribute('key-value')
- // var publishable = $('#publishable_key').val();
+ var publishable = document.getElementById('publishable_key').getAttribute('key-value');
+ var connected_account = document.getElementById('connected_account_id').getAttribute('connected-id');
  console.log('publishable: ' + publishable)
+ console.log('connected-id: ' + connected_account)
 
  if (publishable) {
-   var stripe = Stripe(publishable);
-   // console.log(stripe)
+   var stripe = Stripe(publishable, {
+     stripeAccount: connected_account
+   });
+
    var elements = stripe.elements();
 
     var style = {
