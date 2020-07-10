@@ -491,19 +491,23 @@ def payment(request, cart_id, restaurant_id, menu_id):
             cart.total_with_tip = cart.total
             cart.save()
         #stripe API stuff here
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        intent = stripe.PaymentIntent.create(
-          amount=int((cart.total_with_tip*100)),
-          currency='mxn',
-          transfer_data={'destination': curr_rest.stripe_account_id,}
+        if curr_rest.handle_payment:
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            intent = stripe.PaymentIntent.create(
+              amount=int((cart.total_with_tip*100)),
+              currency='mxn',
+              transfer_data={'destination': curr_rest.stripe_account_id,}
 
-           # Verify your integration in this guide by including this parameter
-          # metadata={'integration_check': 'accept_a_payment'},
-        )
-        cart.stripe_order_id = intent.id
-        cart.save()
+               # Verify your integration in this guide by including this parameter
+              # metadata={'integration_check': 'accept_a_payment'},
+            )
+            cart.stripe_order_id = intent.id
+            cart.save()
+            publishable = settings.STRIPE_PUBLISHABLE_KEY
+            return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable})
+
         #if method is a get, then they're inputting payment info
-        return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu})
+        return render(request, 'customers/payment.html', {'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu})
 
 
 ''' This is an intermediary step between payment and order confirmation. Email and Phone form'''

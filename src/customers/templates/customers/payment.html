@@ -76,6 +76,7 @@
   </div>
 
 <!-- Credit Card Card -->
+{% if restaurant.handle_payment %}
   <div class="card shadow p-3 bg-white rounded mb-4">
     <div class="card-body">
       <div class="row pb-2">
@@ -110,6 +111,7 @@
     </div>
   </div>
   <!-- Credit Card Card ends -->
+  {% endif %}
 
   <!-- Cash Card -->
   <div class="card shadow p-3 bg-white rounded mb-4">
@@ -125,7 +127,7 @@
           <h4 class="cart-title pb-2">{% trans "Cash" %}</h4>
         </div>
       </div>
-      <button class="button" cart="{{ cart.id }}" id="submit_cash">
+      <button class="button" id="submit_cash" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
         {% trans "Pay Cash" %}
       </button>
     </div>
@@ -152,87 +154,98 @@
     </div>
   </div> -->
   <!-- End Temporary Payment Card -->
+<div class="publishable_key" value="{{ publishable }}"></div>
+
 
 </div>
 
 <!-- Stripe Javascript begins -->
 <script>
- var stripe = Stripe('pk_test_Qx7WrULtPr3uWHfJaQveYTfS00pzFRZbt7');
- var elements = stripe.elements();
+ var publishable = $('.publishable_key').val()
+ console.log('publishable: ' + publishable)
 
-  var style = {
-    base: {
-      color: '#32325d',
-      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-      fontSmoothing: 'antialiased',
-      fontSize: '16px',
-      '::placeholder': {
-        color: '#aab7c4'
+ if (publishable) {
+   var stripe = Stripe(publishable);
+   // console.log(stripe)
+   var elements = stripe.elements();
+
+    var style = {
+      base: {
+        color: '#32325d',
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+          color: '#aab7c4'
+        }
+      },
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
       }
-    },
-    invalid: {
-      color: '#fa755a',
-      iconColor: '#fa755a'
-    }
-  };
+    };
 
-  var card = elements.create("card", { style: style });
-  card.mount("#card-element");
+    var card = elements.create("card", { style: style });
+    card.mount("#card-element");
 
-  card.on('change', function(event) {
-   var displayError = document.getElementById('card-errors');
-   if (event.error) {
-     displayError.textContent = event.error.message;
-   } else {
-     displayError.textContent = '';
-   }
-  });
-
-  var form = document.getElementById('payment-form');
-  var clientSecret = document.getElementById('submit').getAttribute('data-secret')
-  var cart_id = document.getElementById('submit').getAttribute('cart');
-  // var cart_id = document.getElementById('submit_cash').getAttribute('cart');
-  // var rest_id = document.getElementById('submit_cash').getAttribute('rest');
-  // var menu_id = document.getElementById('submit_cash').getAttribute('menu');
-
-  var rest_id = document.getElementById('submit').getAttribute('rest');
-  var menu_id = document.getElementById('submit').getAttribute('menu');
-  var cash_payment = document.getElementById('submit_cash');
-
-  form.addEventListener('submit', function(ev) {
-    ev.preventDefault();
-
-    stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-       card: card,
-       billing_details: {
-         name: 'Jenny Rosen'
-       }
-     }
-   }).then(function(result) {
-     if (result.error) {
-       console.log(result.error.message);
+    card.on('change', function(event) {
+     var displayError = document.getElementById('card-errors');
+     if (event.error) {
+       displayError.textContent = event.error.message;
      } else {
-        // The payment has been processed!
-       if (result.paymentIntent.status === 'succeeded') {
-          // Show a success message to your customer
-          // There's a risk of the customer closing the window before callback
-          // execution. Set up a webhook or plugin to listen for the
-          // payment_intent.succeeded event that handles any business critical
-          // post-payment actions.
-          // ***send paymentIntent id to views here*** Probs with AJAX
-         console.log('payment success');
-         console.log(cart_id)
-         location.href="/customers/card_email_receipt/" + cart_id+ "/" + rest_id + "/" + menu_id;
-
-       }
+       displayError.textContent = '';
      }
-   });
- });
+    });
 
-  $( "#submit_cash" ).click(function() {
-    location.href="/customers/cash_email_receipt/" + cart_id + "/" + rest_id + "/" + menu_id;
-  });
+    var form = document.getElementById('payment-form');
+    var clientSecret = document.getElementById('submit').getAttribute('data-secret')
+    var cart_id = document.getElementById('submit').getAttribute('cart');
+    // var cart_id = document.getElementById('submit_cash').getAttribute('cart');
+    // var rest_id = document.getElementById('submit_cash').getAttribute('rest');
+    // var menu_id = document.getElementById('submit_cash').getAttribute('menu');
+
+    var rest_id = document.getElementById('submit').getAttribute('rest');
+    var menu_id = document.getElementById('submit').getAttribute('menu');
+    // var cash_payment = document.getElementById('submit_cash');
+
+    form.addEventListener('submit', function(ev) {
+      ev.preventDefault();
+
+      stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+         card: card,
+         billing_details: {
+           name: 'Jenny Rosen'
+         }
+       }
+     }).then(function(result) {
+       if (result.error) {
+         console.log(result.error.message);
+       } else {
+          // The payment has been processed!
+         if (result.paymentIntent.status === 'succeeded') {
+            // Show a success message to your customer
+            // There's a risk of the customer closing the window before callback
+            // execution. Set up a webhook or plugin to listen for the
+            // payment_intent.succeeded event that handles any business critical
+            // post-payment actions.
+            // ***send paymentIntent id to views here*** Probs with AJAX
+           // console.log('payment success');
+           // console.log(cart_id)
+           location.href="/customers/card_email_receipt/" + cart_id+ "/" + rest_id + "/" + menu_id;
+
+         }
+       }
+     });
+   });
+}
+var cart_id = document.getElementById('submit_cash').getAttribute('cart');
+var rest_id = document.getElementById('submit_cash').getAttribute('rest');
+var menu_id = document.getElementById('submit_cash').getAttribute('menu');
+
+$( "#submit_cash" ).click(function() {
+  location.href="/customers/cash_email_receipt/" + cart_id + "/" + rest_id + "/" + menu_id;
+});
 
 </script>
 <!-- Stripe JavaScript ends -->
