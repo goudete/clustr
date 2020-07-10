@@ -494,9 +494,10 @@ def payment(request, cart_id, restaurant_id, menu_id):
         if curr_rest.handle_payment:
             stripe.api_key = settings.STRIPE_SECRET_KEY
             intent = stripe.PaymentIntent.create(
+              payment_method_types=['card'],
               amount=int((cart.total_with_tip*100)),
               currency='mxn',
-              transfer_data={'destination': curr_rest.stripe_account_id,}
+              on_behalf_of=curr_rest.stripe_account_id
 
                # Verify your integration in this guide by including this parameter
               # metadata={'integration_check': 'accept_a_payment'},
