@@ -154,14 +154,14 @@
     </div>
   </div> -->
   <!-- End Temporary Payment Card -->
-<div class="publishable_key" value="{{ publishable }}"></div>
+<div id="publishable_key" value="{{ publishable }}"></div>
 
 
 </div>
 
 <!-- Stripe Javascript begins -->
 <script>
- var publishable = $('.publishable_key').val()
+ var publishable = $('#publishable_key').val();
  console.log('publishable: ' + publishable)
 
  if (publishable) {
