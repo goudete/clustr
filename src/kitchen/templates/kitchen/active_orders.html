@@ -146,7 +146,8 @@
         },
         dataType: 'json',
         success: function (data) {
-          if (data.new_orders === true){
+          console.log(data.new_orders);
+          if (data.new_orders){
             audio.play();
 
             setTimeout(function () {
