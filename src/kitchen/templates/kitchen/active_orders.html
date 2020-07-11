@@ -133,31 +133,33 @@
     var rest_id = $("#restaurant_id").val()
     var audio = document.getElementById("bell_audio")
 
-    setInterval(CheckIfNewOrder, 10000);
+  CheckIfNewOrder();
 
     function CheckIfNewOrder(){
       //ajax call here
       $.ajax({
-      type: "GET",
-      url: "{% url 'check_new_orders' %}",
-      data: {
-        'rest_id': rest_id,
-        'dict_length': dict_length,
-      },
-      dataType: 'json',
-      success: function (data) {
-        if (data.new_orders === true){
-          audio.play();
+        type: "GET",
+        url: "{% url 'check_new_orders' %}",
+        data: {
+          'rest_id': rest_id,
+          'dict_length': dict_length,
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data.new_orders === true){
+            audio.play();
 
-          setTimeout(function () {
-            location.reload();
-          }, 2000);
+            setTimeout(function () {
+              location.reload();
+            }, 2000);
+          }
+          else{
+            console.log('no change')
+          }
         }
-        else{
-          console.log('no change')
-        }
-      }
-    });
+      });
+      //recursively call
+      setTimeout(CheckIfNewOrder, 3000);
     }
 
   </script>
