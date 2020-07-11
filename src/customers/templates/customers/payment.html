@@ -145,13 +145,13 @@
 
  var publishable = document.getElementById('publishable_key').getAttribute('key-value');
  var connected_account = document.getElementById('connected_account_id').getAttribute('connected-id');
- console.log('publishable: ' + publishable)
- console.log('connected-id: ' + connected_account)
+ // console.log('publishable: ' + publishable)
+ // console.log('connected-id: ' + connected_account)
 
  if (publishable) {
    var stripe = Stripe(publishable, {
      stripeAccount: connected_account
-   });
+    });
 
    var elements = stripe.elements();
 
