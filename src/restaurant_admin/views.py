@@ -933,3 +933,16 @@ def sales(request):
     form = DatesForm
     context = {'form':form}
     return render(request,'restaurant/sales.html',context)
+
+def set_langauge_field(usr, lang):
+    rest = Restaurant.objects.filter(user = usr).first()
+    rest.language = lang
+    rest.save()
+    print(rest.language)
+
+def set_language(request, language):
+    translation.activate(language)
+    set_langauge_field(request.user, language)
+    response = HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
+    return response
