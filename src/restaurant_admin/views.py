@@ -896,9 +896,10 @@ def sales(request):
             start_datetime_str = datetime.strptime(cd['start_date'] + " " + cd['start_time'],
                                 "%Y-%m-%d %I:00 %p")
             print(start_datetime_str)
-            start_datetime_str = start_datetime_str.replace(tzinfo = timezone.utc)
-            end_datetime_str = datetime.strptime(cd['end_date'] + cd['end_time'],
-                                "%Y-%m-%d%I:00 %p")
+            #start_datetime_str = start_datetime_str.replace(tzinfo = timezone.utc)
+            end_datetime_str = datetime.strptime(cd['end_date'] + " " + cd['end_time'],
+                                "%Y-%m-%d %I:00 %p")
+            print(end_datetime_str)
             carts = Cart.objects.filter(restaurant=restaurant).filter(created_at__range=(start_datetime_str,end_datetime_str))
             total_sales = sum([cart.total for cart in carts])
             total_sales_with_tip = sum([cart.total_with_tip for cart in carts])
