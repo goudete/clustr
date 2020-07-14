@@ -557,10 +557,8 @@ msgid "Create"
 msgstr "Crear"
 
 #: restaurant_admin/templates/restaurant/cashiers.html:72
-#, fuzzy
-#| msgid "Cashiers"
 msgid "Cashier Login"
-msgstr "Cajeros"
+msgstr "Iniciar sesión cajero"
 
 #: restaurant_admin/templates/restaurant/cashiers.html:80
 msgid "No Cashiers Yet"
