@@ -17,6 +17,7 @@ from django.utils.translation import gettext as _
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template, render_to_string
 from django.utils import timezone
+from django.utils import translation
 
 
 
@@ -25,6 +26,11 @@ def show_all_menus(request):
     menus = Menu.objects.all()
     return render(request, 'customers/all_menus.html', {'menus': menus})
 
+#sets the language of the menu based on the restaurant admin
+def set_language(response, language):
+    translation.activate(language)
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
+    return response
 
 #this method just creates a cart object and then redirects to the menu
 #method needs to be a post, otherwise someone could accidentally create 2 carts
@@ -36,7 +42,9 @@ def create_cart(request, restaurant_id, menu_id):
         cart.total_with_tip = 0
         cart.save()
         #redirect to view menu page
-        return redirect('/customers/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
+        response = HttpResponseRedirect('/customers/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
+        set_language(response, Restaurant.objects.filter(id = restaurant_id).first().language)
+        return response
     #otherwise it sends you to the page w/ all the menus
     else:
         return redirect('/customers')

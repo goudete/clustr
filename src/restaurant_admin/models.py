@@ -22,6 +22,8 @@ class Restaurant(models.Model):
     #stripe account id
     stripe_account_id = models.CharField(null = True, default = '', max_length = 255)
     dine_in = models.BooleanField(default = False)
+    #language
+    language = models.CharField(default = 'en-us', max_length = 10)
 
 
 class Menu(models.Model):
