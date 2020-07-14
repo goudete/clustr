@@ -75,7 +75,7 @@
 
                 <div class = 'row justify-content-center mt-3'>
                   <div class = 'col'>
-                    <form action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
+                    <form id = 'questions_form' action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
                       {% csrf_token %}
 
                       <div class="form-group">
@@ -88,6 +88,19 @@
                         <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
                         <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
                         <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
+                      </div>
+
+                      <div class = "form-group">
+                        <b><label for = "hours">{% trans 'Hours of Operation' %}</label></b>
+                        <div class = 'row' id = 'hours'>
+                          <div class = 'col'>
+                            <input type = 'text' id = 'timepicker' name = 'opening' {% if me.opening_time %} value = {{me.opening_time}} {% endif %}>
+                          </div>
+                          {% trans 'to' %}
+                          <div class = 'col'>
+                            <input type = 'text' id = 'timepicker2' name = 'closing' {% if me.closing_time %} value = {{me.closing_time}} {% endif %}>
+                          </div>
+                        </div>
                       </div>
 
                       <div class = 'row mt-3'>
@@ -119,7 +132,7 @@
                           </div>
                         </div>
 
-                      <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+                      <button id = 'question_form_button' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
 
                     </form>
                   </div>
@@ -263,15 +276,7 @@
 
     </div>
   </body>
-  <!-- <script>
-    function menuForm(){
-      if(document.getElementById('menu_form').style.display == 'block') document.getElementById('menu_form').style.display = 'none'
-      else document.getElementById('menu_form').style.display = 'block'
-    }
-    function closeMenuForm(){
-      document.getElementById('menu_form').style.display = 'none';
-    }
-  </script> -->
+
   <script>
       $('#inputGroupFile04').on('change',function(){
         var fileName = $(this)[0].files[0].name;
@@ -289,11 +294,32 @@
         $('[data-toggle="popover"]').popover()
       })
   </script>
+
   <script>
-  $('#create_menu').on('shown.bs.modal', function () {
-    $('#myInput').trigger('focus')
-    })
+    $('#create_menu').on('shown.bs.modal', function () {
+      $('#myInput').trigger('focus')
+      })
   </script>
+
+  <script>
+    document.getElementById('question_form_button').addEventListener("click", function(event){
+
+      var openingTime = document.getElementById('timepicker').value;
+      var closingTime = document.getElementById('timepicker2').value;
+
+      if(!openingTime){
+        alert('please fill out an opening time!!');
+        event.preventDefault();
+      }
+      else if (!closingTime){
+        alert('please fill out a closing time!!');
+        event.preventDefault();
+      }
+      else if(openingTime && closingTime)document.getElementById('questions_form').submit();
+
+    }, false);
+  </script>
+
 </html>
 
 {% endblock %}

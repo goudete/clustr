@@ -49,13 +49,25 @@ def create_cart(request, restaurant_id, menu_id):
     else:
         return redirect('/customers')
 
+def check_time(rest):
+    if (not rest.opening_time) or (not rest.closing_time):
+        return True
+    curr_time = datetime.datetime.now().time()
+    if curr_time < rest.opening_time:
+        return False
+    elif curr_time > rest.closing_time:
+        return False
+    return True
+
+
 '''Displays restaurant's menu'''
 def view_menu(request, cart_id, restaurant_id, menu_id):
     if request.method == 'GET':
         curr_cart = Cart.objects.get(id = cart_id)
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-
+        if not check_time(curr_rest):
+            return HttpResponse(_('Sorry, {rr} is currently closed').format(rr = curr_rest.name))
         #get all possible categories of menu
         categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
         category_items = {}

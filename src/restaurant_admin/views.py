@@ -162,13 +162,25 @@ def is_dine_in(resp):
         return True
     return False
 
+
+#helper function to save the time
+def save_time(open, time, rest):
+    # time = clean_time(time)
+    if open:
+        rest.opening_time = time
+        rest.save()
+    else:
+        print("time: ", time)
+        rest.closing_time = time
+        rest.save()
+
+
 def answer_about(request):
     #query restaurant
     curr_rest = Restaurant.objects.filter(user = request.user).first()
     #check request method
     if request.method == 'POST':
         #check for a logo
-
         logo = request.FILES.get('logo', False)
         if logo:
             doc = request.FILES['logo'] #get file
@@ -191,6 +203,8 @@ def answer_about(request):
         else:
             curr_rest.dine_in = False
         #save
+        save_time(True, request.POST['opening'], curr_rest)
+        save_time(False, request.POST['closing'], curr_rest)
         curr_rest.info_input = True
         curr_rest.save()
         #redirect either way post vs get
