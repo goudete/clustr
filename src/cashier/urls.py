@@ -27,6 +27,6 @@ urlpatterns = [
     path('order_history/<int:log_no>',views.orderHistoryView, name = 'order_history'),
     path('ajax/ajax_change_order_quantity/<int:log_no>', views.ajax_change_order_quantity, name = 'change_order_quantity'),
     path('ajax/ajax_add_item/<int:log_no>',views.ajax_add_item, name = 'add_item'),
-    path('logout', views.cashier_logout, name='logout'),
+    path('logout/<int:log_no>', views.cashier_logout, name='logout'),
     path('receipt', TemplateView.as_view(template_name="emails/receipt/receipt.html")),
 ]
