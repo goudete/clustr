@@ -1,0 +1,114 @@
+{% extends 'customers/base.html'%}
+{% load static %}
+{% load i18n %}
+
+
+{% block content %}
+<style>
+.thumbnail{
+  display: block;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+#thumb{
+  float: right;
+  max-height: 300px;
+
+}
+
+#item_img{
+  max-height: 250px;
+}
+
+div.scrollmenu {
+  /* background-color: #333; */
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+div.scrollmenu a:hover {
+  background-color: #D3D3D3;
+}
+
+</style>
+
+<!-- logo -->
+<div class="jumbotron">
+  <div class="row justify-content-center">
+    <div class="thumbnail thumb">
+      {% if restaurant.photo_path %}
+      <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% endif %}
+    </div>
+  </div>
+</div>
+<!-- end logo -->
+
+<div class="container-fluid">
+
+
+  <!-- Restaurant Name and info -->
+  <div class="row ml-1 justify-content-center mt-5">
+    <h5>{{ restaurant.name }}</h5>
+  </div>
+  <div class="row ml-1 mb-4 justify-content-center">
+    <h6>{{ restaurant.info }}</h6>
+  </div>
+
+  <!-- End  -->
+  <hr>
+
+  <div class="row justify-content-center mt-5">
+    <!-- <div class="col"> -->
+      <h4>{{ restaurant.name }}{% trans ' is closed!' %}</h4>
+    <!-- </div> -->
+  </div>
+  <div class="row justify-content-center mt-3">
+    <div class="col">
+       <h5>{% trans 'Please come back during business hours: ' %}  {{ restaurant.opening_time}} - {{ restaurant.closing_time }}</h5>
+    </div>
+  </div>
+
+  <!-- Cart Button ends -->
+  <footer class="page-footer pt-4">
+      <div class="row justify-content-center mb-5">
+        <!-- <div class="col-12"> -->
+          <!-- <a href="/customers/payment/{{ cart.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a> -->
+        <!-- </div> -->
+      </div>
+  </footer>
+</div>
+
+<script>
+
+  $(document).ready(function () {
+    var category_name = $(".cat_button").attr("name");
+    $('#display_category_' + category_name).show()
+
+    if (sessionStorage.getItem('#myModal') !== 'true'){
+      $('#myModal').modal('show');
+      sessionStorage.setItem('#myModal', 'true');
+    }
+
+    $(".cat_button").click(function(){
+       $('.MenuItems').hide();
+      var category_name = $(this).attr("name");
+      $('#display_category_' + category_name).show(400);
+
+    });
+
+  });
+
+
+</script>
+
+{% endblock %}

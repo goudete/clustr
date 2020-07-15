@@ -67,7 +67,7 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
         if not check_time(curr_rest):
-            return HttpResponse(_('Sorry, {rr} is currently closed').format(rr = curr_rest.name))
+            return render(request, 'customers/closed.html', {'restaurant':curr_rest})
         #get all possible categories of menu
         categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
         category_items = {}
