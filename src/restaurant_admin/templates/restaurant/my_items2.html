@@ -299,27 +299,8 @@ input:checked + .slider:before {
                   </div>
               </nav>
               <div class="row">
-              {% for item in items %}
-              <div class="col-sm-2 py-2">
-                  <div class="card h-100 border-secondary" style="margin-bottom: 0 !important;">
-                      <div class="card-body mb-0">
-                          <h6 class="card-title" style="text-align: center;">{{item.name}}</h6>
-                          <a style = 'cursor: pointer; position: absolute; top: 5px; right: 5px;'>
-                            <svg class="bi bi-pencil" width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#edit_modal{{item.id}}">
-                              <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
-                              <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
-                            </svg>
-                          </a>
-                          <!-- <p class="card-text">{{item.description}}</p> -->
-                          {% if item.photo_path %}
-                          <div style="max-width: 100%; max-height: 100%;">
-                            <img class="rounded mx-auto d-block" src="{% static item.photo_path %}" height=75 width=75>
-                          </div>
-                          {% endif %}
-                          <br>
-                            <strong style="text-align: center; margin-left: 25%">${{item.price}}</strong>
-                      </div>
-                  </div>
+              <div id="root">
+
               </div>
               <!-- modal that pops up when item is to be edited-->
               <div class="modal fade bd-example-modal-lg" id="edit_modal{{item.id}}" tabindex="-1" role="dialog">
@@ -441,7 +422,6 @@ input:checked + .slider:before {
                                     </div>
                                   </div>
                                 </form>
-
                               </div>
                             <!-- </div> -->
                         <!-- </div> -->
@@ -452,12 +432,16 @@ input:checked + .slider:before {
           </div>
               {% endfor %}
                 </div>
-              {% endfor %}
         </div>
           <!-- </div> -->
         </div>
-        <!-- hidden input to store language code -->
-        <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
+        <!-- Load React. -->
+          <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+          <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+          <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+          <!-- Load our React component. -->
+          <script type="text/jsx" src="{% static 'table-react/table/src/index.js' %}"></script>
   </body>
   <script>
     function asd(a)
@@ -554,14 +538,7 @@ $('#add_modal').on('shown.bs.modal', function () {
 <script type="text/javascript">
   $(document).on('click', '#add_item_submit', function(e) {
     $("#add_item_submit").attr("disabled", true);
-    var language_code = $('#language_code').val();
-    console.log(language_code);
-    if (language_code === 'es-mx') {
-      display_str = 'Creando Platillo...'
-    } else {
-      display_str = 'Creating Item...'
-    }
-    $("#add_item_submit")[0].innerText = (display_str);
+    $("#add_item_submit")[0].innerText = "Creando...";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     e.preventDefault();
@@ -616,14 +593,10 @@ $('#add_modal').on('shown.bs.modal', function () {
   $(document).on('click', '.edit_item_submit', function(e) {
     e.preventDefault();
     var item_id = $(this).attr("name")
-    var language_code = $('#language_code').val();
-    if (language_code === 'es-mx') {
-      display_str = 'Actualizando ...'
-    } else {
-      display_str = 'Updating...'
-    }
+    console.log("id");
+    console.log(item_id);
     $("#edit_item_submit" + item_id).attr("disabled", true);
-    $("#edit_item_submit" + item_id)[0].innerText = display_str;
+    $("#edit_item_submit" + item_id)[0].innerText = "Actualizando...";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     var formData = new FormData($('#edit_item_form' + item_id)[0]);

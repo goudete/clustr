@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('restaurant_admin', '0001_initial'),
         ('cashier', '0001_initial'),
+        ('restaurant_admin', '0001_initial'),
     ]
 
     operations = [

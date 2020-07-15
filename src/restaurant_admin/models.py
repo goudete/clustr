@@ -24,6 +24,9 @@ class Restaurant(models.Model):
     dine_in = models.BooleanField(default = False)
     #language
     language = models.CharField(default = 'en-us', max_length = 10)
+    #open and closing time
+    opening_time = models.TimeField(null = True, auto_now = False, auto_now_add = False)
+    closing_time = models.TimeField(null = True, auto_now = False, auto_now_add = False)
 
 
 class Menu(models.Model):

@@ -1,5 +1,8 @@
 from django.urls import path
 from . import views
+from django.views.i18n import JavaScriptCatalog
+from django.conf.urls.i18n import i18n_patterns
+
 
 urlpatterns = [
     path('', views.login_view),
@@ -30,4 +33,5 @@ urlpatterns = [
     path('ajax/ajax_add_item',views.ajax_add_item, name="ajax_add_item"),
     path('ajax/ajax_edit_item',views.ajax_edit_item, name="ajax_edit_item"),
     path('set_language/<str:language>', views.set_language),
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'), #for translation in js code
 ]

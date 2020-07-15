@@ -1,0 +1,2 @@
+msgid "Order is already paid"
+msgstr "La orden ya fue pagada"

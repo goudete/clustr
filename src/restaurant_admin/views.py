@@ -162,13 +162,25 @@ def is_dine_in(resp):
         return True
     return False
 
+
+#helper function to save the time
+def save_time(open, time, rest):
+    # time = clean_time(time)
+    if open:
+        rest.opening_time = time
+        rest.save()
+    else:
+        print("time: ", time)
+        rest.closing_time = time
+        rest.save()
+
+
 def answer_about(request):
     #query restaurant
     curr_rest = Restaurant.objects.filter(user = request.user).first()
     #check request method
     if request.method == 'POST':
         #check for a logo
-
         logo = request.FILES.get('logo', False)
         if logo:
             doc = request.FILES['logo'] #get file
@@ -191,6 +203,8 @@ def answer_about(request):
         else:
             curr_rest.dine_in = False
         #save
+        save_time(True, request.POST['opening'], curr_rest)
+        save_time(False, request.POST['closing'], curr_rest)
         curr_rest.info_input = True
         curr_rest.save()
         #redirect either way post vs get
@@ -316,6 +330,7 @@ def item_addon_dict(items):
     return dict
 
 def edit_menu(request, menu_id):
+    language_code = settings.LANGUAGE_CODE
     if not validate_id_number(request, menu_id):
         return HttpResponse('you are not authorized to view this')
     curr_menu = Menu.objects.filter(id = menu_id).first()
@@ -363,7 +378,7 @@ def edit_menu(request, menu_id):
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted})
+                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'language_code':language_code})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -626,6 +641,7 @@ def kitchen_no(request):
 def my_items(request):
     curr_rest = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
+    language_code = settings.LANGUAGE_CODE
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     if url_parameter:
@@ -647,7 +663,8 @@ def my_items(request):
         print("ajax")
         html = render_to_string(
             template_name="restaurant/replaceable_content.html",
-            context={"menus": [],'item_form':form,'me':curr_rest,'category_items':category_items}
+            context={"menus": [],'item_form':form,'me':curr_rest,'category_items':category_items,
+                     'language_code':language_code}
         )
 
         data_dict = {"html_from_view": html}
@@ -659,7 +676,8 @@ def my_items(request):
     # 'item_form': form
     # 'edit_form':edit_form
     # 'menus': []
-    return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items, 'selct_options':selct_options, 'item_form': form})
+    return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items,
+                  'selct_options':selct_options, 'item_form': form, 'language_code':language_code})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
@@ -882,9 +900,10 @@ def sales(request):
             start_datetime_str = datetime.strptime(cd['start_date'] + " " + cd['start_time'],
                                 "%Y-%m-%d %I:00 %p")
             print(start_datetime_str)
-            start_datetime_str = start_datetime_str.replace(tzinfo = timezone.utc)
-            end_datetime_str = datetime.strptime(cd['end_date'] + cd['end_time'],
-                                "%Y-%m-%d%I:00 %p")
+            #start_datetime_str = start_datetime_str.replace(tzinfo = timezone.utc)
+            end_datetime_str = datetime.strptime(cd['end_date'] + " " + cd['end_time'],
+                                "%Y-%m-%d %I:00 %p")
+            print(end_datetime_str)
             carts = Cart.objects.filter(restaurant=restaurant).filter(created_at__range=(start_datetime_str,end_datetime_str))
             total_sales = sum([cart.total for cart in carts])
             total_sales_with_tip = sum([cart.total_with_tip for cart in carts])
