@@ -25,7 +25,7 @@
 <div class="jumbotron">
   <div class="row justify-content-center">
     <div class="thumbnail thumb">
-      <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% if restaurant.photo_path %}<img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">{% endif %}
     </div>
   </div>
 </div>
