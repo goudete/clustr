@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from django.views.i18n import JavaScriptCatalog
+from django.conf.urls.i18n import i18n_patterns
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('restaurant_admin/', include('restaurant_admin.urls')),
@@ -23,5 +27,6 @@ urlpatterns = [
     path('cashier/',include('cashier.urls')),
     path('kitchen/', include('kitchen.urls')),
     path('comms/', include('comms.urls')),
-    path('react',TemplateView.as_view(template_name='index.html'))
+    path('react',TemplateView.as_view(template_name='index.html')),
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'), #for translation in js code
 ]

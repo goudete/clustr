@@ -1,0 +1,638 @@
+{% extends 'restaurant/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+{% load widget_tweaks %}
+<html>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> <!-- search icon -->
+<!-- JQuery CDN -->
+
+<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>
+<!-- ajax search css -->
+<style>
+  @keyframes blinker {
+      from {opacity: 1.0;}
+      to {opacity: 0.0;}
+    }
+
+  .blink {
+      text-decoration: blink;
+      animation-name: blinker;
+      animation-duration: 0.6s;
+      animation-iteration-count:infinite;
+      animation-timing-function:ease-in-out;
+      animation-direction: alternate;
+    }
+
+    .add_items_style{
+      font-size: 200%;
+    }
+</style>
+<style>
+.test {
+  color: red;
+}
+</style>
+  <body>
+    <div class="container" id="daddy_div">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
+
+          <!-- <div class ='card-header'> -->
+
+          <!-- the alert card if they havent picked to handle payments or not -->
+          {% if me.answered_pay_question == False %}
+            <div class = 'row justify-content-center mb-2'>
+              <div class="card text-white bg-warning mb-3" style = 'width: 20rem;'>
+                <div class = 'card-body'>
+                  <div class = 'row justify-content-center'>
+                    <div class = 'col'>
+                      <h5>{% trans 'Would You Like Us to Handle the Payment Process for You?' %}</h5>
+                    </div>
+                  </div>
+                  <div class = 'row justify-content-center mt-2'>
+                    <div class = 'col'>
+                      <form action = '/restaurant_admin/answer_question' method = 'post'>
+                        {% csrf_token %}
+                        <div class = 'row'>
+                          <div class = 'col'>
+                            <input type="radio" id="no" name="answer" value="no">
+                            <label for="no">{% trans 'No' %}</label><br>
+                          </div>
+                          <div class = 'col ml-3'>
+                            <input type="radio" id="yes" name="answer" value="yes">
+                            <label for="yes">{% trans 'Yes' %}</label><br>
+                          </div>
+                        </div>
+
+                        <div class = 'row justify-content-center'>
+                          <div class = 'col'>
+                            <button class = 'rounded' type = 'submit'>{% trans 'Submit' %}</button>
+                          </div>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+            <div class = 'row mb-2'>
+              <div class = "col-2 text-right"
+                  <h2><span class="add_items_style">{% trans "Add Items" %}</span></h2>
+              </div>
+              <div class="col-4">
+                <a href="#" data-toggle="popover" title=" {% trans 'Add Items' %} " data-content=" {% trans 'Menu Items are the basic building blocks of your Menus. Add new items and edit existing ones.' %} ">
+                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
+                    <circle cx="8" cy="4.5" r="1"/>
+                  </svg>
+                </a>
+              </div>
+
+              <!-- <div class="col-3">
+                  <h3>
+                  <a style = 'cursor: pointer;'>
+                    <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
+                    </svg>
+                  </a>
+                  </h3>
+              </div> -->
+
+              <div class="col-6 float-right">
+            		<form class="form-inline " onkeydown="return event.key != 'Enter';">
+                  {% csrf_token %}
+            		<i id="search_icon" class="fas fa-search" aria-hidden="true"></i>
+                {% trans "Search" as search_trans %}
+            		<input id="user-input" class="form-control form-control-sm ml-3 w-75" type="text" placeholder="{{search_trans}}" aria-label="{{search_trans}}">
+            		</form>
+            	</div>
+            </div>
+
+            <div class="row mb-5">
+              <div class="col-1 text-right">
+                <a style = 'cursor: pointer;'>
+                  <svg class="bi bi-plus-circle-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <!-- modal that pops up when item is to be created-->
+            <div class="modal fade bd-example-modal-lg" id="add_modal" tabindex="-1" role="dialog">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class = 'modal-content'>
+                  <div class="modal-body">
+                    <!--hidden form to add new item -->
+                    <!-- <div class = 'row justify-content-center'> -->
+                      <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
+
+                        <div class ='row justify-content-center'>
+                          <h3>{% trans "Create New Item" %}</h3>
+                        </div>
+
+                        <div class="row justify-content-center">
+                          <form method="post" enctype="multipart/form-data" id = "create_item_form">
+                            {% csrf_token %}
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div class = 'col'>
+                                <label for = 'new_item_name'>{%trans 'Name*' %}</label><br>
+                                <input type = 'text' name = 'name' id = 'new_item_name' style = 'width: 450px;' required>
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "name_errors" class="errors">
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div class = 'col'>
+                                <label for = 'new_item_description'>{% trans 'Description' %}</label><br>
+                                <textarea rows = '6' cols = '60' id = 'description' name = 'description' style = 'width: 450px;'></textarea>
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "description_errors" class="errors">
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div class = 'col'>
+                                <label for = 'new_item_category'>{% trans 'Category*' %}</label><br>
+                                <input id = 'new_item_category' name = 'category' list = 'options' style = 'width: 450px;' required>
+                                <datalist id = 'options'>
+                                  {% for option in selct_options %}
+                                    <option value = "{{option.name}}">{{option.name}}</option>
+                                  {% endfor %}
+                                </datalist>
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "category_errors" class="errors">
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div class = 'col'>
+                                <label for = 'new_item_price'>{% trans 'Price*' %}</label><br>
+                                <input type = 'number' name = 'price' id = 'new_item_price' step = '0.01' style = 'width: 450px;' required>
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "price_errors" class="errors">
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-3 mb-2">
+                              <div class = 'col'>
+                                <label for = 'photo'>{% trans 'Item Photo' %}</label>
+                                <div class="input-group" id = 'photo'>
+                                  <div class="custom-file">
+                                    <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                                    <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="row justify-content-center mt-2 mb-2">
+                              <div id = "photo_errors" class="errors">
+                              </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="row justify-content-center mt-3 mb-2">
+                              <div class = 'col'>
+                                <div class="btn-group">
+                                    <button type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
+                                </div>
+                              </div>
+                            </div>
+
+                          </form>
+                        </div>
+                      <!-- </div> -->
+                  <!-- </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+          <!-- </div> -->
+          <div id="replaceable-content">
+              {% for category, items in category_items.items %}
+              <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
+                  <div class="navbar-header">
+                    <h4>{{category}}</h4>
+                  </div>
+              </nav>
+              <div class="row">
+              <div id="root">
+
+              </div>
+              <!-- modal that pops up when item is to be edited-->
+              <div class="modal fade bd-example-modal-lg" id="edit_modal{{item.id}}" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class = 'modal-content'>
+                    <div class="modal-body">
+                      <!--hidden form to edit new item -->
+                      <!-- <div class = 'row justify-content-center'> -->
+                        <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
+
+                            <div class ='row justify-content-center'>
+                              <h3 class="card-title">{% trans "Edit Item" %}</h3>
+                            </div>
+                            <!-- <div class = 'card-body'> -->
+                              <div class="row justify-content-center">
+                                <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
+                                  {% csrf_token %}
+                                  <div class = 'row'>
+                                    <div class="col-6">
+                                      <label for='name'>{% trans 'Name' %}</label>
+                                    </div>
+                                    <div class="col-6">
+                                      <label for='description'>{% trans 'Photo' %}</label>
+                                    </div>
+                                  </div>
+                                  <div class = 'row'>
+                                    <div class="col-6">
+                                      <input type = 'text' id = 'name' name = 'name' placeholder = "{{item.name}}">
+
+                                    </div>
+                                    <div class="col-6">
+                                      <div class="input-group" id = 'photo2'>
+                                        <div class="custom-file">
+                                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                                          <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class = 'row'>
+                                    <div class="col-6">
+                                      <div id = "name_errors_edit{{item.id}}" class="errors">
+                                      </div>
+                                    </div>
+                                    <div class="col-6">
+                                      <div id = "photo_errors_edit{{item.id}}" class="errors">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class = 'row'>
+                                    <div class="col-6">
+                                      <label for='category'>{% trans 'Category' %}</label>
+                                    </div>
+
+                                    <div class="col-6">
+                                      <label for='price'>{% trans 'Price' %}</label>
+                                    </div>
+                                  </div>
+                                  <div class = 'row'>
+                                    <div class="col-6">
+
+                                      <input id = 'category' name = 'category' list = 'options' placeholder = "{{item.category}}">
+                                      <datalist id = 'options'>
+                                        {% for option in selct_options %}
+                                          <option value = "{{option.name}}">{{option.name}}</option>
+                                        {% endfor %}
+                                      </datalist>
+                                    </div>
+
+                                    <div class="col-6">
+                                      <input type = 'number' step = '0.01' id = 'price' name = 'price' placeholder = '{{item.price}}'>
+
+                                    </div>
+                                  </div>
+                                  <br>
+                                  <div class = 'row'>
+                                    <div class="col-6">
+                                      <div id = "category_errors_edit{{item.id}}" class="errors">
+                                      </div>
+                                    </div>
+                                    <div class="col-6">
+                                      <div id = "price_errors_edit{{item.id}}" class="errors">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <br>
+                                  <div class="row justify-content-center">
+                                    <label style="margin-right: 20px;" for = 'description'>{% trans 'Description' %}</label>
+                                  </div>
+                                  <div class = 'row justify-content-center'>
+                                    <textarea rows = '6' cols = '60' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
+
+                                  </div>
+                                  <br>
+                                  <div class="form-group row">
+                                    <label class="col-lg-3 col-form-label form-control-label">{% trans "In Stock" %}?</label>
+                                    <div class="col-lg-9">
+                                      <label class="switch">
+                                        {% if item.is_in_stock %}
+                                        <input name = "is_in_stock" type="checkbox" checked>
+                                        {% endif %}
+                                        {% if item.is_in_stock == False %}
+                                        <input name = "is_in_stock" type="checkbox">
+                                        {% endif %}
+                                        <span class="slider round"></span>
+                                     </label>
+                                    </div>
+                                </div>
+                                  <br>
+                                  <div class = 'row justify-content-center'>
+                                    <div style="text-align: centerl=;" class = 'row justify-content-center'>
+                                      <div class="btn-group mt-2">
+                                          <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}"
+                                         class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
+                                      </div>
+                                      <div class = 'col mt-4'>
+                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </form>
+                              </div>
+                            <!-- </div> -->
+                        <!-- </div> -->
+                    <!-- </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+              {% endfor %}
+                </div>
+        </div>
+          <!-- </div> -->
+        </div>
+        <!-- Load React. -->
+          <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+          <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+          <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+          <!-- Load our React component. -->
+          <script type="text/jsx" src="{% static 'table-react/table/src/index.js' %}"></script>
+  </body>
+  <script>
+    function asd(a)
+    {
+        if(document.getElementById("menu_form").style.display=="block") document.getElementById("menu_form").style.display = 'none';
+
+        else
+            document.getElementById("menu_form").style.display="block";
+    }
+    function showItemForm(a){
+      if(document.getElementById('item'+a).style.display == 'block') document.getElementById('item'+a).style.display = 'none';
+      else document.getElementById('item'+a).style.display = 'block';
+    }
+    function newItemForm(){
+      if(document.getElementById('new_item_form').style.display == 'block') document.getElementById('new_item_form').style.display = 'none';
+      else document.getElementById('new_item_form').style.display = 'block';
+    }
+  </script>
+  <script>
+    function menuForm(){
+      if(document.getElementById('menu_form').style.display == 'block') document.getElementById('menu_form').style.display = 'none'
+      else document.getElementById('menu_form').style.display = 'block'
+    }
+  </script>
+</html>
+<script>
+$('#add_modal').on('shown.bs.modal', function () {
+  $('#myInput').trigger('focus')
+  })
+</script>
+<script>
+    $('#inputGroupFile04').on('change',function(){
+      var fileName = $(this)[0].files[0].name;
+      //replace the "Choose a file" label
+      $(this).next('.custom-file-label').html(fileName);
+    })
+    $('#inputGroupFile05').on('change',function(){
+      var fileName = $(this)[0].files[0].name;
+      //replace the "Choose a file" label
+      $(this).next('.custom-file-label').html(fileName);
+    })
+</script>
+<!-- ajax search js -->
+<script>
+  const user_input = $("#user-input")
+  const search_icon = $('#search_icon')
+  const artists_div = $('#replaceable-content')
+  const endpoint = ''
+  const delay_by_in_ms = 700
+  let scheduled_function = false
+
+  let ajax_call = function (endpoint, request_parameters) {
+      $.getJSON("/restaurant_admin/my_items", request_parameters)
+          .done(response => {
+              // fade out the artists_div, then:
+              artists_div.fadeTo('slow', 0).promise().then(() => {
+                  // replace the HTML contents
+                  artists_div.html(response['html_from_view'])
+                  // fade-in the div with new contents
+                  artists_div.fadeTo('slow', 1)
+                  // stop animating search icon
+                  $('#search_icon').removeClass('blink');
+              })
+          })
+  }
+
+
+  user_input.on('keyup', function () {
+
+      const request_parameters = {
+          q: $(this).val() // value of user_input: the HTML element with ID user-input
+      }
+
+      // start animating the search icon with the CSS class
+      console.log("here");
+      $('#search_icon').addClass('blink');
+
+      // if scheduled_function is NOT false, cancel the execution of the function
+      if (scheduled_function) {
+          clearTimeout(scheduled_function)
+      }
+
+      // setTimeout returns the ID of the function to be executed
+      scheduled_function = setTimeout(ajax_call, delay_by_in_ms, "/my_items", request_parameters)
+  })
+</script>
+<script type="text/javascript">
+  $('#add_modal').on('hidden.bs.add_modal', function(){
+  //remove the backdrop
+  $('.modal-backdrop').remove();
+})
+</script>
+<!-- ajax create item js -->
+<script type="text/javascript">
+  $(document).on('click', '#add_item_submit', function(e) {
+    $("#add_item_submit").attr("disabled", true);
+    $("#add_item_submit")[0].innerText = "Creando...";
+   //you want to start with emptying error divs and blocking the default behavior:
+   $('.errors').empty();
+    e.preventDefault();
+    var formData = new FormData($('#create_item_form')[0]);
+    formData.append('origin','my_items');
+    $.ajax({
+        url: 'ajax/ajax_add_item',
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (data){
+          if (data.err_code === 'invalid_form'){
+            $("#add_item_submit")[0].innerText = "Crear";
+              console.log(data.err_msg);
+              for(var key in data.err_msg){
+                  console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
+                  console.log(key);
+                  var error_div = $('#' + key + '_errors');
+                  error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
+              }
+              $("#add_item_submit").attr("disabled", false);
+          }
+          else{
+            // document.write(data);
+            // document.close();
+            window.location.assign(window.location.pathname);
+          }
+            // // if (data.success){
+            //   console.log("data.success");
+            //     // $('#add_modal').modal('hide');
+            //     // $('body').removeClass('modal-open');
+            //     // $('.modal-backdrop').remove();
+            //     // console.log("success");
+            //     // alert("Item Created");
+            //     // $('.modal-backdrop').remove();
+            //     $("#add_item_submit").attr("disabled", false);
+            //     //$("body").html(data);
+            //     // var newDoc = document.open("text/html", "replace");
+            //     // newDoc.write(data);
+            //     // newDoc.close();
+            //     document.write(data);
+            //     document.close();
+
+            // }
+        },
+    });
+ })
+</script>
+<!-- ajax edit item js -->
+<script type="text/javascript">
+  $(document).on('click', '.edit_item_submit', function(e) {
+    e.preventDefault();
+    var item_id = $(this).attr("name")
+    console.log("id");
+    console.log(item_id);
+    $("#edit_item_submit" + item_id).attr("disabled", true);
+    $("#edit_item_submit" + item_id)[0].innerText = "Actualizando...";
+   //you want to start with emptying error divs and blocking the default behavior:
+   $('.errors').empty();
+    var formData = new FormData($('#edit_item_form' + item_id)[0]);
+    formData.append('origin','my_items');
+    formData.append('item_id',item_id);
+    $.ajax({
+        url: 'ajax/ajax_edit_item',
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (data){
+          if (data.err_code === 'invalid_form'){
+              $("#edit_item_submit" + item_id)[0].innerText = "Actualizar";
+              console.log(data.err_msg);
+              for(var key in data.err_msg){
+                  console.log('[error] for ' + key + ': ' + data.err_msg[key][0]);
+                  console.log(key);
+                  var error_div = $('#' + key + '_errors_edit' + item_id);
+                  console.log(error_div);
+                  console.log(data.err_msg[key][0]);
+                  console.log("we trynna append div");
+                  error_div.append('<div class="alert alert-danger">'+data.err_msg[key][0]+'</div>');
+                  console.log(error_div);
+              }
+              $("#edit_item_submit" + item_id).attr("disabled", false);
+          }
+            else {
+                window.location.assign(window.location.pathname);
+            }
+        },
+    });
+ })
+ //Activating Popovers
+ $(function () {
+   $('[data-toggle="popover"]').popover()
+ })
+</script>
+{% endblock %}
