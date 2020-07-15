@@ -25,13 +25,15 @@
 <div class="jumbotron">
   <div class="row justify-content-center">
     <div class="thumbnail thumb">
-      <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% if restaurant.photo_path %}
+        <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% endif %}
     </div>
   </div>
 </div>
 <!-- end logo -->
 
-<div class="container-fluid">
+<div class="container-fluid mb-5">
   <!-- Menu and About Buttons -->
   <div class="row justify-content-center pt-4 pb-4">
     <div class="col">
@@ -60,4 +62,5 @@
     {{ restaurant.about }}
   </div>
 
+</div>
 {% endblock %}

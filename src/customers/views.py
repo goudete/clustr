@@ -58,6 +58,7 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
 
         #get all possible categories of menu
         categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
+        print(categories)
         category_items = {}
         for category in categories:
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu)
@@ -154,7 +155,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
         addons = get_selected_addons_ids(request)
         if addons:
             addon_objects = get_addon_objects(addons)
-            # print(addon_objects)
+            
 
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_item = MenuItem.objects.filter(id = item_id).first()
