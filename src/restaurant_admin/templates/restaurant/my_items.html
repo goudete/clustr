@@ -441,6 +441,7 @@ input:checked + .slider:before {
                                     </div>
                                   </div>
                                 </form>
+
                               </div>
                             <!-- </div> -->
                         <!-- </div> -->
@@ -455,7 +456,8 @@ input:checked + .slider:before {
         </div>
           <!-- </div> -->
         </div>
-
+        <!-- hidden input to store language code -->
+        <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
   </body>
   <script>
     function asd(a)
@@ -552,7 +554,14 @@ $('#add_modal').on('shown.bs.modal', function () {
 <script type="text/javascript">
   $(document).on('click', '#add_item_submit', function(e) {
     $("#add_item_submit").attr("disabled", true);
-    $("#add_item_submit")[0].innerText = "Creando...";
+    var language_code = $('#language_code').val();
+    console.log(language_code);
+    if (language_code === 'es-mx') {
+      display_str = 'Creando Platillo...'
+    } else {
+      display_str = 'Creating Item...'
+    }
+    $("#add_item_submit")[0].innerText = (display_str);
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     e.preventDefault();
@@ -607,10 +616,14 @@ $('#add_modal').on('shown.bs.modal', function () {
   $(document).on('click', '.edit_item_submit', function(e) {
     e.preventDefault();
     var item_id = $(this).attr("name")
-    console.log("id");
-    console.log(item_id);
+    var language_code = $('#language_code').val();
+    if (language_code === 'es-mx') {
+      display_str = 'Actualizando ...'
+    } else {
+      display_str = 'Updating...'
+    }
     $("#edit_item_submit" + item_id).attr("disabled", true);
-    $("#edit_item_submit" + item_id)[0].innerText = "Actualizando...";
+    $("#edit_item_submit" + item_id)[0].innerText = display_str;
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     var formData = new FormData($('#edit_item_form' + item_id)[0]);
