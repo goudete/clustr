@@ -98,7 +98,8 @@ def orderHistoryView(request, log_no):
     return render(request,'order_history.html',{'carts':carts,
                                                 'path':logo_photo_path,
                                                 'name':backend.name,
-                                                'cashier': backend})
+                                                'cashier': backend,
+                                                'language_code': settings.LANGUAGE_CODE})
 
 def loginCashier(request, rest_id):
     form = CashierLoginForm
