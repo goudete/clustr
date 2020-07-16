@@ -115,7 +115,7 @@ div.scrollmenu a:hover {
   <!-- Button Categories Start -->
   <div class="scrollmenu mb-5">
     {% for category in categories %}
-        <button class="btn btn-light cat_button" name="{{ category.name }}">{{ category.name }}</button>
+        <button class="btn btn-light cat_button" name="category_button_{{category.id}}">{{ category.name }}</button>
     {% endfor %}
   </div>
   <!-- Button Categories End -->
@@ -130,7 +130,7 @@ div.scrollmenu a:hover {
       </div>
     {% else %}
       {% for key, value in category_items.items %}
-        <div class="MenuItems" id="display_category_{{ key }}" style="display:none">
+        <div class="MenuItems" id="display_category_category_button_{{key.id}}" style="display:none">
         {% for v in value %}
             <a href=# style="text-decoration:none; color:#000000">
             <div class="media">

@@ -277,9 +277,9 @@ def view_menu(request, menu_id):
         for category in categories:
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu)
             if len(q_set) > 0:
-                category_items[category.name]  = q_set
+                category_items[category]  = q_set
 
-        # print(category_items)
+        print(category_items)
         return render(request, 'restaurant/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'menu': curr_menu, 'categories': categories})
     else:
         return redirect('/restaurant_admin/view_menu/{m_id}'.format(m_id = menu_id))
@@ -565,12 +565,7 @@ def ajax_edit_item(request):
         file_storage.save(doc_path, doc)
         item.photo_path = doc_path
 
-    if request.POST['origin'] == 'edit_menu':
-        check_category(old_category, item.restaurant, Menu.objects.filter(id = request.POST['menu_id']).first())
-        #check if category exists but menu didnt contain it
-        if not menu_has_category(Menu.objects.filter(id = request.POST['menu_id']).first(), item.category):
-            add_existing_category(Menu.objects.filter(id = request.POST['menu_id']).first().restaurant, Menu.objects.filter(id = request.POST['menu_id']).first(), item.category)
-
+    print("NEW CATEGORY?: ", new_category(request, item.category))
     if new_category(request, item.category):
         if request.POST['origin'] == 'my_items':
             new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
@@ -580,6 +575,12 @@ def ajax_edit_item(request):
             new_cat.save()
             new_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
             new_cat.save()
+
+    if request.POST['origin'] == 'edit_menu':
+        check_category(old_category, item.restaurant, Menu.objects.filter(id = request.POST['menu_id']).first())
+        #check if category exists but menu didnt contain it
+        if not menu_has_category(Menu.objects.filter(id = request.POST['menu_id']).first(), item.category):
+            add_existing_category(Menu.objects.filter(id = request.POST['menu_id']).first().restaurant, Menu.objects.filter(id = request.POST['menu_id']).first(), item.category)
 
     #redirect back to edit menu page
     return JsonResponse({'success':True})
@@ -764,6 +765,21 @@ def ajax_add_item(request):
         item.photo_path = doc_path
         #item.save()
 
+    #check for new category
+    print("Category new?: ", new_category(request, item.category))
+    if new_category(request, item.category):
+        if request.POST['origin'] == 'my_items':
+            new_cat = SelectOption(name = item.category, restaurant = curr_rest)
+            new_cat.save()
+        elif request.POST['origin'] == 'edit_menu':
+            new_cat = SelectOption(name = item.category, restaurant = curr_rest)
+            new_cat.save()
+            new_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
+            new_cat.save()
+    elif request.POST['origin'] == 'edit_menu': #category was an existing one
+        existing_cat = SelectOption.objects.filter(restaurant=curr_rest).filter(name=item.category).first()
+        existing_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
+
     item.save()
     if request.POST['origin'] == 'edit_menu': #if from edit menu page add to menu
         print("yp we here")
@@ -775,21 +791,6 @@ def ajax_add_item(request):
             add_existing_category(curr_rest, menu, item.category)
 
     item.save()
-    #check for new category
-    if new_category(request, item.category):
-        if request.POST['origin'] == 'my_items':
-            new_cat = SelectOption(name = item.category, restaurant = curr_rest)
-            new_cat.save()
-        elif request.POST['origin'] == 'edit_menu':
-            new_cat = SelectOption(name = item.category, restaurant = curr_rest)
-            new_cat.save()
-            new_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
-            new_cat.save()
-
-
-    elif request.POST['origin'] == 'edit_menu': #category was an existing one
-        existing_cat = SelectOption.objects.filter(restaurant=curr_rest).filter(name=item.category).first()
-        existing_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
 
     print("here")
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
