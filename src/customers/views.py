@@ -74,7 +74,7 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         for category in categories:
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu)
             if len(q_set) > 0:
-                category_items[category.name]  = q_set
+                category_items[category]  = q_set
 
         # print(category_items)
         return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
