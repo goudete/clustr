@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-15 20:02+0200\n"
+"POT-Creation-Date: 2020-07-16 17:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -263,6 +263,14 @@ msgstr "No gracias"
 msgid "Please show the cashier this code:"
 msgstr "Muéstrale el código al cajero para pagar:"
 
+#: customers/templates/customers/closed.html:72
+msgid " is closed!"
+msgstr ""
+
+#: customers/templates/customers/closed.html:77
+msgid "Please come back during business hours: "
+msgstr ""
+
 #: customers/templates/customers/menu.html:64
 #: restaurant_admin/templates/restaurant/menu.html:64
 msgid "Welcome to "
@@ -381,11 +389,6 @@ msgstr "Especificar detalles..."
 #: customers/templates/customers/view_item.html:126
 msgid "Add to Cart"
 msgstr "Agregar a Carrito"
-
-#: customers/views.py:70
-#, python-brace-format
-msgid "Sorry, {rr} is currently closed"
-msgstr ""
 
 #: kitchen/templates/kitchen/active_orders.html:42
 #, fuzzy
@@ -770,7 +773,7 @@ msgstr "Agregar extra"
 #: restaurant_admin/templates/restaurant/sales_extended.html:232
 #: restaurant_admin/templates/restaurant/sales_extended.html:254
 msgid "Item Name"
-msgstr "Nuevo Nombre"
+msgstr "Nombre del Platillo"
 
 #: restaurant_admin/templates/restaurant/edit_menu.html:449
 #: restaurant_admin/templates/restaurant/edit_menu.html:476
@@ -1041,6 +1044,10 @@ msgstr "Ingresar"
 msgid "Start of Period"
 msgstr "Comienzo de Periodo"
 
+#: restaurant_admin/templates/restaurant/sales_extended.html:194
+msgid "End of Period"
+msgstr "Find de Periodo"
+
 #: restaurant_admin/templates/restaurant/sales_extended.html:200
 msgid "Sales Stats"
 msgstr "Datos de Ventas"
@@ -1077,7 +1084,7 @@ msgstr "Top 5 Platillos por Ventas"
 #: restaurant_admin/templates/restaurant/sales_extended.html:231
 #: restaurant_admin/templates/restaurant/sales_extended.html:253
 msgid "Rank"
-msgstr "Rank"
+msgstr "Rango"
 
 #: restaurant_admin/templates/restaurant/sales_extended.html:249
 msgid "Top 5 Items By Quantity"
@@ -1091,7 +1098,7 @@ msgstr "Cantidad"
 msgid "Username or Password is incorrect"
 msgstr "Usuario o Contraseña Incorrecta"
 
-#: restaurant_admin/views.py:630
+#: restaurant_admin/views.py:636
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
 
