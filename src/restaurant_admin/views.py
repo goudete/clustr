@@ -607,20 +607,24 @@ def register_cashier(request):
     if request.method == 'POST':
         # form = UserForm(request.POST)
         cashier_form = CashierForm(request.POST)
-        if cashier_form.login_number(request.POST['login_number'], Restaurant.objects.filter(user = request.user).first().id):
+        cashier_form.restaurant_id = Restaurant.objects.get(user = request.user).id
+        if cashier_form.is_valid():
+        # if cashier_form.login_number(request.POST['login_number'], Restaurant.objects.filter(user = request.user).first().id):
             cashier = cashier_form.save(commit=False)
             cashier.restaurant = Restaurant.objects.filter(user = request.user).first()
             cashier.save()
             return redirect('/restaurant_admin/cashiers')
-        context = {'form' : cashier_form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())}
-        return render(request, 'restaurant/cashiers.html', context)
+        else:
+            context = {'form' : cashier_form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first()),
+                       'is_valid':False}
+            return render(request, 'restaurant/cashiers.html', context)
     #if method is get, then user is filling out form
     else:
         form = CashierForm()
         cashiers = CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
-        context = {'form' : form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': cashiers}
+        context = {'form' : form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': cashiers,
+                   'is_valid':True}
         return render(request, 'restaurant/cashiers.html', context)
-
 
 
 """for seeing/changing kitchen login"""

@@ -99,20 +99,21 @@ class MenuItemForm(forms.ModelForm):
 
 
 class CashierForm(forms.ModelForm):
+    restaurant_id = 0
     def __init__(self, *args, **kwargs):
         super(CashierForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
         self.fields['login_number'].required = True
 
-    def login_number(self, login_no, rest_id):
-        if CashierProfile.objects.filter(restaurant = rest_id).filter(login_number = login_no).exists():
-            raise forms.ValidationError("Cashier With that login exists")
-            return False
-        return True
-
     class Meta:
         model = CashierProfile
         fields = ('name', 'login_number')
+
+    def clean_login_number(self):
+        login_number_passed = self.cleaned_data.get('login_number')
+        if CashierProfile.objects.filter(restaurant=self.restaurant_id).filter(login_number = login_number_passed).exists():
+            raise forms.ValidationError("Cashier with that login number already exists")
+        return login_number_passed
 
 class KitchenForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
