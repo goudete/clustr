@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-15 17:46-0500\n"
+"POT-Creation-Date: 2020-07-16 20:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,6 +54,7 @@ msgstr "Introducir el código dado al huesped para pagar en metálico"
 #: customers/templates/customers/cash_email_receipt.html:46
 #: customers/templates/customers/order_confirmation.html:161
 #: customers/templates/customers/view_cart.html:147
+#: kitchen/templates/kitchen/kitchen_login.html:192
 #: restaurant_admin/templates/restaurant/about_info.html:35
 #: restaurant_admin/templates/restaurant/about_info.html:121
 #: restaurant_admin/templates/restaurant/my_items.html:134
@@ -68,6 +69,7 @@ msgstr "Enviar"
 #: cashier/templates/order_history.html:67
 #: cashier/templates/review_order2.html:167
 #: comms/templates/contact_form.html:198
+#: kitchen/templates/kitchen/kitchen_login.html:194
 msgid "Back"
 msgstr "Regresar"
 
@@ -226,15 +228,17 @@ msgstr "Numero Telefónico (opcional)"
 msgid "Your Web Site (optional)"
 msgstr "Pagina de Internet (opcional)"
 
+#: comms/templates/contact_form.html:193
+msgid "Type your message here...."
+msgstr "Ingresa tu mensaje..."
+
 #: customers/templates/customers/about.html:41
-#: customers/templates/customers/closed.html:62
 #: customers/templates/customers/menu.html:90
 #: restaurant_admin/templates/restaurant/menu.html:96
 msgid "Menu"
 msgstr "Menú"
 
 #: customers/templates/customers/about.html:45
-#: customers/templates/customers/closed.html:66
 #: customers/templates/customers/menu.html:94
 #: restaurant_admin/templates/restaurant/menu.html:100
 msgid "About"
@@ -265,11 +269,11 @@ msgstr "No gracias"
 msgid "Please show the cashier this code:"
 msgstr "Muéstrale el código al cajero para pagar:"
 
-#: customers/templates/customers/closed.html:84
+#: customers/templates/customers/closed.html:72
 msgid " is closed!"
 msgstr " está cerrado!"
 
-#: customers/templates/customers/closed.html:89
+#: customers/templates/customers/closed.html:77
 msgid "Please come back during business hours: "
 msgstr "Nuestras horas de operación son de: "
 
@@ -286,13 +290,13 @@ msgstr ""
 "Ve nuestro menú, ordena y paga desde tu celular. Te notificamos cuando esté "
 "listo tu pedido. ¡Provecho!"
 
-#: customers/templates/customers/menu.html:123
+#: customers/templates/customers/menu.html:124
 #: restaurant_admin/templates/restaurant/menu.html:129
 msgid "No Items on Menu!"
 msgstr "Está vacio el Menú!"
 
-#: customers/templates/customers/menu.html:155
-#: customers/templates/customers/menu.html:159
+#: customers/templates/customers/menu.html:156
+#: customers/templates/customers/menu.html:160
 #: customers/templates/customers/view_item.html:136
 #: customers/templates/customers/view_item.html:138
 #: restaurant_admin/templates/restaurant/menu.html:161
@@ -300,7 +304,7 @@ msgstr "Está vacio el Menú!"
 msgid "View Cart $"
 msgstr "Ver Carrito $"
 
-#: customers/templates/customers/menu.html:163
+#: customers/templates/customers/menu.html:164
 #: customers/templates/customers/view_item.html:140
 #: restaurant_admin/templates/restaurant/menu.html:169
 msgid "View Cart"
@@ -392,6 +396,10 @@ msgstr "Especificar detalles..."
 msgid "Add to Cart"
 msgstr "Agregar a Carrito"
 
+#: kitchen/forms.py:14
+msgid "Not a valid kitchen code."
+msgstr "El código es inválido"
+
 #: kitchen/templates/kitchen/active_orders.html:42
 msgid "Welcome!"
 msgstr "¡Bienvenido!"
@@ -416,9 +424,41 @@ msgstr "Pedido #"
 msgid "Time: "
 msgstr "Tiempo: "
 
-#: kitchen/templates/kitchen/active_orders.html:141
+#: kitchen/templates/kitchen/active_orders.html:151
 msgid "Complete"
 msgstr "Finalizada"
+
+#: kitchen/templates/kitchen/kitchen_login.html:188
+#, fuzzy
+#| msgid "Input Cash Code"
+msgid "Input Kitchen Code"
+msgstr "Introducir Código"
+
+#: kitchen/templates/kitchen/kitchen_login.html:189
+#, fuzzy
+#| msgid "Input your cashier code to start the session"
+msgid "Input your kitchen code to start the session"
+msgstr "Introduce tu número dado de cajero para empezar la sesión."
+
+#: restaurant_admin/forms.py:98
+msgid "You have already created an item with this name"
+msgstr "Ya existe un platillo con este nombre"
+
+#: restaurant_admin/forms.py:148
+msgid "Start Date"
+msgstr "Fecha de inicio"
+
+#: restaurant_admin/forms.py:152
+msgid "Start Time"
+msgstr "Tiempo de inicio"
+
+#: restaurant_admin/forms.py:156
+msgid "End Date"
+msgstr "Fecha final"
+
+#: restaurant_admin/forms.py:160
+msgid "End Time"
+msgstr "Tiempo final"
 
 #: restaurant_admin/models.py:10
 #: restaurant_admin/templates/restaurant/register.html:69
@@ -1019,11 +1059,17 @@ msgid "Sign in"
 msgstr "Ingresar"
 
 #: restaurant_admin/templates/restaurant/sales.html:23
+msgid "Please Choose a Start Date"
+msgstr "Por favor escoga una fecha inicial"
+
+#: restaurant_admin/templates/restaurant/sales.html:33
+msgid "Please Choose an End Date"
+msgstr "Por favor escoga una fecha final"
+
 #: restaurant_admin/templates/restaurant/sales.html:46
 msgid "Please Choose a Pickup Date"
 msgstr ""
 
-#: restaurant_admin/templates/restaurant/sales.html:33
 #: restaurant_admin/templates/restaurant/sales.html:56
 msgid "Please Choose a Pickup Time"
 msgstr ""
@@ -1090,7 +1136,7 @@ msgstr "Cantidad"
 msgid "Username or Password is incorrect"
 msgstr "Usuario o Contraseña Incorrecta"
 
-#: restaurant_admin/views.py:636
+#: restaurant_admin/views.py:639
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
 

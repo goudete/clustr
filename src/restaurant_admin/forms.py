@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Restaurant, Menu, MenuItem
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from django.contrib.auth.forms import UserCreationForm
 from cashier.models import CashierProfile
@@ -94,7 +95,7 @@ class MenuItemForm(forms.ModelForm):
         print(self.restaurant_id)
         restaurant = Restaurant.objects.get(id=self.restaurant_id)
         if len(MenuItem.objects.filter(restaurant=restaurant).filter(name=name_passed))>0:
-            raise forms.ValidationError("You have already created an item with this name")
+            raise forms.ValidationError(_("You have already created an item with this name"))
         return name_passed
 
 
@@ -144,19 +145,19 @@ class MenuItemFormItemPage(MenuItemForm):
         self.fields['price'].widget.attrs.update(style='width: 450px;')
 
 class DatesForm(forms.Form): #form for user inputing start and end date
-    start_date = forms.CharField(max_length=100, required = True,
+    start_date = forms.CharField(help_text=_('Start Date'), max_length=100, required = True,
     widget=forms.DateInput(attrs={'id':'datepicker', 'class': 'require-if-active',
                                   'data-require-pair': '#include_date','placeholder':'dd-mm-yyyy'})
     )
-    start_time = forms.CharField(max_length=100, required = True,
+    start_time = forms.CharField(help_text=_('Start Time'), max_length=100, required = True,
     widget=forms.TimeInput(attrs = {'id': 'timepicker', 'class': 'require-if-active', 'data-require-pair': '#include_time'})
     )
 
-    end_date = forms.CharField(max_length=100, required = True,
+    end_date = forms.CharField(help_text=_('End Date'), max_length=100, required = True,
     widget=forms.DateInput(attrs={'id':'datepicker2', 'class': 'require-if-active',
                                   'data-require-pair': '#include_date','placeholder':'dd-mm-yyyy'})
     )
-    end_time = forms.CharField(max_length=100, required = True,
+    end_time = forms.CharField(help_text=_('End Time'), max_length=100, required = True,
     widget=forms.TimeInput(attrs = {'id': 'timepicker2', 'class': 'require-if-active', 'data-require-pair': '#include_time'})
     )
     def __init__(self, *args, **kwargs):
