@@ -1,11 +1,17 @@
 {% extends 'restaurant/sales.html' %}
 {% block salestuff %}
 {% load i18n %}
+<!-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> -->
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <!-- Source : https://bootsnipp.com/snippets/MRB4A -->
 <!------ Include the above in your HEAD tag ---------->
+<style>
+	.bootstrap3 {
+		@import "//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css";
+	}
+</style>
 <style>
 	.leaderboard {
   /* position: absolute; */
@@ -185,7 +191,7 @@
 </style>
 <br>
 <br>
-				<div class="container-fluid">
+				<div class="container-fluid bootstrap3">
 					<div class="col col-md-12">
 						<div class="row">
 							<h5><strong>{% trans "Start of Period" %}: {{period_start}}</strong></h5>
@@ -194,32 +200,40 @@
 							<h5><strong>{% trans "End of Period" %}: {{period_end}}</strong></h5>
 						</div>
 					</div>
+					<hr>
+					<br>
 					<div class="col col-md-12">
 						<div class="row">
 							<div class="col col-md-6">
 								<h4>{% trans "Sales Stats" %}:</h4>
-										{% trans "Total Sales (excluding tips)" %}<span class="pull-right strong">${{total_sales}}</span>
+										{% trans "Total Sales (excluding tips)" %}<span class="float-right">${{total_sales}}</span>
 										 <div class="progress">
-											<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="100"aria-valuemin="0" aria-valuemax="100" style="width:100%">100%</div>
+											<div class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-valuenow="100"aria-valuemin="0" aria-valuemax="100" style="width:100%">100%</div>
 										</div>
 
-										{% trans "Total Cash Sales" %}<span class="pull-right strong">${{total_cash}}</span>
+										<br>
+
+										{% trans "Total Cash Sales" %}<span class="float-right">${{total_cash}}</span>
 										 <div class="progress">
-											<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{cash_percentage}}"aria-valuemin="0" aria-valuemax="100" style="width:{{cash_percentage}}%">{{cash_percentage}}%</div>
+											<div class="progress-bar bg-success" role="progressbar" aria-valuenow="{{cash_percentage}}"aria-valuemin="0" aria-valuemax="100" style="width:{{cash_percentage}}%">{{cash_percentage}}%</div>
 										</div>
 
-										{% trans "Total Card Sales" %}<span class="pull-right strong">${{total_card}}</span>
+										<br>
+
+										{% trans "Total Card Sales" %}<span class="float-right">${{total_card}}</span>
 										 <div class="progress">
-											<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{card_percentage}}"aria-valuemin="0" aria-valuemax="100" style="width:{{card_percentage}}%">{{card_percentage}}%</div>
+											<div class="progress-bar bg-success" role="progressbar" aria-valuenow="{{card_percentage}}"aria-valuemin="0" aria-valuemax="100" style="width:{{card_percentage}}%">{{card_percentage}}%</div>
 										</div>
+
+										<br>
 							</div>
 							<div class="col col-md-6">
 								<h4>{% trans "Tips & Inventory" %}:</h4>
-										{% trans "Total Tips (% of total sales)" %}<span class="pull-right strong">${{total_tip}}</span>
+										{% trans "Total Tips (% of total sales)" %}<span class="float-right">${{total_tip}}</span>
 										 <div class="progress">
-											<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{tip_percentage}}"aria-valuemin="0" aria-valuemax="100" style="width:{{tip_percentage}}%">{{tip_percentage}}%</div>
+											<div class="progress-bar bg-success" role="progressbar" aria-valuenow="{{tip_percentage}}"aria-valuemin="0" aria-valuemax="100" style="width:{{tip_percentage}}%">{{tip_percentage}}%</div>
 										</div>
-										{% trans "Total Items" %}:<span class="pull-right strong">{{total_items}}</span>
+										{% trans "Total Items" %}:<span class="float-right">{{total_items}}</span>
 							</div>
 						</div>
 						<div class="row">
