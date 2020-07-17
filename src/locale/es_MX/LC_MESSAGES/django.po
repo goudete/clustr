@@ -765,7 +765,7 @@ msgstr "Agregar extra"
 #: restaurant_admin/templates/restaurant/sales_extended.html:232
 #: restaurant_admin/templates/restaurant/sales_extended.html:254
 msgid "Item Name"
-msgstr "Nuevo Nombre"
+msgstr "Nombre del Platillo"
 
 #: restaurant_admin/templates/restaurant/edit_menu.html:449
 #: restaurant_admin/templates/restaurant/edit_menu.html:476
@@ -1036,6 +1036,10 @@ msgstr "Ingresar"
 msgid "Start of Period"
 msgstr "Comienzo de Periodo"
 
+#: restaurant_admin/templates/restaurant/sales_extended.html:194
+msgid "End of Period"
+msgstr "Find de Periodo"
+
 #: restaurant_admin/templates/restaurant/sales_extended.html:200
 msgid "Sales Stats"
 msgstr "Datos de Ventas"
@@ -1072,7 +1076,7 @@ msgstr "Top 5 Platillos por Ventas"
 #: restaurant_admin/templates/restaurant/sales_extended.html:231
 #: restaurant_admin/templates/restaurant/sales_extended.html:253
 msgid "Rank"
-msgstr "Rank"
+msgstr "Rango"
 
 #: restaurant_admin/templates/restaurant/sales_extended.html:249
 msgid "Top 5 Items By Quantity"
@@ -1086,7 +1090,7 @@ msgstr "Cantidad"
 msgid "Username or Password is incorrect"
 msgstr "Usuario o Contraseña Incorrecta"
 
-#: restaurant_admin/views.py:631
+#: restaurant_admin/views.py:636
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
 

@@ -97,7 +97,9 @@ def orderHistoryView(request, log_no):
     carts = Cart.objects.filter(restaurant = backend.restaurant)
     return render(request,'order_history.html',{'carts':carts,
                                                 'path':logo_photo_path,
-                                                'name':backend.name})
+                                                'name':backend.name,
+                                                'cashier': backend,
+                                                'language_code': settings.LANGUAGE_CODE})
 
 def loginCashier(request, rest_id):
     form = CashierLoginForm
@@ -173,6 +175,6 @@ def ajax_add_item(request, log_no):
             'new_total_with_tip':curr_cart.total_with_tip, 'item_counter_id':new_item_counter.id}
     return JsonResponse(data)
 
-def cashier_logout(request):
+def cashier_logout(request, log_no):
     # logout(request)
-    return redirect('/cashier/cashier_login') #return to login page
+    return redirect('/cashier/cashier_login/' + str(log_no)) #return to login page

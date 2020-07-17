@@ -54,7 +54,7 @@
             <a class="nav-link" href="#"><i class="fas fa-user"></i> Profile</a>
           </li> -->
           <li class="nav-item">
-            <a href = "logout" class="nav-link"><i class="fas fa-key"></i> Logout</a>
+            <a href = "/cashier/logout/{{cashier.restaurant.id}}" class="nav-link"><i class="fas fa-key"></i> Logout</a>
           </li>
         </ul>
       </div>
@@ -108,9 +108,35 @@
       </div>
     </div>
   </div>
+  <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
 </body>
 <script>
+  var language_code = $('#language_code').val();
+  if (language_code === 'es-mx') {
+    $(document).ready( function () {
+      $('#order_table').DataTable({
+        "language": {
+      "sProcessing": "Procesando...",
+      "sSearch": "Buscar &nbsp;:",
+      "sLengthMenu": "Mostrar _MENU_ Pedidos",
+      "sInfo": "Monstrando pedidos  _START_ - _END_ de _TOTAL_ pedidos",
+      "sInfoEmpty": "",
+      "sInfoFiltered": "(filtrado de un total de _MAX_ pedidos)",
+      "sInfoPostFix": "",
+      "sLoadingRecords": "Cargando...",
+      "sZeroRecords": "",
+      "sEmptyTable": "",
+      "oPaginate": {
+        "sFirst": "Primero",
+        "sPrevious": "Anterior",
+        "sNext": "Siguiente",
+        "sLast": "Ultimo"
+      }
+    }});
+  } );
+} else {
   $(document).ready( function () {
     $('#order_table').DataTable();
 } );
+}
 </script>
