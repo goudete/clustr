@@ -9,5 +9,5 @@ class CashierProfile(models.Model):
     """ the login_number field is not unique because two cashiers from different restaurants
     can have the same login number, instead there will be a check to make sure that two cashiers that
     work at the same restaurant dont have the same login_number in the restaurant_admin.views"""
-    login_number = models.PositiveIntegerField(default = 0)
-    name = models.CharField(null = True, max_length = 255)
+    login_number = models.PositiveIntegerField(_("Cashier Code"),default = 0)
+    name = models.CharField(_("Name"),null = True, max_length = 255)

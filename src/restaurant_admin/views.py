@@ -330,7 +330,7 @@ def item_addon_dict(items):
     return dict
 
 def edit_menu(request, menu_id):
-    language_code = settings.LANGUAGE_CODE
+    language_code = request.user.restaurant.language
     if not validate_id_number(request, menu_id):
         return HttpResponse('you are not authorized to view this')
     curr_menu = Menu.objects.filter(id = menu_id).first()
@@ -649,7 +649,7 @@ def kitchen_no(request):
 def my_items(request):
     curr_rest = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
-    language_code = settings.LANGUAGE_CODE
+    language_code = curr_rest.language
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     if url_parameter:
@@ -908,11 +908,11 @@ def sales(request):
             cd = form.cleaned_data
             print(cd['start_date'] + cd['start_time'])
             start_datetime_str = datetime.strptime(cd['start_date'] + " " + cd['start_time'],
-                                "%Y-%m-%d %I:00 %p")
+                                "%Y-%m-%d %I:%M %p")
             print(start_datetime_str)
             #start_datetime_str = start_datetime_str.replace(tzinfo = timezone.utc)
             end_datetime_str = datetime.strptime(cd['end_date'] + " " + cd['end_time'],
-                                "%Y-%m-%d %I:00 %p")
+                                "%Y-%m-%d %I:%M %p")
             print(end_datetime_str)
             carts = Cart.objects.filter(restaurant=restaurant).filter(created_at__range=(start_datetime_str,end_datetime_str))
             total_sales = sum([cart.total for cart in carts])
