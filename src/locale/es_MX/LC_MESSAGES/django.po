@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-15 20:02+0200\n"
+"POT-Creation-Date: 2020-07-15 17:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,7 +55,7 @@ msgstr "Introducir el código dado al huesped para pagar en metálico"
 #: customers/templates/customers/order_confirmation.html:161
 #: customers/templates/customers/view_cart.html:147
 #: restaurant_admin/templates/restaurant/about_info.html:35
-#: restaurant_admin/templates/restaurant/about_info.html:108
+#: restaurant_admin/templates/restaurant/about_info.html:121
 #: restaurant_admin/templates/restaurant/my_items.html:134
 #: restaurant_admin/templates/restaurant/my_items2.html:134
 #: restaurant_admin/templates/restaurant/my_menus.html:50
@@ -98,8 +98,8 @@ msgstr "Producto"
 #: cashier/templates/order_history.html:76
 #: cashier/templates/order_history.html:104
 #: cashier/templates/review_order2.html:180
-#: cashier/templates/review_order2.html:281 restaurant_admin/models.py:42
-#: restaurant_admin/models.py:59
+#: cashier/templates/review_order2.html:281 restaurant_admin/models.py:45
+#: restaurant_admin/models.py:62
 #: restaurant_admin/templates/restaurant/edit_menu.html:346
 #: restaurant_admin/templates/restaurant/my_items.html:378
 #: restaurant_admin/templates/restaurant/my_items2.html:359
@@ -194,7 +194,7 @@ msgstr "Agregar Platillos al pedido"
 msgid "Add"
 msgstr "Agregar"
 
-#: cashier/views.py:70 customers/views.py:563
+#: cashier/views.py:70 customers/views.py:564
 msgid "Your Receipt"
 msgstr "Tu Recibo"
 
@@ -207,7 +207,7 @@ msgid ""
 "Leave us your information and a message and we will get back to you soon! "
 "Alternatively, you can reach out to us at clustrfood@gmail.com"
 msgstr ""
-"Déjanos tus datos y tu mensjae aquí y te responderemos pronto! También nos "
+"Déjanos tus datos y tu mensaje aquí y te responderemos pronto! También nos "
 "puedes mandar un correo electrónico a clustrfood@gmail.com"
 
 #: comms/templates/contact_form.html:177
@@ -226,17 +226,19 @@ msgstr "Numero Telefónico (opcional)"
 msgid "Your Web Site (optional)"
 msgstr "Pagina de Internet (opcional)"
 
-#: customers/templates/customers/about.html:39
+#: customers/templates/customers/about.html:41
+#: customers/templates/customers/closed.html:62
 #: customers/templates/customers/menu.html:90
 #: restaurant_admin/templates/restaurant/menu.html:96
 msgid "Menu"
 msgstr "Menú"
 
-#: customers/templates/customers/about.html:43
+#: customers/templates/customers/about.html:45
+#: customers/templates/customers/closed.html:66
 #: customers/templates/customers/menu.html:94
 #: restaurant_admin/templates/restaurant/menu.html:100
 msgid "About"
-msgstr "Quiénes somos"
+msgstr "Acerca"
 
 #: customers/templates/customers/card_email_receipt.html:13
 #: customers/templates/customers/cash_email_receipt.html:12
@@ -262,6 +264,14 @@ msgstr "No gracias"
 #: customers/templates/customers/cash_code.html:23
 msgid "Please show the cashier this code:"
 msgstr "Muéstrale el código al cajero para pagar:"
+
+#: customers/templates/customers/closed.html:84
+msgid " is closed!"
+msgstr " está cerrado!"
+
+#: customers/templates/customers/closed.html:89
+msgid "Please come back during business hours: "
+msgstr "Nuestras horas de operación son de: "
 
 #: customers/templates/customers/menu.html:64
 #: restaurant_admin/templates/restaurant/menu.html:64
@@ -382,22 +392,13 @@ msgstr "Especificar detalles..."
 msgid "Add to Cart"
 msgstr "Agregar a Carrito"
 
-#: customers/views.py:70
-#, python-brace-format
-msgid "Sorry, {rr} is currently closed"
-msgstr ""
-
 #: kitchen/templates/kitchen/active_orders.html:42
-#, fuzzy
-#| msgid "Welcome to "
 msgid "Welcome!"
-msgstr "Bienvenido a "
+msgstr "¡Bienvenido!"
 
 #: kitchen/templates/kitchen/active_orders.html:57
-#, fuzzy
-#| msgid "Review Order"
 msgid "View orders"
-msgstr "Revisar Pedido"
+msgstr "Ver Pedidos"
 
 #: kitchen/templates/kitchen/active_orders.html:66
 msgid "Active Orders"
@@ -409,7 +410,7 @@ msgstr "No hay Ordenes en Preparación"
 
 #: kitchen/templates/kitchen/active_orders.html:92
 msgid "Order #"
-msgstr "Pedido"
+msgstr "Pedido #"
 
 #: kitchen/templates/kitchen/active_orders.html:106
 msgid "Time: "
@@ -432,8 +433,8 @@ msgstr "Información Adicional"
 msgid "Your Restaurant's Vision"
 msgstr "La visión de tu Restaurante"
 
-#: restaurant_admin/models.py:30 restaurant_admin/models.py:39
-#: restaurant_admin/models.py:53 restaurant_admin/models.py:58
+#: restaurant_admin/models.py:33 restaurant_admin/models.py:42
+#: restaurant_admin/models.py:56 restaurant_admin/models.py:61
 #: restaurant_admin/templates/restaurant/cashiers.html:87
 #: restaurant_admin/templates/restaurant/edit_menu.html:311
 #: restaurant_admin/templates/restaurant/my_items.html:342
@@ -442,7 +443,7 @@ msgstr "La visión de tu Restaurante"
 msgid "Name"
 msgstr "Nombre"
 
-#: restaurant_admin/models.py:40
+#: restaurant_admin/models.py:43
 #: restaurant_admin/templates/restaurant/edit_menu.html:376
 #: restaurant_admin/templates/restaurant/my_items.html:220
 #: restaurant_admin/templates/restaurant/my_items.html:410
@@ -452,7 +453,7 @@ msgstr "Nombre"
 msgid "Description"
 msgstr "Descripción"
 
-#: restaurant_admin/models.py:41
+#: restaurant_admin/models.py:44
 #: restaurant_admin/templates/restaurant/edit_menu.html:342
 #: restaurant_admin/templates/restaurant/my_items.html:374
 #: restaurant_admin/templates/restaurant/my_items2.html:355
@@ -466,18 +467,20 @@ msgid "Would You Like to Accept Payments?"
 msgstr "Quieres aceptar pagos con Tarjeta?"
 
 #: restaurant_admin/templates/restaurant/about_info.html:27
-#: restaurant_admin/templates/restaurant/about_info.html:87
+#: restaurant_admin/templates/restaurant/about_info.html:100
 #: restaurant_admin/templates/restaurant/my_items.html:124
+#: restaurant_admin/templates/restaurant/my_items2.html:124
 #: restaurant_admin/templates/restaurant/my_menus.html:42
-#: restaurant_admin/templates/restaurant/my_menus.html:101
+#: restaurant_admin/templates/restaurant/my_menus.html:114
 msgid "No"
 msgstr "No"
 
 #: restaurant_admin/templates/restaurant/about_info.html:32
-#: restaurant_admin/templates/restaurant/about_info.html:92
+#: restaurant_admin/templates/restaurant/about_info.html:105
 #: restaurant_admin/templates/restaurant/my_items.html:128
+#: restaurant_admin/templates/restaurant/my_items2.html:128
 #: restaurant_admin/templates/restaurant/my_menus.html:47
-#: restaurant_admin/templates/restaurant/my_menus.html:106
+#: restaurant_admin/templates/restaurant/my_menus.html:119
 msgid "Yes"
 msgstr "Si"
 
@@ -529,12 +532,12 @@ msgstr "Será mostrado en la sección de '¿Quiénes somos?'"
 #: restaurant_admin/templates/restaurant/about_info.html:80
 #: restaurant_admin/templates/restaurant/my_menus.html:94
 msgid "Hours of Operation"
-msgstr ""
+msgstr "Horas de trabajo"
 
 #: restaurant_admin/templates/restaurant/about_info.html:85
 #: restaurant_admin/templates/restaurant/my_menus.html:99
 msgid "to"
-msgstr ""
+msgstr "a"
 
 #: restaurant_admin/templates/restaurant/about_info.html:94
 #: restaurant_admin/templates/restaurant/my_menus.html:108
@@ -604,11 +607,11 @@ msgstr "Cerrar Sesión"
 
 #: restaurant_admin/templates/restaurant/base.html:137
 msgid "Spanish"
-msgstr ""
+msgstr "Español"
 
 #: restaurant_admin/templates/restaurant/base.html:138
 msgid "English"
-msgstr ""
+msgstr "Inglés"
 
 #: restaurant_admin/templates/restaurant/cashiers.html:16
 msgid "Your Cashiers"
@@ -845,11 +848,11 @@ msgstr ""
 
 #: restaurant_admin/templates/restaurant/menu.html:80
 msgid "Browse our menu, order and pay right from your phone!"
-msgstr ""
+msgstr "¡Ve nuestro menú, ordena y paga todo desde tu celular!"
 
 #: restaurant_admin/templates/restaurant/menu.html:88
 msgid "Note: This is only to preview your menu, it has no functionality"
-msgstr ""
+msgstr "Esto nada más es para ver tu menú, no tiene funcionalidad"
 
 #: restaurant_admin/templates/restaurant/my_items.html:114
 #: restaurant_admin/templates/restaurant/my_items2.html:114
@@ -904,7 +907,7 @@ msgstr "Todavía no hay Menus"
 
 #: restaurant_admin/templates/restaurant/my_menus.html:252
 msgid "No Photo"
-msgstr "No hay Foto"
+msgstr "Sin Foto"
 
 #: restaurant_admin/templates/restaurant/my_menus.html:260
 msgid "View"
@@ -1083,7 +1086,7 @@ msgstr "Cantidad"
 msgid "Username or Password is incorrect"
 msgstr "Usuario o Contraseña Incorrecta"
 
-#: restaurant_admin/views.py:630
+#: restaurant_admin/views.py:631
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
 
