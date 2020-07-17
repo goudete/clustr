@@ -12,13 +12,15 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 # Create your views here.
 
 def kitchen_login(request):
+    form = KitchenLoginForm
     if request.method == "POST":
+        form = KitchenLoginForm(request.POST)
         if Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).exists():
             restaurant = Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).first()
             return redirect('/kitchen/{rest_id}'.format(rest_id = restaurant.id))
         else:
-            return redirect('/kitchen')
-    return render(request,'kitchen/kitchen_login.html')
+            return render(request,'kitchen/kitchen_login.html', {'form': form})
+    return render(request,'kitchen/kitchen_login.html', {'form': form})
 
 
 #helper function for a query

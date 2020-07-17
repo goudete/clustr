@@ -321,7 +321,7 @@ input:checked + .slider:before {
                                     <div class="col-6">
                                       <div class="input-group" id = 'photo2'>
                                         <div class="custom-file">
-                                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile{{item.id}}" aria-describedby="inputGroupFileAddon05">
                                           <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
                                         </div>
                                       </div>
@@ -599,7 +599,7 @@ $('#add_item').on('shown.bs.modal', function () {
       //replace the "Choose a file" label
       $(this).next('.custom-file-label').html(fileName);
     })
-    $('#inputGroupFile05').on('change',function(){
+    $('.custom-file-input').on('change',function(){
       //get the file name
       var fileName = $(this)[0].files[0].name;
       //replace the "Choose a file" label

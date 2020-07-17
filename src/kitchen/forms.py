@@ -10,8 +10,8 @@ class KitchenLoginForm(forms.Form):
 
     def clean_kitchen_code(self):
         kitchen_code_passed = self.cleaned_data.get('kitchen_code')
-        if not(Kitchen.objects.filter(login_number=kitchen_code_passed).exists()):
-            raise forms.ValidationError("Not a valid kitchen code.")
+        if not(Restaurant.objects.filter(kitchen_login_no=kitchen_code_passed).exists()):
+            raise forms.ValidationError(_("Not a valid kitchen code."))
         return kitchen_code_passed
 
     def __init__(self, *args, **kwargs):

@@ -554,7 +554,9 @@ def ajax_edit_item(request):
         item.is_in_stock = False
     item.save()
     photo = request.FILES.get('photo', False)
+    print("PHOTO?: ", photo)
     if photo:
+        print('saving photo')
         #save photo to AWS
         doc = request.FILES['photo'] #get file
         files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
@@ -564,6 +566,7 @@ def ajax_edit_item(request):
         doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
         item.photo_path = doc_path
+        item.save()
 
     print("NEW CATEGORY?: ", new_category(request, item.category))
     if new_category(request, item.category):
@@ -756,6 +759,7 @@ def ajax_add_item(request):
 
     photo = request.FILES.get('photo', False)
     print("files")
+    item.save()
     print(request.FILES)
     if photo:
         #save photo to AWS
@@ -767,6 +771,7 @@ def ajax_add_item(request):
         doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
         item.photo_path = doc_path
+        item.save()
         #item.save()
 
     #check for new category

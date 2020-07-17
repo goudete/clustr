@@ -94,11 +94,11 @@
                         <b><label for = "hours">{% trans 'Hours of Operation' %}</label></b>
                         <div class = 'row' id = 'hours'>
                           <div class = 'col'>
-                            <input type = 'text' id = 'timepicker' name = 'opening' {% if me.opening_time %} value = {{me.opening_time}} {% endif %}>
+                            <input type = 'time' id = 'timepicker' name = 'opening' {% if me.opening_time %} value = {{me.opening_time}} {% endif %}>
                           </div>
                           {% trans 'to' %}
                           <div class = 'col'>
-                            <input type = 'text' id = 'timepicker2' name = 'closing' {% if me.closing_time %} value = {{me.closing_time}} {% endif %}>
+                            <input type = 'time' id = 'timepicker2' name = 'closing' {% if me.closing_time %} value = {{me.closing_time}} {% endif %}>
                           </div>
                         </div>
                       </div>
