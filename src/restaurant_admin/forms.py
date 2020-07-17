@@ -166,6 +166,8 @@ class DatesForm(forms.Form): #form for user inputing start and end date
         self.fields['start_time'].required = True
         self.fields['end_date'].required = True
         self.fields['end_time'].required = True
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
 
 class EditMenuItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
