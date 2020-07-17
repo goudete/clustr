@@ -97,13 +97,14 @@ div.scrollmenu a:hover {
   <!-- End Menu and About buttons -->
 
   <!-- Restaurant Name and info -->
-  <div class="row ml-1 justify-content-center">
+  <div class="row ml-1 mb-2 justify-content-center">
     <h5>{{ restaurant.name }}</h5>
   </div>
-  <div class="row ml-1 mb-4 justify-content-center">
-    <h6>{{ restaurant.info }}</h6>
-  </div>
-
+  {% if restaurant.info %}
+    <div class="row ml-1 mb-4 justify-content-center">
+      <h6>{{ restaurant.info }}</h6>
+    </div>
+  {% endif %}
   <!-- End  -->
 
   <!-- Button Categories Start -->

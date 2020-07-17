@@ -44,6 +44,7 @@ def see_orders(request, restaurant_id):
                 item_list.append(item)
         if len(item_list) > 0:
             tracker_item_dict[trackers[i]] = item_list
+            print(tracker_item_dict)
     return render(request, 'kitchen/active_orders.html', {'dict': tracker_item_dict, 'restaurant': restaurant})
 
 
