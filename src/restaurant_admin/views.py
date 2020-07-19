@@ -218,6 +218,11 @@ def answer_about(request):
             if form.is_valid():
                 form.save()
                 messages.info(request,_("Email Successfully Updated"))
+                if 'order_stream' in request.POST:
+                    curr_rest.order_stream = True
+                else:
+                    curr_rest.order_stream = False
+                curr_rest.save() 
                 return redirect('/restaurant_admin/my_menus')
             else:
                 return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
@@ -226,7 +231,8 @@ def answer_about(request):
     else:
         form = EmailForm()
         form.fields['order_stream_email'].widget.attrs['placeholder'] = curr_rest.order_stream_email if curr_rest.order_stream_email else _("None")
-        return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+        order_stream = curr_rest.order_stream
+        return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form,'order_stream':order_stream})
 
 
 def my_menus(request):

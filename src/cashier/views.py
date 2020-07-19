@@ -16,7 +16,6 @@ from kitchen.models import OrderTracker
 from django.utils.translation import gettext as _
 import datetime
 from django.template.loader import get_template, render_to_string
-from .email_handlers import send_order_email
 
 # Create your views here.
 def baseView(request, log_no):
@@ -82,8 +81,6 @@ def reviewOrderView(request, log_no):
                                             })
             msg.attach_alternative(html_template, "text/html")
             msg.send()
-
-            send_order_email(from_email=from_email,to=cashier.restaurant.order_stream_email,order=curr_cart)
 
             curr_cart.is_paid = True
             curr_cart.save()

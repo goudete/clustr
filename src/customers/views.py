@@ -573,7 +573,6 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
                                                 })
                 msg.attach_alternative(html_template, "text/html")
                 msg.send()
-                send_order_email(from_email = from_email, to = to, order = curr_cart)
 
         phone_num = PhoneForm(request.POST)
         if request.POST['phone_number'] != ""  and phone_num.is_valid():
@@ -652,6 +651,10 @@ def order_confirmation(request, cart_id):
         cart.is_paid = True
         cart.paid_at = timezone.now()
         cart.save()
+        curr_rest = request.user.restaurant
+        if curr_rest.order_stream:
+            print("passed if statement")
+            send_order_email(from_email = settings.EMAIL_HOST_USER, to = curr_rest.order_stream_email, order = cart)
         print('time: ', cart.paid_at)
         items = MenuItemCounter.objects.filter(cart = cart_id)
 
