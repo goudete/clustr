@@ -16,6 +16,7 @@ from kitchen.models import OrderTracker
 from django.utils.translation import gettext as _
 import datetime
 from django.template.loader import get_template, render_to_string
+from .email_handlers import send_order_email
 
 # Create your views here.
 def baseView(request, log_no):
@@ -58,6 +59,7 @@ def reviewOrderView(request, log_no):
         cash_code = jsn['cash_code']
         if "confirm_payment" in request.POST: #cashier confirmed the payment
             print(cash_code)
+            print("in confirm payment block")
             curr_cart = Cart.objects.filter(cash_code=cash_code).first()
 
             current_date = datetime.date.today()
@@ -75,10 +77,13 @@ def reviewOrderView(request, log_no):
                                                         'path':cashier.restaurant.photo_path,
                                                         'order_id':curr_cart.id,
                                                         'item_counters': item_counters,
-                                                        'cart': curr_cart
+                                                        'cart': curr_cart,
+                                                        'restaurant_name': cashier.restaurant.name
                                             })
             msg.attach_alternative(html_template, "text/html")
             msg.send()
+
+            send_order_email(from_email=from_email,to=cashier.restaurant.order_stream_email,order=curr_cart)
 
             curr_cart.is_paid = True
             curr_cart.save()

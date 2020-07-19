@@ -18,7 +18,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 from django.utils import translation
-
+from cashier.email_handlers import send_order_email
 
 
 #this method is only for development, it shows all the menus you have on your local db
@@ -573,6 +573,7 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
                                                 })
                 msg.attach_alternative(html_template, "text/html")
                 msg.send()
+                send_order_email(from_email = from_email, to = to, order = curr_cart)
 
         phone_num = PhoneForm(request.POST)
         if request.POST['phone_number'] != ""  and phone_num.is_valid():

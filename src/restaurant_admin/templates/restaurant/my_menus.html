@@ -21,7 +21,19 @@
         <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
 
           <!-- <div class ='card-header'> -->
-
+          {% if messages %}
+          {% for message in messages %}
+          {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+          <div class="row justify-content-center alert alert-primary pt-3 pb-3" role="alert">
+            <!-- <div class="card shadow p-3 m-2 bg-white rounded" style="width: 25rem;"> -->
+              <div class="col-md-8">
+                <h4>{{ message }}</h4>
+              </div>
+            <!-- </div> -->
+          </div>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
           <!-- the alert card if they havent picked to handle payments or not -->
           {% if me.answered_pay_question == False %}
             <div class = 'row justify-content-center mt-4'>

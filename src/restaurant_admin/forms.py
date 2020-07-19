@@ -195,3 +195,15 @@ class EditMenuItemForm(forms.ModelForm):
         if len(MenuItem.objects.filter(name=name_passed))>0:
             raise forms.ValidationError("You have already created an item with this name")
         return name_passed
+
+#form for editing order stream email
+class EmailForm(forms.ModelForm):
+    class Meta:
+        model = Restaurant
+        fields = ('order_stream_email',)
+        required = ()
+
+    def __init__(self, *args, **kwargs):
+        super(EmailForm, self).__init__(*args, **kwargs)
+        self.fields['order_stream_email'].widget.attrs.update(id='tagline',type="text")
+        self.fields['order_stream_email'].widget.attrs['class'] = 'form-control'

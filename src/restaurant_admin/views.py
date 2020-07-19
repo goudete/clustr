@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm, EmailForm
 from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem
@@ -24,7 +24,9 @@ from django.template.loader import render_to_string
 import json
 from datetime import datetime
 from django.utils import timezone
-
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import get_template, render_to_string
+from .email_handlers import send_order_email
 
 #  your views here.
 
@@ -179,42 +181,59 @@ def answer_about(request):
     curr_rest = Restaurant.objects.filter(user = request.user).first()
     #check request method
     if request.method == 'POST':
-        #check for a logo
-        logo = request.FILES.get('logo', False)
-        if logo:
-            doc = request.FILES['logo'] #get file
-            files_dir = '{user}/photos/logo/'.format(user = "R" + str(request.user.id))
-            file_storage = FileStorage()
-            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "logo."+mime) #set path for file to be stored in
-            file_storage.save(doc_path, doc)
-            curr_rest.photo_path = doc_path
+        #check what's being submitted
+        if 'preferences_submit'in request.POST:
+            #check for a logo
+            logo = request.FILES.get('logo', False)
+            if logo:
+                doc = request.FILES['logo'] #get file
+                files_dir = '{user}/photos/logo/'.format(user = "R" + str(request.user.id))
+                file_storage = FileStorage()
+                mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+                doc_path = os.path.join(files_dir, "logo."+mime) #set path for file to be stored in
+                file_storage.save(doc_path, doc)
+                curr_rest.photo_path = doc_path
 
-        #check for a tagline
-        if request.POST['tagline'] != "":
-            curr_rest.info = request.POST['tagline']
-        #check for about
-        if request.POST['about'] != "":
-            curr_rest.about = request.POST['about']
-        #check for dine in vs togo only
-        if is_dine_in(request.POST['dine-in']):
-            curr_rest.dine_in = True
+            #check for a tagline
+            if request.POST['tagline'] != "":
+                curr_rest.info = request.POST['tagline']
+            #check for about
+            if request.POST['about'] != "":
+                curr_rest.about = request.POST['about']
+            #check for dine in vs togo only
+            if is_dine_in(request.POST['dine-in']):
+                curr_rest.dine_in = True
+            else:
+                curr_rest.dine_in = False
+            #save
+            save_time(True, request.POST['opening'], curr_rest)
+            save_time(False, request.POST['closing'], curr_rest)
+            curr_rest.info_input = True
+            curr_rest.save()
+            #redirect either way post vs get
+            return redirect('/restaurant_admin/my_menus')
         else:
-            curr_rest.dine_in = False
-        #save
-        save_time(True, request.POST['opening'], curr_rest)
-        save_time(False, request.POST['closing'], curr_rest)
-        curr_rest.info_input = True
-        curr_rest.save()
-        #redirect either way post vs get
-        return redirect('/restaurant_admin/my_menus')
+            form = EmailForm(request.POST,instance=curr_rest)
+            form.fields['order_stream_email'].widget.attrs['placeholder'] = curr_rest.order_stream_email if curr_rest.order_stream_email else _("None")
+            if form.is_valid():
+                form.save()
+                messages.info(request,_("Email Successfully Updated"))
+                return redirect('/restaurant_admin/my_menus')
+            else:
+                return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+
     #otherwise render the about page
     else:
-        return render(request, 'restaurant/about_info.html', {'me': curr_rest})
+        form = EmailForm()
+        form.fields['order_stream_email'].widget.attrs['placeholder'] = curr_rest.order_stream_email if curr_rest.order_stream_email else _("None")
+        return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
 
 
 def my_menus(request):
     me = Restaurant.objects.get(user = request.user)
+    # test_cart = Cart.objects.all().first()
+    # send_order_email(from_email = settings.EMAIL_HOST_USER,to=me.order_stream_email,order =test_cart)
+
     menus = Menu.objects.filter(restaurant =me) #query set of all menus belonging to this restaurant
     form = MenuForm()
     existing_items = MenuItem.objects.filter(restaurant = me)
