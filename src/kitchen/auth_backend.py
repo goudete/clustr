@@ -1,6 +1,7 @@
 from django.contrib.auth.backends import ModelBackend
 from .models import Kitchen
 from django.contrib.auth.models import User
+from restaurant_admin.models import Restaurant
 
 class PasswordlessAuthBackend(ModelBackend):
     """Log in to Django without providing a password, just a cashier code/login number
@@ -8,9 +9,9 @@ class PasswordlessAuthBackend(ModelBackend):
     """
     def authenticate(self, request, login_number=None):
         try:
-            kitchen =  Kitchen.objects.get(login_number=login_number)
-            return kitchen
-        except Kitchen.DoesNotExist:
+            rest =  Restaurant.objects.filter(kitchen_login_no=login_number).first()
+            return rest
+        except rest.DoesNotExist:
             return None
 
     def get_user(self, user_id):

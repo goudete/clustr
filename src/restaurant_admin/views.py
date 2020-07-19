@@ -69,7 +69,6 @@ def register_view(request):
             user = form.save()
             restaurant = rest_form.save(commit=False)
             restaurant.user = user
-            restaurant.kitchen_login_no = 'QLSTR-'+str(user.id)
             restaurant.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
@@ -628,6 +627,27 @@ def register_cashier(request):
         context = {'form' : form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': cashiers,
                    'is_valid':True}
         return render(request, 'restaurant/cashiers.html', context)
+
+def register_kitchen(request):
+    #if method is a post, then the user submitted a registration from
+    if request.method == 'POST':
+        # form = UserForm(request.POST)
+        kitchen_form = KitchenForm(request.POST)
+        kitchen_form.restaurant_id = Restaurant.objects.get(user = request.user).id
+        if kitchen_form.is_valid():
+        # if cashier_form.login_number(request.POST['login_number'], Restaurant.objects.filter(user = request.user).first().id):
+            kitchen = kitchen_form.save(commit=False)
+            kitchen.restaurant = Restaurant.objects.filter(user = request.user).first()
+            kitchen.save()
+            return redirect('/restaurant_admin/kitchen')
+        else:
+            context = {'form' : kitchen_form, 'restaurant': Restaurant.objects.filter(user = request.user).first()}
+            return render(request, 'restaurant/kitchen.html', context)
+    #if method is get, then user is filling out form
+    else:
+        form = KitchenForm()
+        context = {'form' : form, 'restaurant': Restaurant.objects.filter(user = request.user).first()}
+        return render(request, 'restaurant/kitchen.html', context)
 
 
 """for seeing/changing kitchen login"""

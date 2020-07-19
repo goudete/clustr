@@ -11,16 +11,22 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
 # Create your views here.
 
-def kitchen_login(request):
+def kitchen_login(request, rest_id):
     form = KitchenLoginForm
     if request.method == "POST":
         form = KitchenLoginForm(request.POST)
-        if Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).exists():
-            restaurant = Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).first()
-            return redirect('/kitchen/{rest_id}'.format(rest_id = restaurant.id))
-        else:
-            return render(request,'kitchen/kitchen_login.html', {'form': form})
-    return render(request,'kitchen/kitchen_login.html', {'form': form})
+        print(Restaurant.objects.get(id = rest_id).kitchen_login_no)
+        if form.is_valid():
+            print('form valid')
+            cd = form.cleaned_data
+            kitchen_code = cd['kitchen_code']
+            backend = PasswordlessAuthBackend()
+            bknd = backend.authenticate(request, kitchen_code)
+            print(bknd)
+            if not bknd:
+                return render(request, 'kitchen/kitchen_login.html', {'form': KitchenLoginForm})
+            return redirect('/kitchen/see_orders/{r}'.format(r = rest_id))
+    return render(request,'kitchen/kitchen_login.html',{'form':form})
 
 
 #helper function for a query
@@ -94,4 +100,4 @@ def mark_order_done(request, restaurant_id, tracker_id):
                               body='¡Tu orden de Local Tres esta lista!',
                               to=str(tracker.phone_number)
                           )
-    return redirect('/kitchen/{r_id}'.format(r_id = restaurant_id))
+    return redirect('/kitchen/see_orders/{r_id}'.format(r_id = restaurant_id))
