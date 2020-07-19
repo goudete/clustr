@@ -213,19 +213,37 @@ def answer_about(request):
             #redirect either way post vs get
             return redirect('/restaurant_admin/my_menus')
         else:
-            form = EmailForm(request.POST,instance=curr_rest)
-            form.fields['order_stream_email'].widget.attrs['placeholder'] = curr_rest.order_stream_email if curr_rest.order_stream_email else _("None")
-            if form.is_valid():
-                form.save()
-                messages.info(request,_("Email Successfully Updated"))
-                if 'order_stream' in request.POST:
-                    curr_rest.order_stream = True
-                else:
-                    curr_rest.order_stream = False
-                curr_rest.save() 
-                return redirect('/restaurant_admin/my_menus')
+            if 'order_stream' in request.POST:
+                curr_rest.order_stream = True
             else:
-                return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+                curr_rest.order_stream = False
+            curr_rest.save()
+            messages.info(request,_("Preferences Successfully Updated"))
+
+            if request.POST['order_stream_email'] != "":
+                form = EmailForm(request.POST,instance=curr_rest)
+                if form.is_valid():
+                    form.fields['order_stream_email'].widget.attrs['placeholder'] = str(curr_rest.order_stream_email)
+                    form.save()
+                    return redirect('/restaurant_admin/my_menus')
+                else:
+                    return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+            else:
+                return redirect('/restaurant_admin/my_menus')
+
+            # if form.is_valid():
+            #     print(request.POST['order_stream_email'] == "")
+            #     if request.POST['order_stream_email'] != "":
+            #         form.save()
+            #     messages.info(request,_("Preferences Successfully Updated"))
+            #     if 'order_stream' in request.POST:
+            #         curr_rest.order_stream = True
+            #     else:
+            #         curr_rest.order_stream = False
+            #     curr_rest.save()
+            #     return redirect('/restaurant_admin/my_menus')
+            # else:
+            #     return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
 
     #otherwise render the about page
     else:

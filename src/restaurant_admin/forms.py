@@ -207,3 +207,4 @@ class EmailForm(forms.ModelForm):
         super(EmailForm, self).__init__(*args, **kwargs)
         self.fields['order_stream_email'].widget.attrs.update(id='tagline',type="text")
         self.fields['order_stream_email'].widget.attrs['class'] = 'form-control'
+        self.fields['order_stream_email'].required = False
