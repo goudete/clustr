@@ -18,7 +18,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 from django.utils import translation
-
+from cashier.email_handlers import send_order_email
 
 
 #this method is only for development, it shows all the menus you have on your local db
@@ -651,6 +651,10 @@ def order_confirmation(request, cart_id):
         cart.is_paid = True
         cart.paid_at = timezone.now()
         cart.save()
+        curr_rest = request.user.restaurant
+        if curr_rest.order_stream:
+            print("passed if statement")
+            send_order_email(from_email = settings.EMAIL_HOST_USER, to = curr_rest.order_stream_email, order = cart)
         print('time: ', cart.paid_at)
         items = MenuItemCounter.objects.filter(cart = cart_id)
 

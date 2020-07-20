@@ -34,7 +34,7 @@
             <div class = 'row justify-content-center'>
               <h4 id = 'login_num' style = 'display:none;'>
                 <b>
-                  {{restaurant.kitchen_login_no}}
+                  {% if restaurant.kitchen_login_no %} {{restaurant.kitchen_login_no}} {% else %} {% trans 'No Login Number Yet!' %} {% endif %}
                 </b>
                 <a onclick = 'changeLogin()' style = 'cursor: pointer;'>
                   <svg class="bi bi-pencil" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -59,9 +59,7 @@
                     {% csrf_token %}
 
                     <div class = 'row justify-content-center mt-2'>
-                      <div class = 'col'>
-                        <input type = 'text' name = 'login_no'>
-                      </div>
+                      <input type = "number" name = "login_no">
                     </div>
 
                     <!-- Buttons -->
@@ -78,7 +76,7 @@
 
             <!-- Kitchen link -->
             <div class="row justify-content-center mt-3">
-              <a href="/kitchen" class="btn btn-primary btn-lg" role="button">{% trans 'Kitchen Login' %}</a>
+              <a href="/kitchen/{{restaurant.id}}" class="btn btn-primary btn-lg" role="button">{% trans 'Kitchen Login' %}</a>
             </div>
 
 
@@ -87,12 +85,16 @@
   </body>
   <script>
     function seeLogin(){
-      if(document.getElementById('login_num').style.display == 'block') document.getElementById('kitchen_form').style.display = 'none'
-      else document.getElementById('login_num').style.display = 'block'
+      if(document.getElementById('login_num').style.display == 'none') document.getElementById('login_num').style.display = 'block';
+      else document.getElementById('login_num').style.display = 'none';
     }
     function changeLogin(){
-      if(document.getElementById('login_form').style.dispaly == 'block') document.getElementById('login_form').style.display = 'none';
-      else document.getElementById('login_form').style.display = 'block';
+      console.log(document.getElementById('login_form').style.display);
+      if(document.getElementById('login_form').style.dispaly != 'block'){
+        console.log(true);
+        document.getElementById('login_form').style.display = 'block';
+      }
+      else document.getElementById('login_form').style.display = 'none';
     }
   </script>
 </html>

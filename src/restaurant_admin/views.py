@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm
+from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm, EmailForm
 from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem
@@ -24,7 +24,9 @@ from django.template.loader import render_to_string
 import json
 from datetime import datetime
 from django.utils import timezone
-
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import get_template, render_to_string
+from .email_handlers import send_order_email
 
 #  your views here.
 
@@ -69,7 +71,6 @@ def register_view(request):
             user = form.save()
             restaurant = rest_form.save(commit=False)
             restaurant.user = user
-            restaurant.kitchen_login_no = 'QLSTR-'+str(user.id)
             restaurant.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
@@ -180,42 +181,89 @@ def answer_about(request):
     curr_rest = Restaurant.objects.filter(user = request.user).first()
     #check request method
     if request.method == 'POST':
-        #check for a logo
-        logo = request.FILES.get('logo', False)
-        if logo:
-            doc = request.FILES['logo'] #get file
-            files_dir = '{user}/photos/logo/'.format(user = "R" + str(request.user.id))
-            file_storage = FileStorage()
-            mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "logo."+mime) #set path for file to be stored in
-            file_storage.save(doc_path, doc)
-            curr_rest.photo_path = doc_path
+        #check what's being submitted
+        if 'preferences_submit'in request.POST:
+            #check for a logo
+            logo = request.FILES.get('logo', False)
+            if logo:
+                doc = request.FILES['logo'] #get file
+                files_dir = '{user}/photos/logo/'.format(user = "R" + str(request.user.id))
+                file_storage = FileStorage()
+                mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
+                doc_path = os.path.join(files_dir, "logo."+mime) #set path for file to be stored in
+                file_storage.save(doc_path, doc)
+                curr_rest.photo_path = doc_path
 
-        #check for a tagline
-        if request.POST['tagline'] != "":
-            curr_rest.info = request.POST['tagline']
-        #check for about
-        if request.POST['about'] != "":
-            curr_rest.about = request.POST['about']
-        #check for dine in vs togo only
-        if is_dine_in(request.POST['dine-in']):
-            curr_rest.dine_in = True
+            #check for a tagline
+            if request.POST['tagline'] != "":
+                curr_rest.info = request.POST['tagline']
+            #check for about
+            if request.POST['about'] != "":
+                curr_rest.about = request.POST['about']
+            #check for dine in vs togo only
+            if is_dine_in(request.POST['dine-in']):
+                curr_rest.dine_in = True
+            else:
+                curr_rest.dine_in = False
+            #save
+            save_time(True, request.POST['opening'], curr_rest)
+            save_time(False, request.POST['closing'], curr_rest)
+            curr_rest.info_input = True
+            curr_rest.save()
+            #redirect either way post vs get
+            return redirect('/restaurant_admin/my_menus')
         else:
-            curr_rest.dine_in = False
-        #save
-        save_time(True, request.POST['opening'], curr_rest)
-        save_time(False, request.POST['closing'], curr_rest)
-        curr_rest.info_input = True
-        curr_rest.save()
-        #redirect either way post vs get
-        return redirect('/restaurant_admin/my_menus')
+            if 'order_stream' in request.POST:
+                curr_rest.order_stream = True
+            else:
+                curr_rest.order_stream = False
+            curr_rest.save()
+            messages.info(request,_("Preferences Successfully Updated"))
+
+            if request.POST['order_stream_email'] != "":
+                form = EmailForm(request.POST,instance=curr_rest)
+                if form.is_valid():
+                    form.fields['order_stream_email'].widget.attrs['placeholder'] = str(curr_rest.order_stream_email)
+                    form.save()
+                    return redirect('/restaurant_admin/my_menus')
+                else:
+<<<<<<< Updated upstream
+                    return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+=======
+                    curr_rest.order_stream = False
+                curr_rest.save()
+                return redirect('/restaurant_admin/my_menus')
+>>>>>>> Stashed changes
+            else:
+                return redirect('/restaurant_admin/my_menus')
+
+            # if form.is_valid():
+            #     print(request.POST['order_stream_email'] == "")
+            #     if request.POST['order_stream_email'] != "":
+            #         form.save()
+            #     messages.info(request,_("Preferences Successfully Updated"))
+            #     if 'order_stream' in request.POST:
+            #         curr_rest.order_stream = True
+            #     else:
+            #         curr_rest.order_stream = False
+            #     curr_rest.save()
+            #     return redirect('/restaurant_admin/my_menus')
+            # else:
+            #     return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+
     #otherwise render the about page
     else:
-        return render(request, 'restaurant/about_info.html', {'me': curr_rest})
+        form = EmailForm()
+        form.fields['order_stream_email'].widget.attrs['placeholder'] = curr_rest.order_stream_email if curr_rest.order_stream_email else _("None")
+        order_stream = curr_rest.order_stream
+        return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form,'order_stream':order_stream})
 
 
 def my_menus(request):
     me = Restaurant.objects.get(user = request.user)
+    # test_cart = Cart.objects.all().first()
+    # send_order_email(from_email = settings.EMAIL_HOST_USER,to=me.order_stream_email,order =test_cart)
+
     menus = Menu.objects.filter(restaurant =me) #query set of all menus belonging to this restaurant
     form = MenuForm()
     existing_items = MenuItem.objects.filter(restaurant = me)
@@ -278,7 +326,6 @@ def view_menu(request, menu_id):
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu)
             if len(q_set) > 0:
                 category_items[category]  = q_set
-
         print(category_items)
         return render(request, 'restaurant/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'menu': curr_menu, 'categories': categories})
     else:
@@ -512,13 +559,32 @@ def edit_item(request, item_id, origin, menu_id):
             return redirect('/restaurant_admin/my_items')
 
 
-#helper function, removes a category from a menu if no items are associated with it
-def check_category(category, rest, menu):
-    q_set = MenuItem.objects.filter(restaurant = rest, menus = menu, category = category.name)
-    print('Q_SET: ', q_set)
-    if len(q_set) == 0:
-        category.menus.remove(menu)
-        category.save()
+#helper function, removes empty categories from menus
+#get all menus associated w restaurant
+#get all menu items associated w restaurant and category
+#get all menus that associated w restaurant that contain one of those menu items
+#remove menus that dont contain any of those items ^^ from the category
+def check_categories(category, rest):
+    rest_menus = Menu.objects.filter(restaurant = rest)
+    rest_category_items = SelectOption.objects.filter(restaurant = rest)
+    for category in rest_category_items:
+        for menu in rest_menus:
+            print(category_in_menu(category, menu))
+            if not category_in_menu(category, menu):
+                print("removing ", category.name, " from menu ", menu.name)
+                category.menus.remove(menu)
+                category.save()
+
+#helper function that checks if any menus have an item w specific category
+def category_in_menu(cat, menu):
+    items = MenuItem.objects.filter(menus = menu)
+    for item in items:
+        if item.category == cat.name:
+            return True
+    return False
+
+
+
 
 def ajax_edit_item(request):
     form = EditMenuItemForm(request.POST, request.FILES)
@@ -539,7 +605,7 @@ def ajax_edit_item(request):
     item = MenuItem.objects.get(id=request.POST['item_id'])
     old_category = SelectOption.objects.filter(name = item.category, restaurant = item.restaurant).first()
     #for every field that was filled in, we update the according attribute
-    print('CATEGORY: ', request.POST['category'])
+    # print('CATEGORY: ', request.POST['category'])
     if len(request.POST['name']) > 0:
         item.name = request.POST['name']
     if len(request.POST['category']) > 0:
@@ -554,7 +620,7 @@ def ajax_edit_item(request):
         item.is_in_stock = False
     item.save()
     photo = request.FILES.get('photo', False)
-    print("PHOTO?: ", photo)
+    # print("PHOTO?: ", photo)
     if photo:
         print('saving photo')
         #save photo to AWS
@@ -568,7 +634,7 @@ def ajax_edit_item(request):
         item.photo_path = doc_path
         item.save()
 
-    print("NEW CATEGORY?: ", new_category(request, item.category))
+    # print("NEW CATEGORY?: ", new_category(request, item.category))
     if new_category(request, item.category):
         if request.POST['origin'] == 'my_items':
             new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
@@ -580,10 +646,12 @@ def ajax_edit_item(request):
             new_cat.save()
 
     if request.POST['origin'] == 'edit_menu':
-        check_category(old_category, item.restaurant, Menu.objects.filter(id = request.POST['menu_id']).first())
         #check if category exists but menu didnt contain it
         if not menu_has_category(Menu.objects.filter(id = request.POST['menu_id']).first(), item.category):
+            # print("adding exisitng category")
             add_existing_category(Menu.objects.filter(id = request.POST['menu_id']).first().restaurant, Menu.objects.filter(id = request.POST['menu_id']).first(), item.category)
+
+    check_categories(old_category, item.restaurant)
 
     #redirect back to edit menu page
     return JsonResponse({'success':True})
@@ -628,6 +696,27 @@ def register_cashier(request):
         context = {'form' : form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': cashiers,
                    'is_valid':True}
         return render(request, 'restaurant/cashiers.html', context)
+
+def register_kitchen(request):
+    #if method is a post, then the user submitted a registration from
+    if request.method == 'POST':
+        # form = UserForm(request.POST)
+        kitchen_form = KitchenForm(request.POST)
+        kitchen_form.restaurant_id = Restaurant.objects.get(user = request.user).id
+        if kitchen_form.is_valid():
+        # if cashier_form.login_number(request.POST['login_number'], Restaurant.objects.filter(user = request.user).first().id):
+            kitchen = kitchen_form.save(commit=False)
+            kitchen.restaurant = Restaurant.objects.filter(user = request.user).first()
+            kitchen.save()
+            return redirect('/restaurant_admin/kitchen')
+        else:
+            context = {'form' : kitchen_form, 'restaurant': Restaurant.objects.filter(user = request.user).first()}
+            return render(request, 'restaurant/kitchen.html', context)
+    #if method is get, then user is filling out form
+    else:
+        form = KitchenForm()
+        context = {'form' : form, 'restaurant': Restaurant.objects.filter(user = request.user).first()}
+        return render(request, 'restaurant/kitchen.html', context)
 
 
 """for seeing/changing kitchen login"""

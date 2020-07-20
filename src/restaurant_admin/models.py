@@ -12,7 +12,7 @@ class Restaurant(models.Model):
     photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
     about = models.TextField(_("Your Restaurant's Vision"), null = True, max_length = 255)
     created_at = models.DateTimeField(auto_now_add=True)
-    kitchen_login_no = models.CharField(default = '', max_length = 100, unique = True)
+    kitchen_login_no = models.IntegerField(null = True, unique = True)
     #boolean field, if they answered whether or not they want us to handle payments (a popup is there if not)
     answered_pay_question = models.BooleanField(default = False)
     #boolean field if they want us to handle their payments or not, can be null b/c before they answer its neither
@@ -27,6 +27,9 @@ class Restaurant(models.Model):
     #open and closing time
     opening_time = models.TimeField(null = True, auto_now = False, auto_now_add = False)
     closing_time = models.TimeField(null = True, auto_now = False, auto_now_add = False)
+    order_stream_email = models.EmailField(null=True,max_length=254)
+    #whether emailing order info to order_stream_email is active or not.
+    order_stream = models.BooleanField(default = False)
 
 
 class Menu(models.Model):

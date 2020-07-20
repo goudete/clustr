@@ -1,0 +1,86 @@
+{% load i18n %}
+{% load static %}
+
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<style>
+  body {
+    margin-top: 20px;
+}
+</style>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<div class="container">
+    <div class="row">
+        <div class="well col-xs-10 col-sm-10 col-md-6 col-xs-offset-1 col-sm-offset-1 col-md-offset-3">
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                    <p>
+                        <em>{% trans "Date" %}: {{date}}</em>
+                    </p>
+                    <p>
+                        <em> #{% trans "Receipt" %} : {{order_id}}</em>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <h2>{% trans "Order Info" %} </h2>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Product" %}</th>
+                            <th>#</th>
+                            <th class="text-center">{% trans "Price" %}</th>
+                            <th class="text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      {% for item_counter in item_counters %}
+                      <tr>
+                          <td class="col-md-9"><em>{{item_counter.item.name}}</em>{% if item_counter.custom_instructions %}<br><em style = 'color:red;'>{{item_counter.custom_instructions}}</em>{% endif %}</td>
+                          <td class="col-md-1" style="text-align: center">{{item_counter.quantity}}</td>
+                          <td class="col-md-1 text-center">${{item_counter.item.price}}</td>
+                          <td class="col-md-1 text-center">${{item_counter.price}}</td>
+                      </tr>
+                      {% endfor %}
+                      <tr>
+                          <td>   </td>
+                          <td>   </td>
+                          <td>   </td>
+                          <td class="text-right">
+                          <p>
+                              <strong>{% trans "Subtotal" %}: </strong>
+                          </p>
+                          <p>
+                              <strong>{% trans "Tip" %}: </strong>
+                          </p></td>
+                          <td class="text-center">
+                          <p>
+                              <strong id="order_subtotal">${{cart.total}}</strong>
+                          </p>
+                          <p>
+                              <strong id="tip_amount">${{cart.tip}}</strong>
+                          </p></td>
+                      </tr>
+                        <tr>
+                            <td>   </td>
+                            <td>   </td>
+                            <td class="text-right"><h4><strong>Total: </strong></h4></td>
+                            <td class="text-center text-danger"><h4><strong>${{cart.total_with_tip}}</strong></h4></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- <button type="button" class="btn btn-success btn-lg btn-block">
+                    Pay Now   <span class="glyphicon glyphicon-chevron-right"></span>
+                </button> -->
+            </div>
+        </div>
+    </div>
+</div>

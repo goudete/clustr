@@ -58,6 +58,7 @@ def reviewOrderView(request, log_no):
         cash_code = jsn['cash_code']
         if "confirm_payment" in request.POST: #cashier confirmed the payment
             print(cash_code)
+            print("in confirm payment block")
             curr_cart = Cart.objects.filter(cash_code=cash_code).first()
 
             current_date = datetime.date.today()
@@ -75,7 +76,8 @@ def reviewOrderView(request, log_no):
                                                         'path':cashier.restaurant.photo_path,
                                                         'order_id':curr_cart.id,
                                                         'item_counters': item_counters,
-                                                        'cart': curr_cart
+                                                        'cart': curr_cart,
+                                                        'restaurant_name': cashier.restaurant.name
                                             })
             msg.attach_alternative(html_template, "text/html")
             msg.send()
