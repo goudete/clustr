@@ -227,15 +227,14 @@ def answer_about(request):
                     form.save()
                     return redirect('/restaurant_admin/my_menus')
                 else:
-<<<<<<< Updated upstream
                     return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
-=======
-                    curr_rest.order_stream = False
-                curr_rest.save()
+
+                #     curr_rest.order_stream = False
+                # curr_rest.save()
                 return redirect('/restaurant_admin/my_menus')
->>>>>>> Stashed changes
-            else:
-                return redirect('/restaurant_admin/my_menus')
+# >>>>>>> Stashed changes
+#             else:
+#                 return redirect('/restaurant_admin/my_menus')
 
             # if form.is_valid():
             #     print(request.POST['order_stream_email'] == "")
