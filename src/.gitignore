@@ -8,4 +8,4 @@ cashier/migrations
 restaurant_admin/migrations
 customers/migrations
 kitchen/migrations
-
+NGINX_key.pem
