@@ -72,7 +72,7 @@
           <source src="https://cluster-media.s3-us-west-2.amazonaws.com/bell.mp3" muted="muted">
         </audio>
 
-        <div id="dict_length" style="display: none;">{{ dict|length }}</div>
+        <div id="dict_length" style = "disply:none;">{{ dict|length }}</div>
         <input type="hidden" id="restaurant_id" value="{{ restaurant.id }}">
 
 
@@ -91,6 +91,7 @@
                     <div class = 'row mb-1'>
                         <b style = 'color:black;'><h4>{% trans "Order #" %}{{tracker.cart.id}}</h4></b>
                     </div>
+                    <div class = "tracker_id_number">{{tracker.id}}</div>
                     {% if tracker.cart.dine_in %}
                       <div class="row">
                         <h6>{% trans "Dine In" %}</h6>
@@ -168,9 +169,16 @@
   <script>
 
       var dict_length_str = $("#dict_length").text();
-      var dict_length = parseInt(dict_length_str)
-      var rest_id = $("#restaurant_id").val()
-      var audio = document.getElementById("bell_audio")
+      var dict_length = parseInt(dict_length_str);
+      var rest_id = $("#restaurant_id").val();
+      var audio = document.getElementById("bell_audio");
+
+      let idArray = [];
+      var trackers = document.getElementsByClassName("tracker_id_number");
+      for(i=0; i<trackers.length; i++){
+        idArray.push(parseInt(trackers[i].innerHTML));
+      }
+      console.log(idArray);
 
       //load audio tag on click
       document.onclick = function (){
@@ -195,6 +203,7 @@
           data: {
             'rest_id': rest_id,
             'dict_length': dict_length,
+            'id_array': JSON.stringify(idArray),
           },
           dataType: 'json',
           success: function (data) {
@@ -202,6 +211,11 @@
             if (data.new_orders){
               audio.play();
 
+              setTimeout(function () {
+                location.reload();
+              }, 2000);
+            }
+            else if(data.orders_completed){
               setTimeout(function () {
                 location.reload();
               }, 2000);

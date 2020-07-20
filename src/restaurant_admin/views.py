@@ -227,7 +227,13 @@ def answer_about(request):
                     form.save()
                     return redirect('/restaurant_admin/my_menus')
                 else:
+<<<<<<< Updated upstream
                     return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+=======
+                    curr_rest.order_stream = False
+                curr_rest.save()
+                return redirect('/restaurant_admin/my_menus')
+>>>>>>> Stashed changes
             else:
                 return redirect('/restaurant_admin/my_menus')
 
@@ -320,7 +326,6 @@ def view_menu(request, menu_id):
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu)
             if len(q_set) > 0:
                 category_items[category]  = q_set
-
         print(category_items)
         return render(request, 'restaurant/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'menu': curr_menu, 'categories': categories})
     else:
@@ -554,13 +559,32 @@ def edit_item(request, item_id, origin, menu_id):
             return redirect('/restaurant_admin/my_items')
 
 
-#helper function, removes a category from a menu if no items are associated with it
-def check_category(category, rest, menu):
-    q_set = MenuItem.objects.filter(restaurant = rest, menus = menu, category = category.name)
-    print('Q_SET: ', q_set)
-    if len(q_set) == 0:
-        category.menus.remove(menu)
-        category.save()
+#helper function, removes empty categories from menus
+#get all menus associated w restaurant
+#get all menu items associated w restaurant and category
+#get all menus that associated w restaurant that contain one of those menu items
+#remove menus that dont contain any of those items ^^ from the category
+def check_categories(category, rest):
+    rest_menus = Menu.objects.filter(restaurant = rest)
+    rest_category_items = SelectOption.objects.filter(restaurant = rest)
+    for category in rest_category_items:
+        for menu in rest_menus:
+            print(category_in_menu(category, menu))
+            if not category_in_menu(category, menu):
+                print("removing ", category.name, " from menu ", menu.name)
+                category.menus.remove(menu)
+                category.save()
+
+#helper function that checks if any menus have an item w specific category
+def category_in_menu(cat, menu):
+    items = MenuItem.objects.filter(menus = menu)
+    for item in items:
+        if item.category == cat.name:
+            return True
+    return False
+
+
+
 
 def ajax_edit_item(request):
     form = EditMenuItemForm(request.POST, request.FILES)
@@ -581,7 +605,7 @@ def ajax_edit_item(request):
     item = MenuItem.objects.get(id=request.POST['item_id'])
     old_category = SelectOption.objects.filter(name = item.category, restaurant = item.restaurant).first()
     #for every field that was filled in, we update the according attribute
-    print('CATEGORY: ', request.POST['category'])
+    # print('CATEGORY: ', request.POST['category'])
     if len(request.POST['name']) > 0:
         item.name = request.POST['name']
     if len(request.POST['category']) > 0:
@@ -596,7 +620,7 @@ def ajax_edit_item(request):
         item.is_in_stock = False
     item.save()
     photo = request.FILES.get('photo', False)
-    print("PHOTO?: ", photo)
+    # print("PHOTO?: ", photo)
     if photo:
         print('saving photo')
         #save photo to AWS
@@ -610,7 +634,7 @@ def ajax_edit_item(request):
         item.photo_path = doc_path
         item.save()
 
-    print("NEW CATEGORY?: ", new_category(request, item.category))
+    # print("NEW CATEGORY?: ", new_category(request, item.category))
     if new_category(request, item.category):
         if request.POST['origin'] == 'my_items':
             new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
@@ -622,10 +646,12 @@ def ajax_edit_item(request):
             new_cat.save()
 
     if request.POST['origin'] == 'edit_menu':
-        check_category(old_category, item.restaurant, Menu.objects.filter(id = request.POST['menu_id']).first())
         #check if category exists but menu didnt contain it
         if not menu_has_category(Menu.objects.filter(id = request.POST['menu_id']).first(), item.category):
+            # print("adding exisitng category")
             add_existing_category(Menu.objects.filter(id = request.POST['menu_id']).first().restaurant, Menu.objects.filter(id = request.POST['menu_id']).first(), item.category)
+
+    check_categories(old_category, item.restaurant)
 
     #redirect back to edit menu page
     return JsonResponse({'success':True})

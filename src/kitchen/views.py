@@ -8,6 +8,8 @@ from .auth_backend import PasswordlessAuthBackend
 from .forms import KitchenLoginForm
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+import re
+from django.utils.translation import gettext as _
 
 # Create your views here.
 
@@ -64,26 +66,43 @@ def get_active_orders(rest_id):
     paid_orders = []
     for tracker in trackers:
         if tracker.cart.is_paid:
-            paid_orders.append(tracker)
-    server_dict_length = len(paid_orders)
-    return server_dict_length
+            paid_orders.append(tracker.id)
+    return paid_orders
+
+""" helper function that checks the array of tracker id numbers, and determines if there are any new ones from get_active_orders()"""
+def new_orders(old_list, new_list):
+    union = list(set(old_list) | set(new_list))
+    if union == old_list:
+        return False
+    return True
+
+"""helper function that checks if the array of tracker id numbers from get_active_orders() lost any ids bc the order was completed"""
+def orders_completed(old_list, new_list):
+    intersection = list(set(old_list) & set(new_list))
+    if intersection == old_list:
+        return False
+    return True
+
+"""helper function to turn stringified JSON array back into list of ints"""
+def string_to_list(str):
+    ans = []
+    for char in str:
+        if char.isdigit():
+            ans.append(int(char))
+    return ans
 
 def check_new_orders(request):
     browser_dict_length = request.GET.get('dict_length', None)
     rest_id = request.GET.get('rest_id', None)
-
-    server_dict_length = get_active_orders(rest_id)
-
-    if int(browser_dict_length) > int(server_dict_length) or int(browser_dict_length) == int(server_dict_length):
-        data = {
-            'new_orders': False
-        }
-    elif int(browser_dict_length) < int(server_dict_length):
-        #new orders posted
-        data = {
-            'new_orders': True
-        }
-
+    id_array = string_to_list(request.GET.get('id_array', None))
+    server_list = get_active_orders(rest_id)
+    data = {'new_orders':False, 'orders_completed': False}
+    #use helper functions above with id_array
+    if new_orders(id_array, server_list):
+        data['new_orders'] = True
+    elif orders_completed(id_array, server_list):
+        data['orders_completed'] = True
+    print(data)
     return JsonResponse(data)
 
 
@@ -97,7 +116,7 @@ def mark_order_done(request, restaurant_id, tracker_id):
             client = Client(settings.TWILIO_SID, settings.TWILIO_AUTH_TOKEN)
             message = client.messages.create(
                               from_='+14845099889',
-                              body='¡Tu orden de Local Tres esta lista!',
+                              body= _('¡Tu orden de {name} esta lista!').format(name = Restaurant.objects.get(id = restaurant_id).name),
                               to=str(tracker.phone_number)
                           )
     return redirect('/kitchen/see_orders/{r_id}'.format(r_id = restaurant_id))
