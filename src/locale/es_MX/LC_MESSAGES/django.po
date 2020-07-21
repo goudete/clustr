@@ -24,7 +24,7 @@ msgstr "PEDIDO"
 
 #: cashier/forms.py:21
 msgid "Order with this code does not exist."
-msgstr "Orden Inexistente"
+msgstr "No existe una orden con este código"
 
 #: cashier/forms.py:23
 msgid "Order is already paid"
@@ -32,7 +32,7 @@ msgstr "La orden ya fue pagada"
 
 #: cashier/forms.py:42
 msgid "Not a valid cashier code."
-msgstr "Número de cajero inválido"
+msgstr "El número de cajero es inválido"
 
 #: cashier/models.py:12
 msgid "Cashier Code"
@@ -56,7 +56,7 @@ msgstr "Hola"
 
 #: cashier/templates/base2.html:112
 msgid "Cash Payment"
-msgstr "Pago en metálico"
+msgstr "Pago"
 
 #: cashier/templates/base2.html:126 cashier/templates/order_history.html:65
 msgid "Order History"
@@ -68,7 +68,7 @@ msgstr "Introducir Código"
 
 #: cashier/templates/cash_payment.html:190
 msgid "Enter the code the customer was given for cash payment"
-msgstr "Introducir el código dado al huesped para pagar en metálico"
+msgstr "Introducir el código dado al huesped para cobrar"
 
 #: cashier/templates/cash_payment.html:193
 #: cashier/templates/cashier_login.html:193
@@ -99,11 +99,11 @@ msgstr "Regresar"
 
 #: cashier/templates/cashier_login.html:189
 msgid "Input Cashier Code"
-msgstr "Introducir Número de cajero"
+msgstr "Introducir el número de cajero"
 
 #: cashier/templates/cashier_login.html:190
 msgid "Input your cashier code to start the session"
-msgstr "Introduce tu número dado de cajero para empezar la sesión."
+msgstr "Introduce tu número de cajero para empezar la sesión."
 
 #: cashier/templates/emails/order_info/order_info2_EN.html:24
 #: cashier/templates/emails/receipt/receipt.html:39
@@ -167,8 +167,6 @@ msgstr "Propina"
 
 #: cashier/templates/emails/order_info/order_info_EN.html:69
 #: restaurant_admin/templates/restaurant/emails/order_info/order_info_EN.html:69
-#, fuzzy
-#| msgid "Order #"
 msgid "Order no."
 msgstr "Pedido #"
 
@@ -369,7 +367,7 @@ msgstr "Número de Orden:"
 #: customers/templates/customers/order_confirmation.html:37
 #: kitchen/templates/kitchen/active_orders.html:96
 msgid "Dine In"
-msgstr "Comer con nosotros"
+msgstr "Comer aquí"
 
 #: customers/templates/customers/order_confirmation.html:39
 #: kitchen/templates/kitchen/active_orders.html:100
@@ -426,7 +424,7 @@ msgstr "Propina Personalizada $"
 
 #: customers/templates/customers/view_cart.html:205
 msgid "To Go or Dine In?"
-msgstr "¿Comer con nosotros o para llevar?"
+msgstr "¿Vas a comer aquí o para llevar?"
 
 #: customers/templates/customers/view_cart.html:234
 msgid "Place Order"
@@ -596,17 +594,17 @@ msgstr "Descripción de tu Menu"
 #: restaurant_admin/templates/restaurant/about_info.html:134
 #: restaurant_admin/templates/restaurant/my_menus.html:96
 msgid "This will be displayed under your Restaurant name to the customer"
-msgstr "Será mostrado en abajo del nombre de tu Restaurante en tu menú "
+msgstr "Esta información será mostrada debajo del nombre de tu restaurante en tu menú "
 
 #: restaurant_admin/templates/restaurant/about_info.html:138
 #: restaurant_admin/templates/restaurant/my_menus.html:100
 msgid "About Your Restaurant"
-msgstr "Sobre tu Restaurante"
+msgstr "Acerca de tu restaurante"
 
 #: restaurant_admin/templates/restaurant/about_info.html:140
 #: restaurant_admin/templates/restaurant/my_menus.html:102
 msgid "This will be displayed in your About section"
-msgstr "Será mostrado en la sección de '¿Quiénes somos?'"
+msgstr "Esta información será mostrada en la sección de 'Acerca'"
 
 #: restaurant_admin/templates/restaurant/about_info.html:144
 #: restaurant_admin/templates/restaurant/my_menus.html:106
@@ -621,7 +619,7 @@ msgstr "a"
 #: restaurant_admin/templates/restaurant/about_info.html:158
 #: restaurant_admin/templates/restaurant/my_menus.html:120
 msgid "Do You Currently Offer Dine In?"
-msgstr "¿Ofreces servicio?"
+msgstr "¿Ofreces servicio para que tus clientes se sienten?"
 
 #: restaurant_admin/templates/restaurant/about_info.html:174
 #: restaurant_admin/templates/restaurant/my_menus.html:136
@@ -643,7 +641,7 @@ msgstr "Escoger archivo"
 
 #: restaurant_admin/templates/restaurant/about_info.html:198
 msgid "Orders Email"
-msgstr "Correo Para Pedidos"
+msgstr "Correo electrónico donde te van a llegar los pedidos"
 
 #: restaurant_admin/templates/restaurant/about_info.html:208
 msgid "Email"
@@ -653,7 +651,7 @@ msgstr "Correo Electrónico"
 msgid ""
 "All confirmed orders will be emailed to this email. You can toggle this "
 "feature using the slider below"
-msgstr "Todos los pedidos confirmados se mandan a este Correo. Activa o desactiva esta función deslizando el botón debajo"
+msgstr "Todos los pedidos confirmados se mandan a este correo. Activa o desactiva esta función deslizando el botón debajo"
 
 #: restaurant_admin/templates/restaurant/about_info.html:214
 msgid "Activate"
@@ -671,7 +669,7 @@ msgstr "Platillos"
 #: restaurant_admin/templates/restaurant/sales.html:10
 #: restaurant_admin/templates/restaurant/sales_extended.html:247
 msgid "Sales"
-msgstr "Mis Ventas"
+msgstr "Ventas"
 
 #: restaurant_admin/templates/restaurant/base.html:78
 msgid "Cashiers"
@@ -680,7 +678,7 @@ msgstr "Cajeros"
 #: restaurant_admin/templates/restaurant/base.html:84
 #: restaurant_admin/templates/restaurant/kitchen.html:79
 msgid "Kitchen Login"
-msgstr "Iniciar Sesión Cocina"
+msgstr "Iniciar sesión de cocina"
 
 #: restaurant_admin/templates/restaurant/base.html:90
 msgid "Settings"
@@ -1031,7 +1029,7 @@ msgstr "Tu contraseña ha sido cambiada exitosamente."
 #: restaurant_admin/templates/restaurant/passwords/password_reset_complete.html:12
 #: restaurant_admin/templates/restaurant/passwords/password_reset_done.html:13
 msgid "Having trouble?"
-msgstr "¿Teniendo Problemas?"
+msgstr "¿Estás teniendo problemas?"
 
 #: restaurant_admin/templates/restaurant/passwords/password_reset_complete.html:12
 #: restaurant_admin/templates/restaurant/passwords/password_reset_done.html:13
