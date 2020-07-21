@@ -1003,6 +1003,7 @@ def sales(request):
                                 "%Y-%m-%d %I:%M %p")
             print(end_datetime_str)
             carts = Cart.objects.filter(restaurant=restaurant).filter(created_at__range=(start_datetime_str,end_datetime_str))
+            carts = [cart for cart in carts if cart.is_paid]
             total_sales = sum([cart.total for cart in carts])
             total_sales_with_tip = sum([cart.total_with_tip for cart in carts])
             total_tip = total_sales_with_tip - total_sales
