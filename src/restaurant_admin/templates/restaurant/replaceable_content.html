@@ -1,74 +1,146 @@
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
+<script>
+  $(document).ready(function(){
+      var csrftoken = Cookies.get('csrftoken');
+      console.log("yo this is the CSRF");
+      console.log(csrftoken);
+    }
 
+  $.ajaxSetup({
+      beforeSend: function (xhr, settings) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+  });
+</script>
 
-    {% for category, items in category_items.items %}
-    <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
-        <div class="navbar-header">
-          <h4>{{category}}</h4>
-        </div>
-    </nav>
-    <div class="row">
-    {% for item in items %}
-    <div class="col-sm-2 py-2">
-        <div class="card h-100 border-secondary" style="margin-bottom: 0 !important;">
-            <div class="card-body mb-0">
-                <h6 class="card-title" style="text-align: center;">{{item.name}}</h6>
-                <a style = 'cursor: pointer; position: absolute; top: 5px; right: 5px;'>
-                  <svg class="bi bi-pencil" width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#edit_modal{{item.id}}">
-                    <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
-                    <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
-                  </svg>
-                </a>
-                <!-- <p class="card-text">{{item.description}}</p> -->
-                {% if item.photo_path %}
-                <div style="max-width: 100%; max-height: 100%;">
-                  <img class="rounded mx-auto d-block" src="{% static item.photo_path %}" height=75 width=75>
-                </div>
-                {% endif %}
-                <br>
-                  <strong style="text-align: center; margin-left: 25%">${{item.price}}</strong>
-            </div>
-        </div>
+{% for category, items in category_items.items %}
+<nav class="navbar navbar-default navbar-fixed-tip border-bottom">
+    <div class="navbar-header">
+      <h4>{{category}}</h4>
     </div>
-    <!-- modal that pops up when item is to be edited-->
-    <div class="modal fade bd-example-modal-lg" id="edit_modal{{item.id}}" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <!--hidden form to edit new item -->
-            <div class = 'row justify-content-center'>
-              <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'>
+</nav>
+<br>
+<div class="row">
+  <div class="col">
+  <table class="table table-hover table-bordered" style="border-collapse:collapse;">
+    <thead>
+        <tr>
+              <th>Item Name</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>In Stock?</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for item in items %}
 
-                  <div class ='row justify-content-center'>
-                    <h3 class="card-title">{% trans "Edit Item" %}</h3>
+    <tr colspan="5" data-toggle="collapse" data-target="#demo{{item.id}}" onclick="event.preventDefault();" >
+    <!-- <tr colspan="5"> -->
+        <td data-toggle="collapse">{{item.name}}</td>
+        <td data-toggle="collapse">{{item.price}}</td>
+        <td data-toggle="collapse">{{item.category}}</td>
+        <td style="text-align: center;" data-toggle="collapse">
+          {% if item.is_in_stock %}
+            <i class="fas fa-check" style="color: green;"></i>
+            {% else %}
+            <i class="fas fa-times" style="color: red;"></i>
+            {% endif %}
+        </td>
+    </tr>
+    <tr class="p">
+        <td colspan="5" class="hiddenRow">
+          <div class="accordian-body collapse p-3" id="demo{{item.id}}">
+            <div class="card shadow">
+              <div class="card-body">
+                  <div class="row text-center ">
+                      <div class="col-md-3 mr-3">
+                        <div class="form-group row">
+                          <label class="col-6 col-form-label form-control-label">{% trans "In Stock" %}?</label>
+                          <div class="col-lg-6">
+                            <label class="switch">
+                              {% if item.is_in_stock %}
+                              <input name = "is_in_stock" type="checkbox" form="edit_item_form{{item.id}}" checked>
+                              {% endif %}
+                              {% if item.is_in_stock == False %}
+                              <input name = "is_in_stock" type="checkbox" form="edit_item_form{{item.id}}">
+                              {% endif %}
+                              <span class="slider round"></span>
+                           </label>
+                          </div>
+                      </div>
+                      </div>
+                      <div class="col-md-5">
+                          <h4>{{item.name}}</h4>
+                          <p>{{item.description}}</p>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="btn-group ">
+                              <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}"
+                             class="btn btn-primary edit_item_submit" form="edit_item_form{{item.id}}">{% trans "Update" %}</button>
+                          </div>
+                          <br>
+                          <br>
+                          <div class = 'col mt-2'>
+                            <a style = 'color:red; font-size: 1.2em;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                          </div>
+                      </div>
                   </div>
-                  <div class = 'card-body'>
-                    <div class="card-body d-flex justify-content-center">
-                      <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' method = 'post' enctype = 'multipart/form-data'>
+                  <div class="row text-center">
+                    <div class="col text-center">
+                      {% if item.photo_path %}
+                      <div style="max-width: 100%; max-height: 100%;">
+                        <img class="rounded mx-auto d-block" src="{% static item.photo_path %}" height=250 width=250>
+                      </div>
+                      {% else %}
+                      <div style="max-width: 100%; max-height: 100%;">
+                        <img class="rounded mx-auto d-block" height=250 width=250> No photo </img>
+                      </div>
+
+                      {% endif %}
+                    </div>
+                  </div>
+                  <br>
+                  <div>
+                    <div class="row justify-content-center">
+                      <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
                         {% csrf_token %}
                         <div class = 'row'>
                           <div class="col-6">
                             <label for='name'>{% trans 'Name' %}</label>
                           </div>
                           <div class="col-6">
-                            <label for='description'>{% trans 'Description' %}</label>
+                            <label for='description'>{% trans 'Photo' %}</label>
                           </div>
                         </div>
                         <div class = 'row'>
                           <div class="col-6">
-                            <input type = 'text' id = 'name' name = 'name' value = "{{item.name}}">
+                            <input type = 'text' id = 'name' name = 'name' placeholder = "{{item.name}}">
+
                           </div>
                           <div class="col-6">
-                            <textarea rows = '4' cols = '23' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
+                            <div class="input-group" id = 'photo2'>
+                              <div class="custom-file">
+                                <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                                <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <div class = 'row'>
+                          <div class="col-6">
+                            <div id = "name_errors_edit{{item.id}}" class="errors">
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div id = "photo_errors_edit{{item.id}}" class="errors">
+                            </div>
+                          </div>
                         </div>
                         <div class = 'row'>
                           <div class="col-6">
-                            <label for='course'>{% trans 'Category' %}</label>
+                            <label for='category'>{% trans 'Category' %}</label>
                           </div>
 
                           <div class="col-6">
@@ -77,61 +149,52 @@
                         </div>
                         <div class = 'row'>
                           <div class="col-6">
-                            <input id = 'course' name = 'course' list = 'options' placeholder = "{{item.course}}">
+
+                            <input id = 'category' name = 'category' list = 'options' placeholder = "{{item.category}}">
                             <datalist id = 'options'>
                               {% for option in selct_options %}
-                                <option value = {{option}} {% if option.name == item.course %} selected{% endif %}>
+                                <option value = "{{option.name}}">{{option.name}}</option>
                               {% endfor %}
                             </datalist>
                           </div>
 
                           <div class="col-6">
-                            <input type = 'number' step = '0.01' id = 'price' name = 'price' value = {{item.price}}>
+                            <input type = 'number' step = '0.01' id = 'price' name = 'price' placeholder = '{{item.price}}'>
+
                           </div>
                         </div>
                         <br>
-                        <div class = 'row justify-content-center'>
-                          <!-- <div class="col-8 mt-2"> -->
-                            <label style="margin-right: 20px;" for = 'photo'>{% trans 'Photo' %}</label>
-                          <!-- </div> -->
-                          <input type = 'file' accept="image/*" id = 'photo' name = "photo">
-                        </div>
-                        <br>
-                        <div class="form-group row">
-                          <label class="col-lg-3 col-form-label form-control-label">{% trans "In Stock" %}?</label>
-                          <div class="col-lg-9">
-                            <label class="switch">
-                              {% if item.is_in_stock %}
-                              <input name = "is_in_stock" type="checkbox" checked>
-                              {% endif %}
-                              {% if item.is_in_stock == False %}
-                              <input name = "is_in_stock" type="checkbox">
-                              {% endif %}
-                              <span class="slider round"></span>
-                           </label>
-                          </div>
-                      </div>
-                        <br>
-                        <br>
-                        <div class = 'row justify-content-center'>
-                          <div style="text-align: centerl=;" class = 'row justify-content-center'>
-                            <div class="btn-group mt-2">
-                                <button type="submit" class="btn btn-primary">{% trans "Update" %}</button>
+                        <div class = 'row'>
+                          <div class="col-6">
+                            <div id = "category_errors_edit{{item.id}}" class="errors">
                             </div>
-                            <div class = 'col mt-4'>
-                              <a style = 'color:red;' href = '/restaurant_admin/remove_item/{{menu.id}}/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                          </div>
+                          <div class="col-6">
+                            <div id = "price_errors_edit{{item.id}}" class="errors">
                             </div>
                           </div>
                         </div>
-                      </form>
+                        <br>
+                        <div class="row justify-content-center">
+                          <label style="margin-right: 20px;" for = 'description'>{% trans 'Description' %}</label>
+                        </div>
+                        <div class = 'row justify-content-center'>
+                          <textarea rows = '6' cols = '60' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
+
+                        </div>
+                        </form>
                     </div>
                   </div>
               </div>
-          </div>
-      </div>
-    </div>
-  </div>
-</div>
+            </div>
+        </div>
+
+      </td>
+    </tr>
+
 {% endfor %}
+</tbody>
+</table>
+</div>
   </div>
 {% endfor %}

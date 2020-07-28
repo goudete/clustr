@@ -760,7 +760,8 @@ def my_items(request):
         html = render_to_string(
             template_name="restaurant/replaceable_content.html",
             context={"menus": [],'item_form':form,'me':curr_rest,'category_items':category_items,
-                     'language_code':language_code}
+                     'language_code':language_code},
+            request=request
         )
 
         data_dict = {"html_from_view": html}
