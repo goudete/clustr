@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'customers',
     'kitchen',
     'restaurant_admin',
+    'shift_admin',
     'crispy_forms',
     'storages',
     'django.contrib.admin',
