@@ -976,7 +976,7 @@ msgstr ""
 
 #: .\restaurant_admin\templates\restaurant\my_menus.html:264
 msgid "No Photo"
-msgstr ""
+msgstr "No hay Foto"
 
 #: .\restaurant_admin\templates\restaurant\my_menus.html:272
 msgid "View"
