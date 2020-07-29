@@ -592,6 +592,8 @@ def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
     form = EmailForm()
     phone_form = PhoneForm()
     curr_cart = Cart.objects.filter(id = cart_id).first()
+    curr_cart.is_paid = True
+    curr_cart.save()
     curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
     curr_menu = Menu.objects.filter(id = menu_id).first()
     if request.method == 'GET':

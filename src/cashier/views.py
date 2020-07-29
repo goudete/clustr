@@ -18,11 +18,47 @@ import datetime
 from django.template.loader import get_template, render_to_string
 
 # Create your views here.
-def baseView(request, log_no):
+
+#helper function for a query
+def cart_query(restaurant_id, entered):
+    carts = Cart.objects.filter(restaurant = Restaurant.objects.filter(id = restaurant_id).first()).filter(is_paid = True).filter(is_entered = entered)
+    list = []
+    for item in MenuItemCounter.objects.all():
+        if item.cart in carts:
+            list.append(item)
+    return list
+
+
+def orders_dict(restaurant_id, entered):
+    restaurant = Restaurant.objects.filter(id = restaurant_id).first()
+    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
+    items = cart_query(restaurant_id, entered)
+    tracker_item_dict = {}
+    for i in range(len(trackers)):
+        item_list = []
+        for item in items:
+            if item.cart == trackers[i].cart:
+                item_list.append(item)
+        if len(item_list) > 0:
+            tracker_item_dict[trackers[i]] = item_list
+    return tracker_item_dict
+
+
+def baseView(request, rest_id, log_no):
     backend = CashierProfile.objects.get(id = log_no)
     logo_photo_path = backend.restaurant.photo_path
-    return render(request,'base2.html',{'cashier':backend,
-                                        'path':logo_photo_path})
+    unentered_orders = orders_dict(rest_id, False)
+    incomplete_orders = orders_dict(rest_id, True)
+    return render(request,'new_home.html',{'to_enter': unentered_orders, 'to_complete': incomplete_orders, 'log_no': log_no})
+
+def mark_entered(request, rest_id, log_no, cart_id):
+    if request.method == 'POST':
+        cart = Cart.objects.get(id = cart_id)
+        cart.is_entered = True
+        cart.save()
+        print(cart.is_entered)
+    return redirect('/cashier/base/{r}/{l}'.format(r = rest_id, l = log_no))
+
 
 def cashPaymentView(request, log_no):
     backend = CashierProfile.objects.get(id = log_no)
@@ -117,7 +153,7 @@ def loginCashier(request, rest_id):
             # login(request,cashier.user,backend='cashier.auth_backend.PasswordlessAuthBackend')
             # print(request.user.is_authenticated)
             #return render(request,'base2.html',{'name':cashier.name})
-            return HttpResponseRedirect('/cashier/base/{id}'.format(id = cashier.id))
+            return HttpResponseRedirect('/cashier/base/{rid}/{id}'.format(rid = rest_id, id = cashier.id))
     return render(request,'cashier_login.html',{'form':form})
 
 def ajax_change_order_quantity(request, log_no):

@@ -1,0 +1,197 @@
+{% load i18n %}
+{% load static %}
+<!--template from https://bootsnipp.com/snippets/M5noj-->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+<div class = "row justify-content-center">
+  <!-- left column is for orders that haven't been put into system yet -->
+  <div class = "col">
+    <div class = "row justify-content-center">
+      <h5>{% trans "Orders to Enter" %}</h5>
+    </div>
+    {% if to_enter|length == 0 %}
+    <div class = 'row justify-content-center mt-5'>
+      <h3>{% trans 'No Orders To Enter' %}</h3>
+    </div>
+    {% else %}
+
+      {% for tracker, list in to_enter.items %}
+        {% if tracker.cart.is_paid %}
+        <div class="order-card card shadow p-3 bg-white rounded mr-2 ml-2 mb-2 mt-2" style = "width:20rem;">
+          <div class="card-body">
+
+            <div class = 'row mb-1'>
+                <b style = 'color:black;'><h4>{% trans "Order #" %}{{tracker.cart.id}}</h4></b>
+            </div>
+            <div class = "tracker_id_number">{{tracker.id}}</div>
+            {% if tracker.cart.dine_in %}
+              <div class="row">
+                <h6>{% trans "Dine In" %}</h6>
+              </div>
+            {% else %}
+              <div class="row">
+                <h6>{% trans "To Go" %}</h6>
+              </div>
+            {% endif %}
+
+            <!-- when order was payed -->
+              <div class="row mb-3">
+                <h6>{% trans "Time: " %}{{ tracker.cart.paid_at }}</h6>
+              </div>
+            <!-- end time section -->
+
+            {% for item in list %}
+              <div class = 'row'>
+                <div class="col ml-1">
+                  <h7>- {{item.quantity}} {{item.item.name}}</h7>
+                </div>
+              </div>
+              {% if item.custom_instructions %}
+              <div class = 'row'>
+                <div class="col ml-1">
+                <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
+                </div>
+              </div>
+              {% endif %}
+
+              {% if item.addon_items %}
+                {% for i in item.addon_items.all %}
+                <div class = 'row'>
+                  <div class="col ml-1">
+                  <h7 style = 'color:red;'> -- {{i.name}}</h7>
+                  </div>
+                </div>
+                {% endfor %}
+              {% endif %}
+              <div class = 'row mt-2 mb-2'>
+                <!-- just for spacing -->
+              </div>
+            {% endfor %}
+
+            <div class = 'row justify-content-center mt-5'>
+              <a style = 'cursor:pointer;' onclick = "showObj('tracker{{tracker.id}}')">
+                <svg class="bi bi-pencil" width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                  <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                </svg>
+              </a>
+            </div>
+
+            <div class = 'row justify-content-center mt-5'>
+              <div id = 'tracker{{tracker.id}}' style = 'display:none;'>
+                <form action = '/cashier/mark_entered/{{tracker.cart.restaurant.id}}/{{log_no}}/{{tracker.cart.id}}' method = 'post'>
+                  {% csrf_token %}
+                  <button type = 'submit' class = 'btn btn-success'>{% trans 'Entered' %}</button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+
+    {% endif %}
+  </div>
+
+  <!-- right column is for orders that need to be marked as ready -->
+  <div class = "col">
+    <div class = "row justify-content-center">
+      <h5>{% trans "Orders to Complete" %}</h5>
+    </div>
+    {% if to_complete|length == 0 %}
+    <div class = 'row justify-content-center mt-5'>
+      <h3>{% trans 'No Active Orders' %}</h3>
+    </div>
+    {% else %}
+
+      {% for tracker, list in to_complete.items %}
+        {% if tracker.cart.is_paid %}
+        <div class="order-card card shadow p-3 bg-white rounded mr-2 ml-2 mb-2 mt-2" style = 'width:20rem;'>
+          <div class="card-body">
+
+            <div class = 'row mb-1'>
+                <b style = 'color:black;'><h4>{% trans "Order #" %}{{tracker.cart.id}}</h4></b>
+            </div>
+            <div class = "tracker_id_number">{{tracker.id}}</div>
+            {% if tracker.cart.dine_in %}
+              <div class="row">
+                <h6>{% trans "Dine In" %}</h6>
+              </div>
+            {% else %}
+              <div class="row">
+                <h6>{% trans "To Go" %}</h6>
+              </div>
+            {% endif %}
+
+            <!-- when order was payed -->
+              <div class="row mb-3">
+                <h6>{% trans "Time: " %}{{ tracker.cart.paid_at }}</h6>
+              </div>
+            <!-- end time section -->
+
+            {% for item in list %}
+              <div class = 'row'>
+                <div class="col ml-1">
+                  <h7>- {{item.quantity}} {{item.item.name}}</h7>
+                </div>
+              </div>
+              {% if item.custom_instructions %}
+              <div class = 'row'>
+                <div class="col ml-1">
+                <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
+                </div>
+              </div>
+              {% endif %}
+
+              {% if item.addon_items %}
+                {% for i in item.addon_items.all %}
+                <div class = 'row'>
+                  <div class="col ml-1">
+                  <h7 style = 'color:red;'> -- {{i.name}}</h7>
+                  </div>
+                </div>
+                {% endfor %}
+              {% endif %}
+              <div class = 'row mt-2 mb-2'>
+                <!-- just for spacing -->
+              </div>
+            {% endfor %}
+
+            <div class = 'row justify-content-center mt-5'>
+              <a style = 'cursor:pointer;' onclick = "showObj('tracker{{tracker.id}}')">
+                <svg class="bi bi-pencil" width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                  <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                </svg>
+              </a>
+            </div>
+
+            <div class = 'row justify-content-center mt-5'>
+              <div id = 'tracker{{tracker.id}}' style = 'display:none;'>
+                <form action = '/kitchen/{{tracker.cart.restaurant.id}}/{{tracker.id}}' method = 'post'>
+                  {% csrf_token %}
+                  <button type = 'submit' class = 'btn btn-success'>{% trans 'Complete' %}</button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function showObj(id){
+    if (document.getElementById(id).style.display == 'none') document.getElementById(id).style.display = 'block';
+    else document.getElementById(id).style.display = 'none';
+  }
+</script>

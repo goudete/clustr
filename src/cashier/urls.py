@@ -20,7 +20,8 @@ from . import views
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('base/<int:log_no>',views.baseView),
+    path('base/<int:rest_id>/<int:log_no>',views.baseView),
+    path('mark_entered/<int:rest_id>/<int:log_no>/<int:cart_id>', views.mark_entered),
     path('cash_payment/<int:log_no>',views.cashPaymentView, name = 'cash_payment'),
     path('review_order/<int:log_no>',views.reviewOrderView, name = 'review_order'),
     path('cashier_login/<int:rest_id>',views.loginCashier, name = 'cashier_login'),
