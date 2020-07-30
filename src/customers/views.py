@@ -19,7 +19,7 @@ from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 from django.utils import translation
 from cashier.email_handlers import send_order_email
-
+from .helpers import assignToCashier
 
 #this method is only for development, it shows all the menus you have on your local db
 def show_all_menus(request):
@@ -649,11 +649,12 @@ def order_confirmation(request, cart_id):
     #if this method is a get, then theyre seeing the confirmation page
     '''Send order to kitchen to print'''
     if request.method == 'GET':
+        curr_rest = request.user.restaurant
         cart = Cart.objects.filter(id = cart_id).first()
         cart.is_paid = True
+        assignToCashier(cart,curr_rest)
         cart.paid_at = timezone.now()
         cart.save()
-        curr_rest = request.user.restaurant
         if curr_rest.order_stream:
             print("passed if statement")
             send_order_email(from_email = settings.EMAIL_HOST_USER, to = curr_rest.order_stream_email, order = cart)

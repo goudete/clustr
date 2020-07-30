@@ -153,6 +153,8 @@ def loginCashier(request, rest_id):
             # login(request,cashier.user,backend='cashier.auth_backend.PasswordlessAuthBackend')
             # print(request.user.is_authenticated)
             #return render(request,'base2.html',{'name':cashier.name})
+            cashier.is_active = True
+            cashier.save()
             return HttpResponseRedirect('/cashier/base/{rid}/{id}'.format(rid = rest_id, id = cashier.id))
     return render(request,'cashier_login.html',{'form':form})
 
@@ -214,5 +216,6 @@ def ajax_add_item(request, log_no):
     return JsonResponse(data)
 
 def cashier_logout(request, log_no):
-    # logout(request)
+    cashier.is_active = False
+    cashier.save()
     return redirect('/cashier/cashier_login/' + str(log_no)) #return to login page

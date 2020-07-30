@@ -1,7 +1,6 @@
 from django.db import models
 from restaurant_admin.models import MenuItem
 from django.core.validators import MinValueValidator, MaxValueValidator
-from restaurant_admin.models import Restaurant
 from cashier.models import CashierProfile
 from restaurant_admin.models import Restaurant, AddOnItem, AddOnGroup
 # Create your models here.
