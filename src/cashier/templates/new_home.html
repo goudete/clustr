@@ -194,4 +194,45 @@
     if (document.getElementById(id).style.display == 'none') document.getElementById(id).style.display = 'block';
     else document.getElementById(id).style.display = 'none';
   }
+
+  let idArray = [];
+  var trackers = document.getElementsByClassName("tracker_id_number");
+  for(i=0; i<trackers.length; i++){
+    idArray.push(parseInt(trackers[i].innerHTML));
+  }
+
+  CheckIfNewOrder();
+
+  function CheckIfNewOrder(){
+    //ajax call here
+    $.ajax({
+      type: "GET",
+      url: "{% url 'check_new_orders' %}",
+      data: {
+        'rest_id': {{rest_id}},
+        'id_array': JSON.stringify(idArray),
+      },
+      dataType: 'json',
+      success: function (data) {
+        console.log(data.new_orders);
+        if (data.new_orders){
+          // audio.play();
+
+          setTimeout(function () {
+            location.reload();
+          }, 2000);
+        }
+        else if(data.orders_completed){
+          setTimeout(function () {
+            location.reload();
+          }, 2000);
+        }
+        else{
+          console.log('no change')
+        }
+      }
+    });
+    //recursively call
+    setTimeout(CheckIfNewOrder, 3000);
+  }
 </script>

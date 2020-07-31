@@ -49,7 +49,7 @@ def baseView(request, rest_id, log_no):
     logo_photo_path = backend.restaurant.photo_path
     unentered_orders = orders_dict(rest_id, False)
     incomplete_orders = orders_dict(rest_id, True)
-    return render(request,'new_home.html',{'to_enter': unentered_orders, 'to_complete': incomplete_orders, 'log_no': log_no})
+    return render(request,'new_home.html',{'to_enter': unentered_orders, 'to_complete': incomplete_orders, 'log_no': log_no, 'rest_id': rest_id})
 
 def mark_entered(request, rest_id, log_no, cart_id):
     if request.method == 'POST':
@@ -219,3 +219,50 @@ def cashier_logout(request, log_no):
     cashier.is_active = False
     cashier.save()
     return redirect('/cashier/cashier_login/' + str(log_no)) #return to login page
+
+""" helper function to find number of active orders """
+def get_active_orders(rest_id):
+    #should only get size from payed orders
+    restaurant = Restaurant.objects.filter(id = rest_id).first()
+    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
+    paid_orders = []
+    for tracker in trackers:
+        if tracker.cart.is_paid:
+            paid_orders.append(tracker.id)
+    return paid_orders
+
+""" helper function that checks the array of tracker id numbers, and determines if there are any new ones from get_active_orders()"""
+def new_orders(old_list, new_list):
+    union = list(set(old_list) | set(new_list))
+    if union == old_list:
+        return False
+    return True
+
+"""helper function that checks if the array of tracker id numbers from get_active_orders() lost any ids bc the order was completed"""
+def orders_completed(old_list, new_list):
+    intersection = list(set(old_list) & set(new_list))
+    if intersection == old_list:
+        return False
+    return True
+
+"""helper function to turn stringified JSON array back into list of ints"""
+def string_to_list(str):
+    ans = []
+    for char in str:
+        if char.isdigit():
+            ans.append(int(char))
+    return ans
+
+def check_new_orders(request):
+    browser_dict_length = request.GET.get('dict_length', None)
+    rest_id = request.GET.get('rest_id', None)
+    id_array = string_to_list(request.GET.get('id_array', None))
+    server_list = get_active_orders(rest_id)
+    data = {'new_orders':False, 'orders_completed': False}
+    #use helper functions above with id_array
+    if new_orders(id_array, server_list):
+        data['new_orders'] = True
+    elif orders_completed(id_array, server_list):
+        data['orders_completed'] = True
+    print(data)
+    return JsonResponse(data)
