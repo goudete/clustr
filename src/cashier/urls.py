@@ -30,5 +30,6 @@ urlpatterns = [
     path('ajax/ajax_add_item/<int:log_no>',views.ajax_add_item, name = 'add_item'),
     path('logout/<int:log_no>', views.cashier_logout, name='logout'),
     path('receipt', TemplateView.as_view(template_name="emails/receipt/receipt.html")),
-    path('ajax/chack_new_orders', views.check_new_orders, name = "check_new_orders")
+    path('ajax/chack_new_orders', views.check_new_orders, name = "check_new_orders"),
+    path('mark_ready/<int:restaurant_id>/<int:log_no>/<int:tracker_id>', views.mark_order_done),
 ]

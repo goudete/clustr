@@ -266,3 +266,18 @@ def check_new_orders(request):
         data['orders_completed'] = True
     print(data)
     return JsonResponse(data)
+
+def mark_order_done(request, restaurant_id, log_no, tracker_id):
+    if request.method == 'POST':
+        tracker = OrderTracker.objects.filter(id = tracker_id).first()
+        tracker.is_complete = True
+        tracker.save()
+        #twilio stuff
+        if tracker.phone_number != None:
+            client = Client(settings.TWILIO_SID, settings.TWILIO_AUTH_TOKEN)
+            message = client.messages.create(
+                              from_='+14845099889',
+                              body= _('¡Tu orden de {name} esta lista!').format(name = Restaurant.objects.get(id = restaurant_id).name),
+                              to=str(tracker.phone_number)
+                          )
+    return redirect('/cashier/base/{r_id}/{l_no}'.format(r_id = restaurant_id, l_no = log_no))
