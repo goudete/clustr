@@ -178,13 +178,12 @@
                 </a>
               </div>
 
-              <div class = 'row justify-content-center mt-3'>
-                <div id = 'tracker{{tracker.id}}' style = 'display:none;'>
-                  <form action = '/kitchen/{{tracker.cart.restaurant.id}}/{{tracker.id}}' method = 'post'>
-                    {% csrf_token %}
-                    <button type = 'submit' class = 'btn btn-success'>{% trans 'Complete' %}</button>
-                  </form>
-                </div>
+            <div class = 'row justify-content-center mt-5'>
+              <div id = 'tracker{{tracker.id}}' style = 'display:none;'>
+                <form action = '/cashier/mark_ready/{{tracker.cart.restaurant.id}}/{{log_no}}/{{tracker.id}}' method = 'post'>
+                  {% csrf_token %}
+                  <button type = 'submit' class = 'btn btn-success'>{% trans 'Complete' %}</button>
+                </form>
               </div>
 
             </div>
