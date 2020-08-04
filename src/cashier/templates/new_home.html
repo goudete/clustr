@@ -85,7 +85,7 @@
                   </div>
 
                   <div class = 'row justify-content-center mt-3'>
-                    <div id = 'tracker{{tracker.id}}' style = 'display:none;'>
+                    <div id = 'tracker{{tracker.id}}' class = 'marker-button' style = 'display:none;'>
                       <form action = '/cashier/mark_entered/{{tracker.cart.restaurant.id}}/{{log_no}}/{{tracker.cart.id}}' method = 'post'>
                         {% csrf_token %}
                         <button type = 'submit' class = 'btn btn-success'>{% trans 'Entered' %}</button>
@@ -179,7 +179,7 @@
               </div>
 
             <div class = 'row justify-content-center mt-5'>
-              <div id = 'tracker{{tracker.id}}' style = 'display:none;'>
+              <div id = 'tracker{{tracker.id}}' class = 'marker-button' style = 'display:none;'>
                 <form action = '/cashier/mark_ready/{{tracker.cart.restaurant.id}}/{{log_no}}/{{tracker.id}}' method = 'post'>
                   {% csrf_token %}
                   <button type = 'submit' class = 'btn btn-success'>{% trans 'Complete' %}</button>
@@ -202,6 +202,14 @@
     else document.getElementById(id).style.display = 'none';
   }
 
+  function seeObj(){
+    var buttons = document.getElementsByClassName('marker-button');
+    for(i =0; i<buttons.length; i++){
+      if(buttons[i].style.display != 'none') return false;
+    }
+    return true;
+  }
+
   let idArray = [];
   var trackers = document.getElementsByClassName("tracker_id_number");
   for(i=0; i<trackers.length; i++){
@@ -222,16 +230,17 @@
       dataType: 'json',
       success: function (data) {
         console.log(data.new_orders);
+        console.log(seeObj());
         if (data.new_orders){
           // audio.play();
 
           setTimeout(function () {
-            location.reload();
+            if(seeObj() == true) location.reload();
           }, 2000);
         }
         else if(data.orders_completed){
           setTimeout(function () {
-            location.reload();
+            if(seeObj() == true) location.reload();
           }, 2000);
         }
         else{
