@@ -537,10 +537,10 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-        #If Customer was going to pay cash but changed their mind, delete cash Code
-        if curr_cart.cash_code != None:
-            curr_cart.cash_code = None
-            curr_cart.save()
+        #If Customer was going to pay cash but changed their mind, mark cash code false
+        if curr_cart.cash_payment != None:
+             curr_cart.cash_payment = False
+             curr_cart.save()
         #create new order tracker if one DNE
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
@@ -597,8 +597,8 @@ def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
     curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
     curr_menu = Menu.objects.filter(id = menu_id).first()
     if request.method == 'GET':
-        #Generate Customer Cash Code
-        curr_cart.cash_code = 'QR' + str(curr_cart.id)
+        #Mark cash payment
+        curr_cart.cash_payment = True
         curr_cart.save()
         #create new order tracker if one DNE
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
@@ -619,19 +619,9 @@ def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
             number = request.POST['phone_number']
             tracker.phone_number = number
             tracker.save()
-            return redirect('/customers/cash_code/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
-        # else:
-        #     return render(request, 'customers/cash_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_num})
-        return redirect('/customers/cash_code/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+            return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
-''' This view handles showing their cash code to the user if paying cash'''
-def cash_payment_code(request, cart_id, restaurant_id, menu_id):
-    if request.method == 'GET':
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-        curr_menu = Menu.objects.filter(id = menu_id).first()
-
-        return render(request, 'customers/cash_code.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu})
+        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
 def ajax_confirm_cash_payment(request):
     cart_id = request.GET.get('cart_id', None)
@@ -677,8 +667,6 @@ def feedback(request, cart_id):
         feedback = form.save(commit = False)
         feedback.cart = cart
         feedback.save()
-        # print(feedback.feedback)
-        # print(feedback.cart)
         messages.info(request, "Thank you for your feedback!")
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:

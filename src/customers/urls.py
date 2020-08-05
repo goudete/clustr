@@ -18,7 +18,6 @@ urlpatterns = [
     path('calculate_tip/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:tip>', views.calculate_tip),
     path('card_email_receipt/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.card_email_receipt),
     path('cash_email_receipt/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.cash_email_receipt),
-    path('cash_code/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.cash_payment_code),
     path('feedback/<int:cart_id>', views.feedback),
     path('ajax/ajax_increase_quantity', views.ajax_increase_quantity, name='increase_quantity'),
     path('ajax/ajax_decrease_quantity', views.ajax_decrease_quantity, name='decrease_quantity'),

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-31 22:00-0600\n"
+"POT-Creation-Date: 2020-08-05 13:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,7 +74,7 @@ msgstr "Introducir el código dado al huesped para cobrar"
 #: comms/templates/contact_form.html:196
 #: customers/templates/customers/card_email_receipt.html:34
 #: customers/templates/customers/cash_email_receipt.html:46
-#: customers/templates/customers/order_confirmation.html:161
+#: customers/templates/customers/order_confirmation.html:166
 #: customers/templates/customers/view_cart.html:147
 #: kitchen/templates/kitchen/kitchen_login.html:193
 #: restaurant_admin/templates/restaurant/about_info.html:99
@@ -146,7 +146,7 @@ msgstr "Precio"
 #: cashier/templates/emails/order_info/order_info2_EN.html:59
 #: cashier/templates/emails/receipt/receipt.html:74
 #: cashier/templates/review_order2.html:206
-#: customers/templates/customers/order_confirmation.html:105
+#: customers/templates/customers/order_confirmation.html:110
 #: customers/templates/customers/view_cart.html:158
 #: restaurant_admin/templates/restaurant/emails/order_info/order_info2_EN.html:64
 msgid "Subtotal"
@@ -155,7 +155,7 @@ msgstr "Base"
 #: cashier/templates/emails/order_info/order_info2_EN.html:62
 #: cashier/templates/emails/receipt/receipt.html:77
 #: cashier/templates/review_order2.html:209
-#: customers/templates/customers/order_confirmation.html:114
+#: customers/templates/customers/order_confirmation.html:119
 #: customers/templates/customers/view_cart.html:120
 #: customers/templates/customers/view_cart.html:167
 #: restaurant_admin/templates/restaurant/emails/order_info/order_info2_EN.html:67
@@ -181,13 +181,13 @@ msgid "Order #"
 msgstr "Pedido #"
 
 #: cashier/templates/new_home.html:37 cashier/templates/new_home.html:131
-#: customers/templates/customers/order_confirmation.html:37
+#: customers/templates/customers/order_confirmation.html:42
 #: kitchen/templates/kitchen/active_orders.html:97
 msgid "Dine In"
 msgstr "Comer aquí"
 
 #: cashier/templates/new_home.html:41 cashier/templates/new_home.html:135
-#: customers/templates/customers/order_confirmation.html:39
+#: customers/templates/customers/order_confirmation.html:44
 #: kitchen/templates/kitchen/active_orders.html:101
 msgid "To Go"
 msgstr "Para llevar"
@@ -242,12 +242,12 @@ msgid "Review Order"
 msgstr "Revisar Pedido"
 
 #: cashier/templates/review_order2.html:174
-#: customers/templates/customers/order_confirmation.html:59
+#: customers/templates/customers/order_confirmation.html:64
 msgid "Order Details"
 msgstr "Detalles de Orden"
 
 #: cashier/templates/review_order2.html:181
-#: customers/templates/customers/order_confirmation.html:128
+#: customers/templates/customers/order_confirmation.html:133
 #: customers/templates/customers/view_cart.html:181
 msgid "Total"
 msgstr "Total"
@@ -401,23 +401,28 @@ msgstr "Ver Carrito $"
 msgid "View Cart"
 msgstr "Ver Carrito"
 
-#: customers/templates/customers/order_confirmation.html:33
-msgid "Payment Confirmed"
-msgstr "Pago Confirmado"
-
 #: customers/templates/customers/order_confirmation.html:34
+#: customers/templates/customers/order_confirmation.html:38
 msgid "Order Number:"
 msgstr "Número de Orden:"
 
-#: customers/templates/customers/order_confirmation.html:43
+#: customers/templates/customers/order_confirmation.html:35
+msgid "Please pay at the register"
+msgstr "Por favor, paga al recoger tu orden."
+
+#: customers/templates/customers/order_confirmation.html:37
+msgid "Payment Confirmed"
+msgstr "Pago Confirmado"
+
+#: customers/templates/customers/order_confirmation.html:48
 msgid "Email Receipt:"
 msgstr "Correo Electrónico:"
 
-#: customers/templates/customers/order_confirmation.html:149
+#: customers/templates/customers/order_confirmation.html:154
 msgid "Feedback"
 msgstr "Compártenos tu Opinión"
 
-#: customers/templates/customers/order_confirmation.html:172
+#: customers/templates/customers/order_confirmation.html:177
 msgid "Back to Menu"
 msgstr "Regresar a Menu"
 

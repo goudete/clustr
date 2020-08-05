@@ -22,6 +22,7 @@ class Cart(models.Model):
     receipt_html = models.TextField(null = True)
     is_cancelled = models.BooleanField(default = False)
     dine_in = models.BooleanField(null = True)
+    cash_payment = models.BooleanField(null = True)
 
 
 """ this model acts as a way to keep track of how many of a MenuItem are in a cart

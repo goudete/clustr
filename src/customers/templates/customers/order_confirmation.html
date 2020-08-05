@@ -12,15 +12,15 @@
 
   <!-- Feedback success Message -->
   {% if messages %}
-  {% for message in messages %}
-  {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-  <div class="row justify-content-center alert alert-primary pt-3 pb-3" role="alert">
-      <!-- <div class="col-md-8"> -->
-        <h5>{{ message }}</h5>
-      <!-- </div> -->
-  </div>
-  {% endif %}
-  {% endfor %}
+    {% for message in messages %}
+      {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+      <div class="row justify-content-center alert alert-primary pt-3 pb-3" role="alert">
+          <!-- <div class="col-md-8"> -->
+            <h5>{{ message }}</h5>
+          <!-- </div> -->
+      </div>
+      {% endif %}
+    {% endfor %}
   {% endif %}
 
   <!-- End Message -->
@@ -30,17 +30,16 @@
       <svg class="bi bi-check-circle-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
       </svg>
-      <h5 class="card-title pt-3">{% trans "Payment Confirmed" %}</h5>
-      <p>{% trans "Order Number:" %} <b>{{ cart.id }}</b></p>
-
-      {% if cart.dine_in %}
-      <p>{% trans "Dine In" %}</p>
+      {% if cart.cash_payment %}
+        <h5 class="card-title pt-3">{% trans "Order Number:" %} <b>{{ cart.id }}</b></h5>
+        <h7 class="pt-3">{% trans "Please pay at the register" %}
       {% else %}
-      <p>{% trans "To Go" %}</p>
+        <h5 class="card-title pt-3">{% trans "Payment Confirmed" %}</h5>
+        <p>{% trans "Order Number:" %} <b>{{ cart.id }}</b></p>
       {% endif %}
 
       {% if cart.email %}
-      <p>{% trans "Email Receipt:" %} {{ cart.email }}</p>
+      <p class="pt-3">{% trans "Email Receipt:" %} {{ cart.email }}</p>
       {% endif %}
     </div>
   </div>
@@ -195,84 +194,5 @@
     });
   });
 
-  //Print PDF Attempts
-  // function Print(){
-    //Converts HTML receipt to PDF
-    // function PDF(){
-    //   var blob;
-    //   html2canvas(document.getElementById("receipt"), {
-    //     onrendered: function(canvas) {
-    //         var imgData = canvas.toDataURL('image/png');
-    //         // console.log('Report Image URL: '+imgData);
-    //         var doc = new jsPDF('p', 'mm', 'a6'); //210mm wide and 297mm high
-    //
-    //         doc.addImage(imgData, 'PNG', 5, 5);
-    //         blob = doc.output('blob');
-    //         // doc.save('sample.pdf');
-    //
-    //         var reader = new FileReader();
-            // reader.readAsDataURL(blob);
-            // // Onload of file read the file content
-            // reader.onloadend = function() {
-            //     var base64data = reader.result;
-            //     var passprnt_uri;
-            //     passprnt_uri = "starpassprnt://v1/print/nopreview?";
-            //     passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
-            //     passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(base64data);
-            //     console.log(passprnt_uri)
-            //
-            //     location.href = passprnt_uri;
-            //
-            // };
-
-  //           reader.onload = function(fileLoadedEvent) {
-  //               var base64 = fileLoadedEvent.target.result;
-  //               var passprnt_uri;
-  //               passprnt_uri = "starpassprnt://v1/print/nopreview?";
-  //               passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
-  //               passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(base64);
-  //               console.log(passprnt_uri)
-  //
-  //               location.href = passprnt_uri;
-  //               // Print data in console
-  //               console.log(base64);
-  //           };
-  //           // Convert data to base64
-  //           reader.readAsDataURL(blob);
-  //
-  //       }
-  //     });
-  //   }
-  //     //PDF to base64
-  //   function convertToBase64( selectedFile ) {
-  //     var reader = new FileReader();
-  //     reader.readAsDataURL(selectedFile);
-  //     // Onload of file read the file content
-  //     reader.onloadend = function() {
-  //         var base64data = reader.result;
-  //         console.log(base64data);
-  //         return base64data
-  //     };
-  //   }
-  //
-  //   function SendToPrinter ( file ){
-  //     //Printer Stuff
-  //     //Sends PDF Receipt to PassPRNT through URL
-  //     var passprnt_uri;
-  //     passprnt_uri = "starpassprnt://v1/print/nopreview?";
-  //     passprnt_uri = passprnt_uri + "back=" + encodeURIComponent(window.location.href);
-  //     passprnt_uri = passprnt_uri + "&pdf=" + encodeURIComponent(file);
-  //
-  //     // document.getElementById("print").onclick = function () {
-  //     location.href = passprnt_uri;
-  //     //};
-  //   }
-  // //}
-  //   PDF();
-  //   // const blob = PDF();
-  //   console.log(blob)
-    // console.log('suppose_blob: '+blob)
-    //const base64 = convertToBase64(blob);
-    // SendToPrinter(blob);
 </script>
 {% endblock %}
