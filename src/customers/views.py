@@ -649,8 +649,8 @@ def order_confirmation(request, cart_id):
     #if this method is a get, then theyre seeing the confirmation page
     '''Send order to kitchen to print'''
     if request.method == 'GET':
-        curr_rest = request.user.restaurant
         cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = cart.restaurant
         cart.is_paid = True
         assignToCashier(cart,curr_rest)
         cart.paid_at = timezone.now()
