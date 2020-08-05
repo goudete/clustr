@@ -74,10 +74,13 @@ div.scrollmenu a:hover {
             {% endif %}
           </div>
         </div>
-
-        <p>
-          {% trans "Browse our menu, order and pay right from your phone! You'll get notified by text when your order is ready." %}
-        </p>
+        {% if restaurant.handle_payment and restaurant.stripe_account_id %}
+          <p>
+            {% trans "Browse our menu, order and pay right from your phone! You'll get notified by text when your order is ready." %}
+          </p>
+        {% else %}
+          
+        {% endif %}
       </div>
     </div>
   </div>
