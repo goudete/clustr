@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-28 23:54+0200\n"
+"POT-Creation-Date: 2020-07-31 22:00-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,49 @@ msgstr "Propina"
 msgid "Order no."
 msgstr "Pedido #"
 
+#: cashier/templates/new_home.html:17
+msgid "Orders to Enter"
+msgstr "Nuevos Pedidos"
+
+#: cashier/templates/new_home.html:21
+msgid "No Orders To Enter"
+msgstr "Respira, no hay nuevos pedidos."
+
+#: cashier/templates/new_home.html:32 cashier/templates/new_home.html:126
+#: kitchen/templates/kitchen/active_orders.html:92
+msgid "Order #"
+msgstr "Pedido #"
+
+#: cashier/templates/new_home.html:37 cashier/templates/new_home.html:131
+#: customers/templates/customers/order_confirmation.html:37
+#: kitchen/templates/kitchen/active_orders.html:97
+msgid "Dine In"
+msgstr "Comer aquí"
+
+#: cashier/templates/new_home.html:41 cashier/templates/new_home.html:135
+#: customers/templates/customers/order_confirmation.html:39
+#: kitchen/templates/kitchen/active_orders.html:101
+msgid "To Go"
+msgstr "Para llevar"
+
+#: cashier/templates/new_home.html:91
+msgid "Entered"
+msgstr "Pedidos Activos"
+
+#: cashier/templates/new_home.html:111
+msgid "Orders to Complete"
+msgstr "Pedidos Activos"
+
+#: cashier/templates/new_home.html:115
+#: kitchen/templates/kitchen/active_orders.html:81
+msgid "No Active Orders"
+msgstr "No hay Ordenes en Preparación"
+
+#: cashier/templates/new_home.html:185
+#: kitchen/templates/kitchen/active_orders.html:152
+msgid "Complete"
+msgstr "Finalizada"
+
 #: cashier/templates/order_history.html:73
 #: cashier/templates/order_history.html:101
 msgid "Order"
@@ -239,9 +282,14 @@ msgstr "Agregar Platillos al pedido"
 msgid "Add"
 msgstr "Agregar"
 
-#: cashier/views.py:71 customers/views.py:564
+#: cashier/views.py:107 customers/views.py:564
 msgid "Your Receipt"
 msgstr "Tu Recibo"
+
+#: cashier/views.py:280 kitchen/views.py:119
+#, python-brace-format
+msgid "¡Tu orden de {name} esta lista!"
+msgstr ""
 
 #: comms/templates/contact_form.html:174
 msgid "Contact the Team"
@@ -361,16 +409,6 @@ msgstr "Pago Confirmado"
 msgid "Order Number:"
 msgstr "Número de Orden:"
 
-#: customers/templates/customers/order_confirmation.html:37
-#: kitchen/templates/kitchen/active_orders.html:97
-msgid "Dine In"
-msgstr "Comer aquí"
-
-#: customers/templates/customers/order_confirmation.html:39
-#: kitchen/templates/kitchen/active_orders.html:101
-msgid "To Go"
-msgstr "Para llevar"
-
 #: customers/templates/customers/order_confirmation.html:43
 msgid "Email Receipt:"
 msgstr "Correo Electrónico:"
@@ -456,21 +494,9 @@ msgstr "Ver Pedidos"
 msgid "Active Orders"
 msgstr "Ordenes en Preparación"
 
-#: kitchen/templates/kitchen/active_orders.html:81
-msgid "No Active Orders"
-msgstr "No hay Ordenes en Preparación"
-
-#: kitchen/templates/kitchen/active_orders.html:92
-msgid "Order #"
-msgstr "Pedido #"
-
 #: kitchen/templates/kitchen/active_orders.html:107
 msgid "Time: "
 msgstr "Tiempo: "
-
-#: kitchen/templates/kitchen/active_orders.html:152
-msgid "Complete"
-msgstr "Finalizada"
 
 #: kitchen/templates/kitchen/kitchen_login.html:189
 #, fuzzy
@@ -483,11 +509,6 @@ msgstr "Introducir Código"
 #| msgid "Input your cashier code to start the session"
 msgid "Input your kitchen code to start the session"
 msgstr "Introduce tu número dado de cajero para empezar la sesión."
-
-#: kitchen/views.py:119
-#, python-brace-format
-msgid "¡Tu orden de {name} esta lista!"
-msgstr ""
 
 #: restaurant_admin/forms.py:98
 msgid "You have already created an item with this name"
@@ -893,7 +914,7 @@ msgstr "Inicio de Sesión de Cocina"
 
 #: restaurant_admin/templates/restaurant/kitchen.html:37
 msgid "No Login Number Yet!"
-msgstr ""
+msgstr "Todavía no has creado una cuenta"
 
 #: restaurant_admin/templates/restaurant/kitchen.html:53
 msgid "New Kitchen Login"
@@ -967,9 +988,8 @@ msgid "Price*"
 msgstr "Precio"
 
 #: restaurant_admin/templates/restaurant/my_items.html:354
-#, fuzzy
-#| msgid "No Photo"
-msgid "No photo"
+#: restaurant_admin/templates/restaurant/my_menus.html:264
+msgid "No Photo"
 msgstr "Sin Foto"
 
 #: restaurant_admin/templates/restaurant/my_menus.html:158
@@ -988,10 +1008,6 @@ msgstr "Crear Nuevo Menu"
 #: restaurant_admin/templates/restaurant/my_menus.html:245
 msgid "No Menus Yet"
 msgstr "Todavía no hay Menus"
-
-#: restaurant_admin/templates/restaurant/my_menus.html:264
-msgid "No Photo"
-msgstr "Sin Foto"
 
 #: restaurant_admin/templates/restaurant/my_menus.html:272
 msgid "View"
@@ -1187,6 +1203,11 @@ msgstr "Preferencias Actualizadas"
 #: restaurant_admin/views.py:727
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
+
+#, fuzzy
+#~| msgid "No Photo"
+#~ msgid "No photo"
+#~ msgstr "Sin Foto"
 
 #~ msgid "Would You Like Us to Handle the Payment Process for You?"
 #~ msgstr "Quieres aceptar pagos con Tarjeta?"
