@@ -57,7 +57,8 @@
   <!-- End  -->
 
   <hr>
-
+  <!-- Adding to cart disabled if the restaurant is not handling payments -->
+{% if restaurant.handle_payment and restaurant.stripe_account_id %}
   <div class="row justify-content-center mt-4 mb-3">
     <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" id="target">
     {% csrf_token %}
@@ -122,26 +123,63 @@
       <input class="form-control" type="number" name="quantity" min="1" value="1" placeholder="Quantity">
     </div>
 
-      <div class="row justify-content-center mb-4 mt-4">
-        <button type="submit" class="btn btn-dark btn-circle btn-xl">{% trans "Add to Cart" %}</button>
-      </div>
+    <div class="row justify-content-center mb-4 mt-4">
+      <button type="submit" class="btn btn-dark btn-circle btn-xl">{% trans "Add to Cart" %}</button>
+    </div>
+
   </form>
 </div>
 <!-- Form Ends -->
 
-<!-- View Cart Button -->
-<div class="fixed-bottom">
-  <div class="row justify-content-center mb-3">
-    {% if cart.total_with_tip %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
-    {% elif cart.total %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total }}</a>
-    {% else %}
-    <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
-    {% endif %}
+<!-- Restaurant is not handling payments -->
+{% else %}
+  {% if addon_dict %}
+  <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
+    {% for key, value in addon_dict.items %}
+    <div class="row mb-3">
+      <div class="col-1">
+
+      </div>
+      <div class="col-11">
+        <b>{{ key.name }}</b>
+      </div>
+    </div>
+      {% for v in value %}
+      <div class="row ml-3">
+        <div class="col-8">
+          <div class="form-check">
+            <label class="form-check-label" for="radio_addon">
+              {{ v.name }}
+            </label>
+          </div>
+        </div>
+        <div class="col-4">
+          + ${{ v.price }}
+        </div>
+        <hr>
+      </div>
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
+{% endif %}
+
+<!-- Displayed only if the restaurant is handling payments -->
+{% if restaurant.handle_payment and restaurant.stripe_account_id %}
+  <!-- View Cart Button -->
+  <div class="fixed-bottom">
+    <div class="row justify-content-center mb-3">
+      {% if cart.total_with_tip %}
+      <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
+      {% elif cart.total %}
+      <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total }}</a>
+      {% else %}
+      <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
+      {% endif %}
+    </div>
   </div>
-</div>
-<!-- Cart Button ends -->
+  <!-- Cart Button ends -->
+{% endif %}
+
 <footer class="page-footer pt-4">
     <div class="row justify-content-center mb-3">
 

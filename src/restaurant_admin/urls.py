@@ -13,6 +13,7 @@ urlpatterns = [
     path('cashiers', views.register_cashier),
     path('connect', views.stripe_connect),
     path('answer_question', views.payment_question),
+    path('toggle_payments', views.toggle_payments),
     path('answer_about', views.answer_about),
     path('add_menu', views.add_menu),
     path('view_menu/<int:menu_id>', views.view_menu),

@@ -32,7 +32,7 @@
       </svg>
       {% if cart.cash_payment %}
         <h5 class="card-title pt-3">{% trans "Order Number:" %} <b>{{ cart.id }}</b></h5>
-        <h7 class="pt-3">{% trans "Please pay at the register" %}
+        <h7 class="pt-3">{% trans "Please pay when you pick up your order." %}
       {% else %}
         <h5 class="card-title pt-3">{% trans "Payment Confirmed" %}</h5>
         <p>{% trans "Order Number:" %} <b>{{ cart.id }}</b></p>

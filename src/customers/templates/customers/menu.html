@@ -149,6 +149,7 @@ div.scrollmenu a:hover {
   </ul>
   <!-- Menu Items Ends -->
 
+  {% if restaurant.handle_payment and restaurant.stripe_account_id %}
   <!-- View Cart Button -->
   <div class="fixed-bottom">
     {% if cart.total_with_tip %}
@@ -166,6 +167,8 @@ div.scrollmenu a:hover {
     {% endif %}
   </div>
   <!-- Cart Button ends -->
+  {% endif %}
+
   <footer class="page-footer pt-4">
       <div class="row justify-content-center mb-5">
         <!-- <div class="col-12"> -->

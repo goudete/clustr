@@ -115,8 +115,21 @@ def payment_question(request):
             # return redirect("https://connect.stripe.com/express/oauth/authorize?client_id=ca_HNkukA8zfrf8R4YkvrwLOayhitwqn2Q1&state={STATE_VALUE}&suggested_capabilities[]=transfers&stripe_user[email]={email}".format(STATE_VALUE = 'OneBeerAndThenBoom!123OunesOfC0ca1n3', email = me.user.email))
             return redirect("https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_HNkuWuyy8FeUyeTWTMANREQ4QJBi1fLO&redirect_uri=https://cluster-mvp.herokuapp.com/restaurant_admin/connect&state={STATE_VALUE}&scope=read_write&stripe_user[email]={email}".format(STATE_VALUE = 'OneBeerAndThenBoom!123OunesOfC0ca1n3', email = me.user.email))
 
-"""this method recieves a GET request from stripe, and validates the response"""
+'''If the restaurant has already filled out Stripe but wants to disable payments.'''
+def toggle_payments(request):
+    me = Restaurant.objects.get(user = request.user)
+    if request.method == 'POST':
+        answer = request.POST['answer']
+        if answer == 'off':
+            me.handle_payment = False
+            me.save()
+            return redirect('/restaurant_admin/answer_about')
+        else:
+            me.handle_payment = True
+            me.save()
+            return redirect('/restaurant_admin/answer_about')
 
+"""this method recieves a GET request from stripe, and validates the response"""
 def stripe_connect(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     print(request.GET)
@@ -135,7 +148,7 @@ def stripe_connect(request):
         except Exception as e:
             return HttpResponse('internal server error')
         #if everything checks out, save the restaurants stripe account id and redirect to their homepage
-        print('all info good')
+        # print('all info good')
         account_id = response['stripe_user_id']
         curr_rest = Restaurant.objects.get(user = request.user)
         curr_rest.stripe_account_id = account_id
@@ -232,23 +245,6 @@ def answer_about(request):
                 #     curr_rest.order_stream = False
                 # curr_rest.save()
                 return redirect('/restaurant_admin/my_menus')
-# >>>>>>> Stashed changes
-#             else:
-#                 return redirect('/restaurant_admin/my_menus')
-
-            # if form.is_valid():
-            #     print(request.POST['order_stream_email'] == "")
-            #     if request.POST['order_stream_email'] != "":
-            #         form.save()
-            #     messages.info(request,_("Preferences Successfully Updated"))
-            #     if 'order_stream' in request.POST:
-            #         curr_rest.order_stream = True
-            #     else:
-            #         curr_rest.order_stream = False
-            #     curr_rest.save()
-            #     return redirect('/restaurant_admin/my_menus')
-            # else:
-            #     return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
 
     #otherwise render the about page
     else:

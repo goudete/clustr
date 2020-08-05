@@ -76,7 +76,7 @@
   </div>
 
 <!-- Credit Card Card -->
-{% if restaurant.handle_payment %}
+{% if restaurant.handle_payment and restaurant.stripe_account_id %}
   <div class="card shadow p-3 bg-white rounded mb-4">
     <div class="card-body">
       <div class="row pb-2">

@@ -70,9 +70,54 @@ input:checked + .slider:before {
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
 <div class="container">
+  {% if me.stripe_account_id %}
+    <!-- If stripe account id exists but they want to disable payments -->
+    <!-- form to be able to change handle payment -->
+    <div class="justify-content-center">
+      <div class = 'row justify-content-center mt-4'>
+        <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
+          <div class = 'card-body'>
 
-  <div class="justify-content-center">
-    {% if me.handle_payment == False %}
+            <div class="card-title">
+              <h4>{% trans 'Handling Payments' %}</h4>
+            </div>
+            {% if me.handle_payment %}
+              <p class="card-text">{% trans 'You are currently accepting payments.' %}</p>
+            {% else %}
+              <p class="card-text">{% trans 'Payments are disabled on your menu.' %}</p>
+            {% endif %}
+
+            <div class = 'row justify-content-center mt-5'>
+              <div class = 'col'>
+                <form action = '/restaurant_admin/toggle_payments' method = 'post'>
+                  {% csrf_token %}
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="off" name="answer" value="off" class="custom-control-input">
+                    <label class="custom-control-label" for="off">{% trans 'Off' %}</label>
+                  </div>
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="on" name="answer" value="on" class="custom-control-input">
+                    <label class="custom-control-label" for="on">{% trans 'On' %}</label>
+                  </div>
+
+                  <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+
+                </form>
+
+                <hr>
+                <p class="card-text">{% trans "If you disable payments, your customers will only be able to see your menu." %}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- If stripe_account_id is Null display this -->
+    <div class="justify-content-center">
       <div class = 'row justify-content-center mt-4'>
         <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
           <div class = 'card-body'>
@@ -109,10 +154,8 @@ input:checked + .slider:before {
           </div>
         </div>
       </div>
-    {% endif %}
-
-  </div>
-
+    </div>
+  {% endif %}
 
   <div class = 'row justify-content-center mt-4'>
     <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
@@ -251,6 +294,8 @@ input:checked + .slider:before {
     else if(openingTime && closingTime)document.getElementById('questions_form').submit();
 
   }, false);
+
 </script>
+
 
 {% endblock %}
