@@ -642,7 +642,7 @@ def order_confirmation(request, cart_id):
         cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = cart.restaurant
         cart.is_paid = True
-        assignToCashier(cart,curr_rest)
+        # assignToCashier(cart,curr_rest)
         cart.paid_at = timezone.now()
         cart.save()
         if curr_rest.order_stream:
