@@ -33,7 +33,6 @@ from .email_handlers import send_order_email
 """this function just verifies that you are not trying to edit another restaurant's menu"""
 def validate_id_number(request, menu_id):
     menu = Menu.objects.get(id = menu_id)
-    print(menu.restaurant, Restaurant.objects.filter(user = request.user).first())
     if menu.restaurant == Restaurant.objects.filter(user = request.user).first():
         return True
     else:
@@ -42,14 +41,11 @@ def validate_id_number(request, menu_id):
 
 def login_view(request):
     if request.method == 'POST':
-        print(request.POST)
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            print('logging in')
             login(request, user)
-            print('logged_in')
             return redirect('/restaurant_admin/my_menus')
         else:
             messages.info(request, _('Username or Password is incorrect'))
@@ -132,9 +128,7 @@ def toggle_payments(request):
 """this method recieves a GET request from stripe, and validates the response"""
 def stripe_connect(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    print(request.GET)
     if request.method == 'GET':
-        print('method is a GET')
         state = request.GET['state']
         #check that the state is the same
         if state != 'OneBeerAndThenBoom!123OunesOfC0ca1n3':
@@ -148,12 +142,10 @@ def stripe_connect(request):
         except Exception as e:
             return HttpResponse('internal server error')
         #if everything checks out, save the restaurants stripe account id and redirect to their homepage
-        # print('all info good')
         account_id = response['stripe_user_id']
         curr_rest = Restaurant.objects.get(user = request.user)
         curr_rest.stripe_account_id = account_id
         curr_rest.save()
-        print('redirecting')
         return redirect('https://cluster-mvp.herokuapp.com/restaurant_admin/my_menus')
     else:
         return redirect('https://cluster-mvp.herokuapp.com/restaurant_admin/my_menus')
@@ -184,7 +176,6 @@ def save_time(open, time, rest):
         rest.opening_time = time
         rest.save()
     else:
-        print("time: ", time)
         rest.closing_time = time
         rest.save()
 
@@ -321,7 +312,6 @@ def view_menu(request, menu_id):
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu)
             if len(q_set) > 0:
                 category_items[category]  = q_set
-        print(category_items)
         return render(request, 'restaurant/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'menu': curr_menu, 'categories': categories})
     else:
         return redirect('/restaurant_admin/view_menu/{m_id}'.format(m_id = menu_id))
@@ -381,7 +371,6 @@ def edit_menu(request, menu_id):
 
     photo = request.FILES.get('photo', False)
     if photo:
-        # print("issue is here")
         #save photo to AWS
         doc = request.FILES['photo'] #get file
         files_dir = '{user}/photos/m/{menu_num}/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(menu_id))
@@ -397,23 +386,18 @@ def edit_menu(request, menu_id):
         items = MenuItem.objects.filter(menus = curr_menu)
         addon_dict = item_addon_dict(items)
         restaurant = Restaurant.objects.filter(user = request.user).first()
-        # print('items queried')
         item_form = MenuItemForm()
         selct_options = SelectOption.objects.filter(restaurant = curr_menu.restaurant)
-        print(selct_options)
         existing_items = MenuItem.objects.filter(restaurant = restaurant)
         alphabetically_sorted = sorted(existing_items, key = lambda x: x.name)
         all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
-        # print('select options queried')
         #generate pre-signed url to download the QR code
 
         s3 = boto3.resource('s3') #setup to get from AWS
         aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
-        # print('aws dir good')
         bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
         objs = bucket.objects.filter(Prefix=aws_dir) #get folder
         url = "#"
-        # print('objs queried')
         for obj in objs: #iterate over file objects in folder
              if os.path.split(obj.key)[1].split('.')[1] == 'png':
                 s3Client = boto3.client('s3')
@@ -462,13 +446,11 @@ def add_item(request, menu_id):
             item.save()
             #check for new category
             if new_category(request, item.category):
-                print('creating new category with name ', item.category)
                 new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first(), menu=Menu.objects.filter(id = menu_id).first())
                 new_cat.save()
             #check if they uploaded new photo
             photo = request.FILES.get('photo', False)
             if photo:
-                # print('PHOTO HERE!!!! BADD')
                 #save photo to AWS
                 doc = request.FILES['photo'] #get file
                 files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
@@ -509,8 +491,6 @@ def edit_item(request, item_id, origin, menu_id):
     if origin == 'edit_menu': #validate if request is coming from an edit_menu page
         if not validate_id_number(request, menu_id):
             return HttpResponse('you are not authorized to view this')
-    print("origin")
-    print(origin)
     item = MenuItem.objects.filter(id = item_id).first()
     #if method is get, then user is filling out form to change item
     if request.method == 'GET':
@@ -544,7 +524,6 @@ def edit_item(request, item_id, origin, menu_id):
             doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
             file_storage.save(doc_path, doc)
             item.photo_path = doc_path
-            print(item.photo_path)
             item.save()
 
         #redirect depending on where the request came from
@@ -564,9 +543,7 @@ def check_categories(category, rest):
     rest_category_items = SelectOption.objects.filter(restaurant = rest)
     for category in rest_category_items:
         for menu in rest_menus:
-            print(category_in_menu(category, menu))
             if not category_in_menu(category, menu):
-                print("removing ", category.name, " from menu ", menu.name)
                 category.menus.remove(menu)
                 category.save()
 
@@ -583,13 +560,8 @@ def category_in_menu(cat, menu):
 
 def ajax_edit_item(request):
     form = EditMenuItemForm(request.POST, request.FILES)
-    print("request:")
-    print(request.POST)
     #if form isnt valid we send the errors to the JS script in template
     if not form.is_valid():
-        print("form was not valid. these are the errors")
-        print(form.errors)
-
         return JsonResponse({
             'success': False,
             'err_code': 'invalid_form',
@@ -600,7 +572,6 @@ def ajax_edit_item(request):
     item = MenuItem.objects.get(id=request.POST['item_id'])
     old_category = SelectOption.objects.filter(name = item.category, restaurant = item.restaurant).first()
     #for every field that was filled in, we update the according attribute
-    # print('CATEGORY: ', request.POST['category'])
     if len(request.POST['name']) > 0:
         item.name = request.POST['name']
     if len(request.POST['category']) > 0:
@@ -615,9 +586,7 @@ def ajax_edit_item(request):
         item.is_in_stock = False
     item.save()
     photo = request.FILES.get('photo', False)
-    # print("PHOTO?: ", photo)
     if photo:
-        print('saving photo')
         #save photo to AWS
         doc = request.FILES['photo'] #get file
         files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
@@ -629,29 +598,40 @@ def ajax_edit_item(request):
         item.photo_path = doc_path
         item.save()
 
-    # print("NEW CATEGORY?: ", new_category(request, item.category))
     if new_category(request, item.category):
         if request.POST['origin'] == 'my_items':
             new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
             new_cat.save()
+            add_new_category_to_menus(item, new_cat)
         elif request.POST['origin'] == 'edit_menu':
             new_cat = SelectOption(name = item.category, restaurant = Restaurant.objects.filter(user = request.user).first())
             new_cat.save()
             new_cat.menus.add(Menu.objects.filter(id = request.POST['menu_id']).first())
             new_cat.save()
 
-    if request.POST['origin'] == 'edit_menu':
-        #check if category exists but menu didnt contain it
-        if not menu_has_category(Menu.objects.filter(id = request.POST['menu_id']).first(), item.category):
-            # print("adding exisitng category")
-            add_existing_category(Menu.objects.filter(id = request.POST['menu_id']).first().restaurant, Menu.objects.filter(id = request.POST['menu_id']).first(), item.category)
-
+    add_existing_category_to_menus(item, item.restaurant, item.category)
     check_categories(old_category, item.restaurant)
-
     #redirect back to edit menu page
     return JsonResponse({'success':True})
-    print('redirecting')
 
+#helper functions for line 614
+#1 get all menus w this item
+#2 for each menu in 1) see if it has that category and if it doesn't then add it
+def get_menus_from_item(item):
+    return Menu.objects.filter(menuitem = item)
+
+def add_existing_category_to_menus(item, rest, category):
+    menus = get_menus_from_item(item)
+    for menu in menus:
+        if not menu_has_category(menu, category):
+            add_existing_category(rest, menu, category)
+
+#helper function for adding a new category to all menus
+def add_new_category_to_menus(item, category):
+    menus = get_menus_from_item(item)
+    for menu in menus:
+        category.menus.add(menu)
+        category.save()
 
 def view_item(request, menu_id, item_id):
     if not validate_id_number(request, menu_id):
@@ -737,7 +717,6 @@ def my_items(request):
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     if url_parameter:
-        print("we here")
         for cat in categories:
             category_items[cat]  = MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat).filter(name__icontains=url_parameter)
     else:
@@ -747,12 +726,8 @@ def my_items(request):
     # edit_form = EditMenuItemForm()
 
     #get all possible categories of menu
-    # print("categories length")
-    # print(len(categories))
-    # print(category_items)
 
     if request.is_ajax(): #this is for search
-        print("ajax")
         html = render_to_string(
             template_name="restaurant/replaceable_content.html",
             context={"menus": [],'item_form':form,'me':curr_rest,'category_items':category_items,
@@ -764,11 +739,7 @@ def my_items(request):
 
         return JsonResponse(data=data_dict, safe=False)
     selct_options = SelectOption.objects.filter(restaurant = curr_rest)
-    print(selct_options)
 
-    # 'item_form': form
-    # 'edit_form':edit_form
-    # 'menus': []
     return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items,
                   'selct_options':selct_options, 'item_form': form, 'language_code':language_code})
 
@@ -797,7 +768,6 @@ def add_item_no_menu(request):
 
             #item.menu = None
             item.save()
-            print('redirecting')
             #redirect back to edit menu page
             return redirect('/restaurant_admin/my_items')
         else:
@@ -821,15 +791,8 @@ def ajax_add_item(request):
     curr_rest = request.user.restaurant
     form = MenuItemForm(request.POST, request.FILES)
     form.restaurant_id = curr_rest.id
-    print("current")
-    print(curr_rest.id)
-    print("origin:")
-    print(request.POST['origin'])
     #if form isnt valid we send the errors to the JS script in template
     if not form.is_valid():
-        print("form was not valid. these are the errors")
-        print(form.errors)
-
         return JsonResponse({
             'success': False,
             'err_code': 'invalid_form',
@@ -843,9 +806,7 @@ def ajax_add_item(request):
     item.restaurant = curr_rest
 
     photo = request.FILES.get('photo', False)
-    print("files")
     item.save()
-    print(request.FILES)
     if photo:
         #save photo to AWS
         doc = request.FILES['photo'] #get file
@@ -860,7 +821,6 @@ def ajax_add_item(request):
         #item.save()
 
     #check for new category
-    print("Category new?: ", new_category(request, item.category))
     if new_category(request, item.category):
         if request.POST['origin'] == 'my_items':
             new_cat = SelectOption(name = item.category, restaurant = curr_rest)
@@ -876,9 +836,7 @@ def ajax_add_item(request):
 
     item.save()
     if request.POST['origin'] == 'edit_menu': #if from edit menu page add to menu
-        print("yp we here")
         menu = Menu.objects.get(id=request.POST['menu_id'])
-        print(menu)
         item.menus.add(menu)
         #check if category existed but not in menu previously
         if not new_category(request, item.category) and not menu_has_category(menu, item.category):
@@ -886,7 +844,6 @@ def ajax_add_item(request):
 
     item.save()
 
-    print("here")
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     for cat in categories:
@@ -898,7 +855,6 @@ def ajax_add_item(request):
     # return redirect('/restaurant_admin/my_items').render()
     return render(request, 'restaurant/my_items.html', context)
     # return JsonResponse({'success':True})
-    print('redirecting')
     #redirect back to edit menu page
     return redirect('/restaurant_admin/my_items')
 
@@ -918,7 +874,6 @@ def ajax_receipt(request):
     if request.method == 'POST':
         cart_id = request.POST.get('cart_id', None)
         queue.append(cart_id)
-        print(queue)
         receipt_html = request.POST.get('receipt_html', None)
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_cart.receipt_html = receipt_html
@@ -931,9 +886,7 @@ def ajax_receipt(request):
         return JsonResponse(data)
     else:
         if queue:
-            print('QUEUE pre-pop: ', queue)
             cart_id = queue.pop(0)
-            print('QUEUE post-pop: ', queue)
             curr_cart = Cart.objects.filter(id = cart_id).first()
             receipt_html = curr_cart.receipt_html
 
@@ -983,22 +936,16 @@ def add_existing_addon_group(request, menu_id, item_id, addon_group_id):
 
 def sales(request):
     restaurant = Restaurant.objects.get(user = request.user)
-    print("method is:")
-    print(request.method)
     if request.method == "POST":
-        print("here")
         form = DatesForm(request.POST)
         if form.is_valid():
             """This block of code gets data like the total sales, total cash/card sales etc."""
             cd = form.cleaned_data
-            print(cd['start_date'] + cd['start_time'])
             start_datetime_str = datetime.strptime(cd['start_date'] + " " + cd['start_time'],
                                 "%Y-%m-%d %I:%M %p")
-            print(start_datetime_str)
             #start_datetime_str = start_datetime_str.replace(tzinfo = timezone.utc)
             end_datetime_str = datetime.strptime(cd['end_date'] + " " + cd['end_time'],
                                 "%Y-%m-%d %I:%M %p")
-            print(end_datetime_str)
             carts = Cart.objects.filter(restaurant=restaurant).filter(created_at__range=(start_datetime_str,end_datetime_str))
             carts = [cart for cart in carts if cart.is_paid]
             total_sales = sum([cart.total for cart in carts])
@@ -1007,8 +954,6 @@ def sales(request):
             total_items = 0
             item_scores = {item : [0,0] for item in MenuItem.objects.filter(restaurant=restaurant)} #item : (sales,quantity)
             for cart in carts:
-                print("total items:")
-                print(total_items)
                 cart_counters = MenuItemCounter.objects.filter(cart=cart)
                 total_items += sum([counter.quantity for counter in cart_counters])
                 for counter in cart_counters:
@@ -1053,7 +998,6 @@ def set_langauge_field(usr, lang):
     rest = Restaurant.objects.filter(user = usr).first()
     rest.language = lang
     rest.save()
-    print(rest.language)
 
 def set_language(request, language):
     translation.activate(language)
