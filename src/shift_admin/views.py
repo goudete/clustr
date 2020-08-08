@@ -14,13 +14,10 @@ def is_correct(request):
     cool = request.POST['cool']
 
     if passw != 'OneB33R@ndB00m!0unce0fc0caine' or bald != 'Mook':
-        print('wrong at password or bald')
         return False
     elif mari != 'Kike' or goon != 'Luisillo':
-        print('wrong at maricon or goon')
         return False
     elif cool != 'Rowan':
-        print('wrong at cool')
         return False
     else:
         return True
@@ -29,7 +26,6 @@ def login_admin(request):
     if request.method == 'GET':
         return render(request, 'shift_admin/login.html')
     else:
-        print(is_correct(request))
         if is_correct(request):
             return redirect('/shift_admin/home/11168/41816')
         return redirect('/shift_admin')
