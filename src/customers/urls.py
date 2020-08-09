@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from restaurant_admin.views import ajax_receipt, receipt_page
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('', views.show_all_menus), #this one is for showing all menus in your db
@@ -25,4 +26,6 @@ urlpatterns = [
     path('ajax/ajax_receipt', ajax_receipt, name = 'ajax_receipt'),
     path('ajax/receipt_page', receipt_page, name = 'receipt_page'),
     path('ajax/dine_in_option', views.dine_in_option, name = 'dine_in_option'),
+    #path('logout/',TemplateView.as_view(template_name="customers/logout.html"), name= 'logout')
+    path('logout', views.logout_view),
 ]

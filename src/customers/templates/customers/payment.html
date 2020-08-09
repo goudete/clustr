@@ -76,7 +76,7 @@
   </div>
 
 <!-- Credit Card Card -->
-{% if restaurant.handle_payment and restaurant.stripe_account_id %}
+{% if restaurant.handle_payment %}
   <div class="card shadow p-3 bg-white rounded mb-4">
     <div class="card-body">
       <div class="row pb-2">
@@ -107,7 +107,31 @@
             {% trans "Submit Payment" %}
           </button>
       </form>
+      {% if card_stored %}
+      <br>
+      <div class="row pb-2">
+        <div class="col-2">
+          <svg class="bi bi-credit-card" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M14 3H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
+            <rect width="3" height="3" x="2" y="9" rx="1"/>
+            <path d="M1 5h14v2H1z"/>
+          </svg>
+        </div>
+        <div class="col-10">
+          <h5 class="cart-title pb-2">{% trans "Pay with same card as last time" %}</h5>
+        </div>
+        <div class="col-10">
+          <p>Last time you paid with card number **** **** **** {{last4}}. Pay again with this card by clicking the button below.</p>
+        </div>
+      </div>
 
+      <form action="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" method="post" id="payment-form-previous" class="w-100">
+        {% csrf_token %}
+          <button class="button" id="previous_card_submit" name="previous_card_submit" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
+            {% trans "Submit Payment" %}
+          </button>
+      </form>
+      {% endif %}
     </div>
   </div>
   <!-- Credit Card Card ends -->
@@ -149,9 +173,10 @@
  // console.log('connected-id: ' + connected_account)
 
  if (publishable) {
-   var stripe = Stripe(publishable, {
-     stripeAccount: connected_account
-    });
+   var stripe = Stripe(publishable)
+   // , {
+   //   stripeAccount: connected_account
+   //  });
 
    var elements = stripe.elements();
 
@@ -199,12 +224,13 @@
 
       stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-         card: card,
-         billing_details: {
-           name: 'Jenny Rosen'
-         }
-       }
-     }).then(function(result) {
+          card: card,
+          billing_details: {
+            name: 'Jenny Rosen'
+          }
+        },
+        setup_future_usage: 'off_session'
+      }).then(function(result) {
        if (result.error) {
          console.log(result.error.message);
        } else {
@@ -216,7 +242,7 @@
             // payment_intent.succeeded event that handles any business critical
             // post-payment actions.
             // ***send paymentIntent id to views here*** Probs with AJAX
-           // console.log('payment success');
+            // console.log('payment success');
            // console.log(cart_id)
            location.href="/customers/card_email_receipt/" + cart_id+ "/" + rest_id + "/" + menu_id;
 

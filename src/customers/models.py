@@ -3,6 +3,8 @@ from restaurant_admin.models import MenuItem
 from django.core.validators import MinValueValidator, MaxValueValidator
 from cashier.models import CashierProfile
 from restaurant_admin.models import Restaurant, AddOnItem, AddOnGroup
+from django.contrib.auth.models import User
+
 # Create your models here.
 
 """this model is synonymous with an order"""
@@ -40,3 +42,7 @@ class MenuItemCounter(models.Model):
 class Feedback(models.Model):
     feedback = models.CharField(null = True, max_length = 255)
     cart = models.ForeignKey(Cart, on_delete = models.CASCADE)
+
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete = models.CASCADE)
+    stripe_id =  models.CharField(null = True, max_length = 255)

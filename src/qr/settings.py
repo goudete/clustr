@@ -41,7 +41,7 @@ ALLOWED_HOSTS = ['cluster-mvp.herokuapp.com', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'cashier',
+    'django.contrib.sites',
     'customers',
     'kitchen',
     'restaurant_admin',
@@ -58,7 +58,12 @@ INSTALLED_APPS = [
     'stripe',
     'django_extensions',
     'phonenumber_field',
-    'comms'
+    'comms',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'cashier',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +81,7 @@ ROOT_URLCONF = 'qr.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'collapsible-table-rows-react/build')],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -170,12 +175,12 @@ LOGIN_REDIRECT_URL = 'restaurant_admin/my_menus'
 LOGOUT_REDIRECT_URL = 'restaurant_admin/logout_view'
 #AWS stuff
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR,'collapsible-table-rows-in-react/build/static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 #AWS stuff
 AWS_S3_FILE_OVERWRITE = True
 AWS_DEFAULT_ACL = None
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
@@ -183,7 +188,9 @@ AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 
 
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend','cashier.auth_backend.PasswordlessAuthBackend']
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',
+                           'cashier.auth_backend.PasswordlessAuthBackend',
+                           'allauth.account.auth_backends.AuthenticationBackend']
 
 #Email Configuration
 EMAIL_HOST = 'smtp.gmail.com'
@@ -191,3 +198,19 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "clustrfood@gmail.com"
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
+
+SITE_ID = 3
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
