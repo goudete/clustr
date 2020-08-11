@@ -76,7 +76,7 @@ ROOT_URLCONF = 'qr.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'collapsible-table-rows-react/build')],
+        'DIRS': '',
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -169,8 +169,8 @@ TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
 LOGIN_REDIRECT_URL = 'restaurant_admin/my_menus'
 LOGOUT_REDIRECT_URL = 'restaurant_admin/logout_view'
 #AWS stuff
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR,'collapsible-table-rows-in-react/build/static')]
+STATIC_URL = 'https://s3.console.aws.amazon.com/s3/buckets/cluster-dev-bucket/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 #AWS stuff
 AWS_S3_FILE_OVERWRITE = True
 AWS_DEFAULT_ACL = None
