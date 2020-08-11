@@ -556,8 +556,6 @@ def category_in_menu(cat, menu):
     return False
 
 
-
-
 def ajax_edit_item(request):
     form = EditMenuItemForm(request.POST, request.FILES)
     #if form isnt valid we send the errors to the JS script in template

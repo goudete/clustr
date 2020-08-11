@@ -59,6 +59,17 @@ def check_time(rest):
         return False
     return True
 
+#helper function that checks if any category is empty
+def empty_categories(curr_rest, curr_menu):
+    #gets categories that are empty (in the case all items were disabled)
+    empty_cats = []
+    categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
+    for category in categories:
+        q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu, is_in_stock = True)
+        if len(q_set) == 0:
+            empty_cats.append(category.name)
+    return empty_cats
+
 
 '''Displays restaurant's menu'''
 def view_menu(request, cart_id, restaurant_id, menu_id):
@@ -68,16 +79,21 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         curr_menu = Menu.objects.filter(id = menu_id).first()
         if not check_time(curr_rest):
             return render(request, 'customers/closed.html', {'restaurant': curr_rest})
-        #get all possible categories of menu
-        categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
-        print(categories)
+
+        #get empty categories, if any exist
+        empty_cats = empty_categories(curr_rest, curr_menu)
+        if empty_cats:
+            categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu).exclude(name__in = empty_cats)
+        else:
+            #get all possible categories of menu
+            categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
+
         category_items = {}
         for category in categories:
-            q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu)
+            q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu, is_in_stock = True)
             if len(q_set) > 0:
-                category_items[category]  = q_set
+                category_items[category] = q_set
 
-        # print(category_items)
         return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
     else:
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
