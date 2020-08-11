@@ -34,5 +34,5 @@ urlpatterns = [
     path('ajax/ajax_add_item',views.ajax_add_item, name="ajax_add_item"),
     path('ajax/ajax_edit_item',views.ajax_edit_item, name="ajax_edit_item"),
     path('set_language/<str:language>', views.set_language),
-    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'), #for translation in js code
+    path('toggle_menu_display_status/<int:menu_id>', views.toggle_menu_display_status)
 ]

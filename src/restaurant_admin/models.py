@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 import django.utils.timezone as timezone
-# Create your models here.
+import pyqrcode
 
 class Restaurant(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
@@ -30,7 +30,7 @@ class Restaurant(models.Model):
     order_stream_email = models.EmailField(null=True,max_length=254)
     #whether emailing order info to order_stream_email is active or not.
     order_stream = models.BooleanField(default = False)
-
+    qr_code_path = models.CharField(null = True, max_length = 255)
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
@@ -38,6 +38,7 @@ class Menu(models.Model):
     photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage
     qr_code_path = models.CharField(null = True, max_length = 255) #path to qr code svg in S3
     created_at = models.DateTimeField(auto_now_add=True)
+    displaying = models.BooleanField(default = True) #control whether or not a menu should appear for customers
 
 class MenuItem(models.Model):
     menus = models.ManyToManyField(Menu) #this is how the item is linked to a specific menu
