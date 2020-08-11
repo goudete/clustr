@@ -151,7 +151,8 @@
         {% csrf_token %}
 
         <div class = 'row justify-content-center'>
-          <input class="form-control" type="text" id="feedback" name="feedback" placeholder="Feedback about this app?">
+          {% trans "Feedback about this app?" as feedback_placeholder %}
+          <input class="form-control" type="text" id="feedback" name="feedback" placeholder="{{feedback_placeholder}}">
         </div>
 
         <!-- Buttons -->

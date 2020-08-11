@@ -235,7 +235,7 @@ def answer_about(request):
 
                 #     curr_rest.order_stream = False
                 # curr_rest.save()
-                return redirect('/restaurant_admin/my_menus')
+            return redirect('/restaurant_admin/my_menus')
 
     #otherwise render the about page
     else:
@@ -963,8 +963,8 @@ def sales(request):
             top5_sales = [(i+1,tup[0].name,tup[1][0]) for i,tup in enumerate(top5_sales)]
             top5_quantity = sorted(item_scores.items(),key=lambda item: item[1][1], reverse=True)[:5]
             top5_quantity = [(i+1,tup[0].name,tup[1][1]) for i,tup in enumerate(top5_quantity)]
-            total_cash = sum([cart.total for cart in carts if cart.cash_code  != None])
-            total_card = sum([cart.total for cart in carts if cart.cash_code == None])
+            total_cash = sum([cart.total for cart in carts if cart.cash_payment])
+            total_card = sum([cart.total for cart in carts if (cart.cash_payment == None or cart.cash_payment == False)])
             form = DatesForm()
             #hanlde division by zero for percentages
             if total_cash == 0:

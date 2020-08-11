@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-05 16:30-0500\n"
+"POT-Creation-Date: 2020-08-10 23:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,10 +71,10 @@ msgstr "Introducir el código dado al huesped para cobrar"
 
 #: cashier/templates/cash_payment.html:193
 #: cashier/templates/cashier_login.html:193
-#: comms/templates/contact_form.html:196
+#: comms/templates/contact_form.html:193
 #: customers/templates/customers/card_email_receipt.html:34
 #: customers/templates/customers/cash_email_receipt.html:46
-#: customers/templates/customers/order_confirmation.html:160
+#: customers/templates/customers/order_confirmation.html:161
 #: customers/templates/customers/view_cart.html:147
 #: kitchen/templates/kitchen/kitchen_login.html:193
 #: restaurant_admin/templates/restaurant/about_info.html:105
@@ -90,7 +90,7 @@ msgstr "Enviar"
 #: cashier/templates/cashier_login.html:195
 #: cashier/templates/order_history.html:67
 #: cashier/templates/review_order2.html:167
-#: comms/templates/contact_form.html:198
+#: comms/templates/contact_form.html:195
 #: kitchen/templates/kitchen/kitchen_login.html:195
 msgid "Back"
 msgstr "Regresar"
@@ -281,7 +281,7 @@ msgstr "Agregar Platillos al pedido"
 msgid "Add"
 msgstr "Agregar"
 
-#: cashier/views.py:107 customers/views.py:564
+#: cashier/views.py:107 customers/views.py:636
 msgid "Your Receipt"
 msgstr "Tu Recibo"
 
@@ -290,11 +290,15 @@ msgstr "Tu Recibo"
 msgid "¡Tu orden de {name} esta lista!"
 msgstr ""
 
-#: comms/templates/contact_form.html:174
+#: comms/email_handlers.py:10
+msgid "Help is on the way!"
+msgstr "¡Te ayudamos en seguida!"
+
+#: comms/templates/contact_form.html:171
 msgid "Contact the Team"
 msgstr "Contáctanos"
 
-#: comms/templates/contact_form.html:175
+#: comms/templates/contact_form.html:172
 msgid ""
 "Leave us your information and a message and we will get back to you soon! "
 "Alternatively, you can reach out to us at clustrfood@gmail.com"
@@ -302,37 +306,57 @@ msgstr ""
 "Déjanos tus datos y tu mensaje aquí y te responderemos pronto! También nos "
 "puedes mandar un correo electrónico a clustrfood@gmail.com"
 
-#: comms/templates/contact_form.html:177
+#: comms/templates/contact_form.html:174
 msgid "Your Name"
 msgstr "Tu Nombre"
 
-#: comms/templates/contact_form.html:181
+#: comms/templates/contact_form.html:178
 msgid "Your Email"
 msgstr "Correo Electrónico"
 
-#: comms/templates/contact_form.html:185
+#: comms/templates/contact_form.html:182
 msgid "Your Phone Number (optional)"
 msgstr "Numero Telefónico (opcional)"
 
-#: comms/templates/contact_form.html:189
+#: comms/templates/contact_form.html:186
 msgid "Your Web Site (optional)"
 msgstr "Pagina de Internet (opcional)"
 
-#: comms/templates/contact_form.html:193
+#: comms/templates/contact_form.html:190
 msgid "Type your message here...."
 msgstr "Ingresa tu mensaje..."
 
+#: comms/views.py:29
+msgid "Thanks "
+msgstr "Gracias"
+
+#: comms/views.py:30
+msgid "We have received your message and will get back to you shortly at"
+msgstr "Hemos recibido tu mensaje y te mandaremos una respuesta pronto a"
+
 #: customers/templates/customers/about.html:41
-#: customers/templates/customers/menu.html:90
+#: customers/templates/customers/menu.html:93
 #: restaurant_admin/templates/restaurant/menu.html:96
 msgid "Menu"
 msgstr "Menú"
 
 #: customers/templates/customers/about.html:45
-#: customers/templates/customers/menu.html:94
+#: customers/templates/customers/menu.html:97
 #: restaurant_admin/templates/restaurant/menu.html:100
 msgid "About"
 msgstr "Acerca"
+
+#: customers/templates/customers/all_menus.html:123
+#, fuzzy
+#| msgid "Welcome!"
+msgid "Welcome"
+msgstr "¡Bienvenido!"
+
+#: customers/templates/customers/all_menus.html:140
+msgid ""
+"If you sign in with your google account we can remember your details for "
+"next time!"
+msgstr ""
 
 #: customers/templates/customers/card_email_receipt.html:13
 #: customers/templates/customers/cash_email_receipt.html:12
@@ -363,6 +387,20 @@ msgstr " está cerrado!"
 msgid "Please come back during business hours: "
 msgstr "Nuestras horas de operación son de: "
 
+#: customers/templates/customers/logout.html:5
+#: customers/templates/customers/logout.html:8
+#: customers/templates/customers/logout.html:17
+#, fuzzy
+#| msgid "Sign up"
+msgid "Sign Out"
+msgstr "Regístrate"
+
+#: customers/templates/customers/logout.html:10
+#, fuzzy
+#| msgid "Are You Sure You Want to Delete "
+msgid "Are you sure you want to sign out?"
+msgstr "Seguro que quieres eliminar? "
+
 #: customers/templates/customers/menu.html:64
 #: restaurant_admin/templates/restaurant/menu.html:64
 msgid "Welcome to "
@@ -376,13 +414,13 @@ msgstr ""
 "Ve nuestro menú, ordena y paga desde tu celular. Te notificamos cuando esté "
 "listo tu pedido. ¡Provecho!"
 
-#: customers/templates/customers/menu.html:124
+#: customers/templates/customers/menu.html:127
 #: restaurant_admin/templates/restaurant/menu.html:129
 msgid "No Items on Menu!"
 msgstr "Está vacio el Menú!"
 
-#: customers/templates/customers/menu.html:157
-#: customers/templates/customers/menu.html:161
+#: customers/templates/customers/menu.html:160
+#: customers/templates/customers/menu.html:164
 #: customers/templates/customers/view_item.html:172
 #: customers/templates/customers/view_item.html:174
 #: restaurant_admin/templates/restaurant/menu.html:161
@@ -390,7 +428,7 @@ msgstr "Está vacio el Menú!"
 msgid "View Cart $"
 msgstr "Ver Carrito $"
 
-#: customers/templates/customers/menu.html:165
+#: customers/templates/customers/menu.html:168
 #: customers/templates/customers/view_item.html:176
 #: restaurant_admin/templates/restaurant/menu.html:169
 msgid "View Cart"
@@ -417,7 +455,11 @@ msgstr "Correo Electrónico:"
 msgid "Feedback"
 msgstr "Compártenos tu Opinión"
 
-#: customers/templates/customers/order_confirmation.html:171
+#: customers/templates/customers/order_confirmation.html:154
+msgid "Feedback about this app?"
+msgstr "Que podemos mejorar?"
+
+#: customers/templates/customers/order_confirmation.html:172
 msgid "Back to Menu"
 msgstr "Regresar a Menu"
 
@@ -430,14 +472,19 @@ msgid "Credit or Debit Card"
 msgstr "Crédito o Débito"
 
 #: customers/templates/customers/payment.html:107
+#: customers/templates/customers/payment.html:131
 msgid "Submit Payment"
 msgstr "Enviar Pago"
 
-#: customers/templates/customers/payment.html:127
+#: customers/templates/customers/payment.html:121
+msgid "Pay with same card as last time"
+msgstr ""
+
+#: customers/templates/customers/payment.html:151
 msgid "Cash"
 msgstr "Efectivo"
 
-#: customers/templates/customers/payment.html:131
+#: customers/templates/customers/payment.html:155
 msgid "Pay Cash"
 msgstr "Pagar en Efectivo"
 
@@ -466,7 +513,7 @@ msgid "Place Order"
 msgstr "Continuar al Pago"
 
 #: customers/templates/customers/view_item.html:101
-#: restaurant_admin/views.py:252
+#: restaurant_admin/views.py:243
 msgid "None"
 msgstr "Ninguno"
 
@@ -1213,15 +1260,15 @@ msgstr "Top 5 Platillos por Cantidad"
 msgid "Quantity"
 msgstr "Cantidad"
 
-#: restaurant_admin/views.py:55
+#: restaurant_admin/views.py:51
 msgid "Username or Password is incorrect"
 msgstr "Usuario o Contraseña Incorrecta"
 
-#: restaurant_admin/views.py:234
+#: restaurant_admin/views.py:225
 msgid "Preferences Successfully Updated"
 msgstr "Preferencias Actualizadas"
 
-#: restaurant_admin/views.py:723
+#: restaurant_admin/views.py:703
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
 
