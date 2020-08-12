@@ -261,11 +261,20 @@ def my_menus(request):
     me = Restaurant.objects.get(user = request.user)
     # test_cart = Cart.objects.all().first()
     # send_order_email(from_email = settings.EMAIL_HOST_USER,to=me.order_stream_email,order =test_cart)
-
     menus = Menu.objects.filter(restaurant =me) #query set of all menus belonging to this restaurant
     form = MenuForm()
-    existing_items = MenuItem.objects.filter(restaurant = me)
-    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me})
+    aws_dir = me.qr_code_path
+    print(aws_dir)
+    s3 = boto3.resource('s3') #setup to get from AWS
+    bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    objs = bucket.objects.filter(Prefix=aws_dir) #get folder
+    print(objs)
+    url = "#"
+    for obj in objs: #iterate over file objects in folder
+         if os.path.split(obj.key)[1].split('.')[1] == 'png':
+            s3Client = boto3.client('s3')
+            url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
+    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me,'url':url})
 
 
 def add_menu(request):
