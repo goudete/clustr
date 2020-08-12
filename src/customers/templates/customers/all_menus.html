@@ -241,12 +241,7 @@
           </div>
           </h6>
         <div class="card-body">
-          <form action = '/customers/{{menu.restaurant.id}}/{{menu.id}}' method = 'get'>
-            {% csrf_token %}
-            <div class="row justify-content-center">
-              <button type = 'submit' class="btn btn-primary" style="width: 17rem;">{% trans "Check it out" %}</button>
-            </div>
-          </form>
+          <a href = '/customers/view_menu/{{c_id}}/{{menu.restaurant.id}}/{{menu.id}}' class="btn btn-primary" style="width: 17rem;">{% trans "Check it out" %}</a>
         </div>
       </div>
     </div>
