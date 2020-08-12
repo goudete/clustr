@@ -77,7 +77,6 @@ pyrsistent==0.16.0
 PySocks==1.7.1
 python-dateutil==2.8.1
 python-magic==0.4.18
-python-magic-bin==0.4.14
 python3-openid==3.2.0
 pytz==2020.1
 PyYAML==5.3.1
