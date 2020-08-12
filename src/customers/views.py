@@ -2,7 +2,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from restaurant_admin.models import Restaurant, Menu, MenuItem
-from .models import Cart, MenuItemCounter
+from .models import Cart, MenuItemCounter, Customer
 from restaurant_admin.models import Restaurant, SelectOption, AddOnGroup, AddOnItem
 from .forms import CustomOrderForm, CustomTipForm, EmailForm, FeedbackForm, PhoneForm
 import stripe
@@ -20,11 +20,14 @@ from django.utils import timezone
 from django.utils import translation
 from cashier.email_handlers import send_order_email
 from .helpers import assignToCashier
+from django.contrib.auth import logout
+
 
 #this method is only for development, it shows all the menus you have on your local db
-def show_all_menus(request):
-    menus = Menu.objects.all()
-    return render(request, 'customers/all_menus.html', {'menus': menus})
+def show_all_menus(request, cart_id, restaurant_id):
+    curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+    active_menus = Menu.objects.filter(restaurant = curr_rest, displaying = True)
+    return render(request, 'customers/all_menus.html', {'menus': active_menus, 'restaurant': curr_rest, 'c_id': cart_id})
 
 #sets the language of the menu based on the restaurant admin
 def set_language(response, language):
@@ -32,9 +35,7 @@ def set_language(response, language):
     response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
     return response
 
-#this method just creates a cart object and then redirects to the menu
-#method needs to be a post, otherwise someone could accidentally create 2 carts
-def create_cart(request, restaurant_id, menu_id):
+def create_cart(request, restaurant_id):
     if request.method == 'GET':
         cart = Cart()
         cart.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
@@ -42,12 +43,12 @@ def create_cart(request, restaurant_id, menu_id):
         cart.total_with_tip = 0
         cart.save()
         #redirect to view menu page
-        response = HttpResponseRedirect('/customers/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
+        response = HttpResponseRedirect('/customers/menus/{c_id}/{r_id}'.format(c_id = cart.id, r_id = restaurant_id))
         set_language(response, Restaurant.objects.filter(id = restaurant_id).first().language)
         return response
     #otherwise it sends you to the page w/ all the menus
     else:
-        return redirect('/customers')
+        return redirect('/customers/{r_id}'.format(r_id = restaurant_id))
 
 def check_time(rest):
     if (not rest.opening_time) or (not rest.closing_time):
@@ -510,40 +511,110 @@ def dine_in_option(request):
     already paid, it redirects to order_confirmation
 """
 def payment(request, cart_id, restaurant_id, menu_id):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
     #1st check if this bill has already been paid, someone could accidentally come here and pay something that they're not meant to
     cart = Cart.objects.filter(id = cart_id).first()
-    # print("DINE IN OPTION: ", cart.dine_in)
     if cart.is_paid == True:
         ''' If payed, just redirect to order confirmation'''
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
+    user = request.user
+    authenticated = user.is_authenticated
+    #if they have a stored customer stripe id, give option of paying with previous card.
+    card_stored = False
+    last4 = '****' #arbitrary. if they have a stored card, we update this later
+    if authenticated:
+        if Customer.objects.filter(user=user).exists():
+            existing_customer = Customer.objects.get(user=user)
+            if Customer.objects.get(user=request.user).stripe_id != None:
+                card_stored = True
+                #get their card info
+                payment_methods = stripe.PaymentMethod.list(
+                                      customer=existing_customer.stripe_id,
+                                      type="card",
+                                    )
+                payment_method_id = payment_methods['data'][0]['id']
+                last4 = payment_methods['data'][0]['card']['last4'] #last four digits in credit card number
+
     if request.method == 'POST':
+        #check whether customer paid with saved card.
+        if "previous_card_submit" in request.POST:
+            try:
+                stripe.PaymentIntent.create(
+                amount=int(cart.total_with_tip*100),
+                currency='mxn',
+                customer=existing_customer.stripe_id,
+                payment_method=payment_method_id,
+                off_session=True,
+                confirm=True,
+              )
+            except stripe.error.CardError as e:
+              err = e.error
+              # Error code will be authentication_required if authentication is needed
+              print("Code is: %s" % err.code)
+              payment_intent_id = err.payment_intent['id']
+              payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        else:
+            if card_stored:
+                payment_methods = stripe.PaymentMethod.list(
+                                      customer=existing_customer.stripe_id,
+                                      type="card",
+                                    )
+                stripe.Customer.delete_source(
+                  existing_customer.id,
+                  payment_methods['data'][1]['id'],
+                )
 
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:
-        cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
         if cart.total_with_tip == 0:
             cart.total_with_tip = cart.total
             cart.save()
         #stripe API stuff here
+        #added to save card details if customer authenticated and paying for the first time
         if curr_rest.handle_payment:
-            stripe.api_key = settings.STRIPE_SECRET_KEY
-            intent = stripe.PaymentIntent.create(
-              payment_method_types=['card'],
-              amount=int((cart.total_with_tip*100)),
-              currency='mxn',
-              stripe_account=curr_rest.stripe_account_id,
-            )
+            if authenticated and not(card_stored):
+                # Create a Customer (stripe API object):
+                new_customer = stripe.Customer.create()
+                #create customer object we will save to db
+                db_customer = Customer(
+                    user = user,
+                    stripe_id = new_customer.id
+                )
+                db_customer.save()
+
+                intent = stripe.PaymentIntent.create(
+                  payment_method_types=['card'],
+                  amount=int((cart.total_with_tip*100)),
+                  currency='mxn',
+                  setup_future_usage='off_session',
+                  customer = new_customer.stripe_id
+                  # stripe_account=curr_rest.stripe_account_id,
+                )
+            elif card_stored:
+                intent = stripe.PaymentIntent.create(
+                  payment_method_types=['card'],
+                  amount=int((cart.total_with_tip*100)),
+                  currency='mxn',
+                  setup_future_usage='off_session',
+                  customer = existing_customer.stripe_id
+                  # stripe_account=curr_rest.stripe_account_id,
+                )
+            else:
+                intent = stripe.PaymentIntent.create(
+                  payment_method_types=['card'],
+                  amount=int((cart.total_with_tip*100)),
+                  currency='mxn'
+                  # stripe_account=curr_rest.stripe_account_id,
+                )
             cart.stripe_order_id = intent.id
             cart.save()
             publishable = settings.STRIPE_PUBLISHABLE_KEY
-            return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable})
-
-        #if method is a get, then they're inputting payment info
-        return render(request, 'customers/payment.html', {'cart': cart, 'restaurant': curr_rest, 'menu': curr_menu})
-
+            return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart,
+                                                              'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable,
+                                                              'card_stored':card_stored, 'last4':last4})
 
 ''' This is an intermediary step between payment and order confirmation. Email and Phone form'''
 def card_email_receipt(request, cart_id, restaurant_id, menu_id):
@@ -688,3 +759,7 @@ def feedback(request, cart_id):
     else:
         cart = Cart.objects.filter(id = cart_id).first()
         return render(request, 'customers/order_confirmation.html', {'cart': cart, 'form': form})
+
+def logout_view(request, restaurant_id):
+    logout(request)
+    return redirect('/customers/{r_id}'.format(r_id=restaurant_id)) #return to login page

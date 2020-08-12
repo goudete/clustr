@@ -53,7 +53,7 @@
   }
 
 </style>
-<nav class="navbar navbar-light bg-light">
+<nav class="navbar navbar-dark bg-dark">
   <a class="navbar-brand" href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
   <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
@@ -64,34 +64,63 @@
 
 <div class="container-fluid">
   <div class="row justify-content-center mt-4 mb-3">
-    <!-- <div class="col-6 mr-auto"> -->
+
       <svg class="bi bi-receipt-cutoff" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v13h-1V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51L2 2.118V15H1V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zM0 15.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
         <path fill-rule="evenodd" d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-8a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"/>
       </svg>
-    <!-- </div> -->
-    <!-- <div class="col-6"> -->
+
       <h5>{% trans "Payment" %}</h5>
-    <!-- </div> -->
+
   </div>
 
 <!-- Credit Card Card -->
-{% if restaurant.handle_payment and restaurant.stripe_account_id %}
-  <div class="card shadow p-3 bg-white rounded mb-4">
-    <div class="card-body">
-      <div class="row pb-2">
+{% if restaurant.handle_payment %}
+  <div class="card shadow bg-white rounded mb-4">
+    <h6 class="card-header">
+      <div class="row justify-content-center">
         <div class="col-2">
-          <svg class="bi bi-credit-card" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M14 3H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
-            <rect width="3" height="3" x="2" y="9" rx="1"/>
-            <path d="M1 5h14v2H1z"/>
-          </svg>
+          <div class="col mt-1">
+            <svg class="bi bi-credit-card" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M14 3H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
+              <rect width="3" height="3" x="2" y="9" rx="1"/>
+              <path d="M1 5h14v2H1z"/>
+            </svg>
+          </div>
         </div>
         <div class="col-10">
-          <h5 class="cart-title pb-2">{% trans "Credit or Debit Card" %}</h5>
+          <div class="mt-1">
+           <h5>{% trans "Credit or Debit Card" %}</h5>
+          </div>
+        </div>
+      </div>
+    </h6>
+    <div class="card-body">
+      <!-- existing card -->
+      {% if card_stored %}
+      <div class="row pb-1">
+        <div class="col-10">
+          <h6>{% trans "Previous Card" %}</h6>
         </div>
       </div>
 
+      <form action="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" method="post" id="payment-form-previous" class="w-100">
+        {% csrf_token %}
+          <button class="button" id="previous_card_submit" name="previous_card_submit" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
+            {% trans "Pay with card ending in " %} '{{last4}}'
+          </button>
+      </form>
+
+      <hr>
+      {% endif %}
+      <!-- end existing card -->
+
+      <!-- new card -->
+      <div class="row pb-1">
+        <div class="col-10">
+          <h6>{% trans "New Card" %}</h6>
+        </div>
+      </div>
       <form action="/customers/payment/{{ cart.id }}" method="post" id="payment-form" class="w-100">
         {% csrf_token %}
           <div id="card-element" class="form-control">
@@ -99,14 +128,15 @@
           </div>
 
           <!-- Used to display form errors. -->
-          <div id="card-errors" role="alert">
+          <div class="mt-1" id="card-errors" role="alert">
 
           </div>
 
-          <button class="button" id="submit" data-secret="{{ client_secret }}" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
+          <button class="button mt-2 mb-3" id="submit" data-secret="{{ client_secret }}" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
             {% trans "Submit Payment" %}
           </button>
       </form>
+      <!-- end new card -->
 
     </div>
   </div>
@@ -114,20 +144,26 @@
   {% endif %}
 
   <!-- Cash Card -->
-  <div class="card shadow p-3 bg-white rounded mb-4">
-    <div class="card-body">
-      <div class="row pb-2">
+  <div class="card shadow bg-white rounded mb-4">
+    <h6 class="card-header">
+      <div class="row justify-content-center">
         <div class="col-2">
-          <svg class="bi bi-aspect-ratio" width="2em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5v-9zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
-            <path fill-rule="evenodd" d="M2 4.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H3v2.5a.5.5 0 0 1-1 0v-3zm12 7a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H13V8.5a.5.5 0 0 1 1 0v3z"/>
-          </svg>
+          <div class=" col mt-1">
+            <svg width="2em" height="1.5em" viewBox="0 0 16 16" class="bi bi-cash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M15 4H1v8h14V4zM1 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H1z"/>
+              <path d="M13 4a2 2 0 0 0 2 2V4h-2zM3 4a2 2 0 0 1-2 2V4h2zm10 8a2 2 0 0 1 2-2v2h-2zM3 12a2 2 0 0 0-2-2v2h2zm7-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+            </svg>
+          </div>
         </div>
         <div class="col-10">
-          <h4 class="cart-title pb-2">{% trans "Cash" %}</h4>
+          <div class="mt-1">
+            <h5>{% trans "Cash" %}</h5>
+          </div>
         </div>
       </div>
-      <button class="button" id="submit_cash" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
+    </h6>
+    <div class="card-body">
+      <button class="button mt-3 mb-3" id="submit_cash" cart="{{ cart.id }}" rest="{{ restaurant.id }}" menu="{{ menu.id }}">
         {% trans "Pay Cash" %}
       </button>
     </div>
@@ -149,9 +185,10 @@
  // console.log('connected-id: ' + connected_account)
 
  if (publishable) {
-   var stripe = Stripe(publishable, {
-     stripeAccount: connected_account
-    });
+   var stripe = Stripe(publishable)
+   // , {
+   //   stripeAccount: connected_account
+   //  });
 
    var elements = stripe.elements();
 
@@ -199,14 +236,17 @@
 
       stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-         card: card,
-         billing_details: {
-           name: 'Jenny Rosen'
-         }
-       }
-     }).then(function(result) {
+          card: card,
+          billing_details: {
+            name: 'Jenny Rosen'
+          }
+        },
+        setup_future_usage: 'off_session'
+      }).then(function(result) {
        if (result.error) {
          console.log(result.error.message);
+         //display error
+         $( "#card-errors" ).append( "<p style='color:red;'>" + result.error.message + "</p>" );
        } else {
           // The payment has been processed!
          if (result.paymentIntent.status === 'succeeded') {
@@ -216,7 +256,7 @@
             // payment_intent.succeeded event that handles any business critical
             // post-payment actions.
             // ***send paymentIntent id to views here*** Probs with AJAX
-           // console.log('payment success');
+            // console.log('payment success');
            // console.log(cart_id)
            location.href="/customers/card_email_receipt/" + cart_id+ "/" + rest_id + "/" + menu_id;
 

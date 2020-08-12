@@ -82,6 +82,28 @@ input:checked + .slider:before {
           </svg>
         </a>
       </h1>
+      <br>
+
+      <form action="/restaurant_admin/toggle_menu_display_status/{{menu.id}}" method="post">
+        {% csrf_token %}
+        <div class="form-group row justify-content-center">
+          <label class="form-control-label col-1">{% trans "In Stock" %}?</label>
+          <div class="col-1">
+            <label class="switch">
+              {% if menu.displaying %}
+              <input name = "toggle_menu_status" type="checkbox" checked>
+              {% else%}
+              <input name = "toggle_menu_status" type="checkbox">
+              {% endif %}
+              <span class="slider round"></span>
+           </label>
+          </div>
+          <div class="col-1">
+            <button type="submit" class="btn btn-primary mb-2">{% trans "Save" %}</button>
+          </div>
+        </div>
+      </form>
+
       <!-- hidden form that pops up if you click the pencil-->
       <div class = 'row justify-content-center mt-3'>
         <div style = 'display: none; width: 22rem;' id = 'menu_form' class = 'card'>
@@ -121,11 +143,7 @@ input:checked + .slider:before {
           </div>
         </div>
       </div>
-      <div class = 'row justify-content-center'>
-        <a class = 'btn btn-primary' href = "{{ url }}">{% trans 'View QR Code' %}</a>
-      </div>
       <p>{{ restaurant.info }}</p>
-      <!-- <img src="..." class="img-fluid" alt="Responsive image"> -->
     </div>
   </div>
   <!-- end logo -->
