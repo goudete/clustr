@@ -169,7 +169,7 @@ TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
 LOGIN_REDIRECT_URL = 'restaurant_admin/my_menus'
 LOGOUT_REDIRECT_URL = 'restaurant_admin/logout_view'
 #AWS stuff
-STATIC_URL = 'https://s3.console.aws.amazon.com/s3/buckets/cluster-dev-bucket/'
+STATIC_URL = 'https://s3.console.aws.amazon.com/s3/buckets/cluster-pro-bucket/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 #AWS stuff
 AWS_S3_FILE_OVERWRITE = True
