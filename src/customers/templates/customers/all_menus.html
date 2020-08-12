@@ -6,10 +6,11 @@
 <style>
 
 .google-btn {
-  margin: 25px;
+  margin-right: 15px;
+  /* margin-top: 15px; */
   width: 80%;
-  min-width: 184px;
-  max-width: 184px;
+  min-width: 145px;
+  max-width: 145px;
   height: 42px;
   background-color: #fcfcfc;
   border-radius: 2px;
@@ -100,11 +101,74 @@
 </style>
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:400" />
 
+<nav class="navbar navbar-dark bg-dark">
+  <a class="navbar-brand mb-0 h1" href="#">{{ restaurant.name }}</a>
+
+  {% if user.is_authenticated %}
+    <div class="row justify-content-center mt-1 mb-1">
+      <a style="text-decoration: none; color: grey;" href="/customers/logout/{{ restaurant.id }}">
+        <div class="google-btn">
+          <div class="google-icon-wrapper">
+            <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+          </div>
+          <p class="btn-text"><b>{% trans "Logout" %}</b></p>
+        </div>
+      </a>
+    </div>
+  {% else %}
+    <div class="row justify-content-center mt-1 mb-1">
+      <a style="text-decoration: none; color: grey;" href="{% provider_login_url 'google' %}?next=/customers/{{ restaurant.id }}">
+        <div class="google-btn">
+          <div class="google-icon-wrapper">
+            <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+          </div>
+          <p class="btn-text"><b>{% trans "Login" %}</b></p>
+        </div>
+      </a>
+    </div>
+  {% endif %}
+</nav>
 
 <div class = 'container-fluid'>
+
+  {% if user.is_authenticated %}
+    <div class="row justify-content-center mt-5 mb-5">
+      <h5>{% trans "Welcome," %} {{ user.username }}!</h5>
+    </div>
+  {% endif %}
+  <!-- Just Button Test -->
+  <!-- Google Button -->
+  <!-- {% if user.is_authenticated %}
+    <div class="row justify-content-center mt-5">
+      <h5>{% trans "Welcome," %} {{ user.username }}!</h5>
+    </div>
+    <div class="row justify-content-center mb-4">
+      <a style="text-decoration: none; color: grey;" href="/customers/logout/{{ restaurant.id }}">
+        <div class="google-btn">
+          <div class="google-icon-wrapper">
+            <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+          </div>
+          <p class="btn-text"><b>{% trans "Logout" %}</b></p>
+        </div>
+      </a>
+    </div>
+  {% else %}
+    <div class="row justify-content-center mt-5 mb-4">
+      <a style="text-decoration: none; color: grey;" href="{% provider_login_url 'google' %}?next=/customers/{{ restaurant.id }}">
+        <div class="google-btn">
+          <div class="google-icon-wrapper">
+            <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+          </div>
+          <p class="btn-text"><b>{% trans "Login with Google" %}</b></p>
+        </div>
+      </a>
+    </div>
+  {% endif %} -->
+  <!-- End Test -->
+
   <!-- Authentication Card Begins -->
-  <div class="row justify-content-center mt-5 mb-3">
-    <div class="card shadow bg-white rounded mb-4">
+  <!-- <div class="row justify-content-center mt-5 mb-3">
+    <div class="card shadow bg-white rounded mb-4" style="width: 20rem;">
       <h6 class="card-header">
         <div class="row">
           <div class="col">
@@ -112,56 +176,64 @@
           </div>
         </div>
         </h6>
-        <div class="card-body">
+        <div class="card-body"> -->
 
         <!-- Google Button -->
-        {% if user.is_authenticated %}
-          <div class="google-btn">
-            <div class="google-icon-wrapper">
-              <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
-            </div>
-            <p class="btn-text"><b><a style="text-decoration: none; color: grey;" href = "/customers/logout">Logout</a></b></p>
-          </div>
+        <!-- {% if user.is_authenticated %}
           <div class="row justify-content-center">
-            <h4>{% trans "Welcome" %}, {{ user.username }}!</h4>
-          </div>
-        {% else %}
-        <div class="row justify-content-center">
-          <div class="google-btn">
-            <div class="google-icon-wrapper">
-              <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+            <div class="google-btn">
+              <div class="google-icon-wrapper">
+                <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+              </div>
+              <p class="btn-text"><b><a style="text-decoration: none; color: grey;" href = "/customers/logout">Logout</a></b></p>
             </div>
-            <p class="btn-text"><b><a style="text-decoration: none; color: grey;" href="{% provider_login_url 'google' %}?next=/customers/">Login with Google</a></b></p>
           </div>
+        </div>
+        <div class="card-footer text-muted">
+          {% trans "Welcome" %}, {{ user.username }}!
+        </div>
+        {% else %}
+          <div class="row justify-content-center">
+            <div class="google-btn">
+              <div class="google-icon-wrapper">
+                <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+              </div>
+              <p class="btn-text"><b><a style="text-decoration: none; color: grey;" href="{% provider_login_url 'google' %}?next=/customers/">Login with Google</a></b></p>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer text-muted">
+          {% trans "Login to save your details for next time!" %}
         </div>
         {% endif %}
       </div>
-      <div class="card-footer text-muted">
-        {% trans "Login to save your details for next time!" %}
-      </div>
     </div>
-  </div>
+  </div> -->
   <!-- Authentication Card Ends -->
 
-  <div class="row justify-content-center mt-4 mb-3">
-    <div class="card shadow p-3 bg-white rounded mb-4">
-      <div class="card-body">
-        <table class = 'table'>
-          {% for menu in menus %}
-            <tr>
-              <th scope = 'col'>{{menu.name}}</th>
-              <th>
-                <!-- empty form -->
-                <form action = '/customers/{{menu.restaurant.id}}/{{menu.id}}' method = 'get'>
-                  {% csrf_token %}
-                  <button type = 'submit' class = 'button-link'>view</button>
-                </form>
-              </th>
-            </tr>
-          {% endfor %}
-        </table>
+  <!-- Menu Cards Begin -->
+  {% for menu in menus %}
+    <div class="row justify-content-center mt-5">
+      <div class="card shadow bg-white rounded mb-4" style="width: 20rem;">
+        <h6 class="card-header">
+          <div class="row">
+            <div class="col">
+              {{ menu.name }}
+            </div>
+          </div>
+          </h6>
+        <div class="card-body">
+          <form action = '/customers/{{menu.restaurant.id}}/{{menu.id}}' method = 'get'>
+            {% csrf_token %}
+            <div class="row justify-content-center">
+              <button type = 'submit' class="btn btn-primary" style="width: 17rem;">{% trans "Check it out" %}</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
+  {% endfor %}
+  <!-- End Menu Cards -->
+
 </div>
 {% endblock %}

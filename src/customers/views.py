@@ -24,9 +24,10 @@ from django.contrib.auth import logout
 
 
 #this method is only for development, it shows all the menus you have on your local db
-def show_all_menus(request):
-    menus = Menu.objects.all()
-    return render(request, 'customers/all_menus.html', {'menus': menus})
+def show_all_menus(request, restaurant_id):
+    curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+    active_menus = Menu.objects.filter(restaurant = curr_rest, displaying = True)
+    return render(request, 'customers/all_menus.html', {'menus': active_menus, 'restaurant': curr_rest})
 
 #sets the language of the menu based on the restaurant admin
 def set_language(response, language):
@@ -745,6 +746,6 @@ def feedback(request, cart_id):
         cart = Cart.objects.filter(id = cart_id).first()
         return render(request, 'customers/order_confirmation.html', {'cart': cart, 'form': form})
 
-def logout_view(request):
+def logout_view(request, restaurant_id):
     logout(request)
-    return redirect('/customers') #return to login page
+    return redirect('/customers/{r_id}'.format(r_id=restaurant_id)) #return to login page
