@@ -49,7 +49,7 @@
     <div class="c-sidebar c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
       <div class="c-sidebar-brand d-lg-down-none pt-1">
         <a class="navbar-brand" href="/restaurant_admin/my_menus">
-          shift.
+          <img style="max-height:40px;" src="https://cluster-media.s3-us-west-2.amazonaws.com/shift-logo.png" class="img-fluid" id="item_img" alt="Responsive image">
         </a>
       </div>
 
@@ -115,16 +115,6 @@
         </button>
 
         <ul class="c-header-nav ml-auto mr-4">
-          <!-- <li class="c-header-nav-item mx-2"><a class="c-header-nav-link" href="/trucker/notifications">
-              {% if num_notifications > 0 %}
-              <svg class="bi bi-exclamation-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="red" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
-                <path d="M7.002 11a1 1 0 112 0 1 1 0 01-2 0zM7.1 4.995a.905.905 0 111.8 0l-.35 3.507a.552.552 0 01-1.1 0L7.1 4.995z"/>
-              </svg>
-              {% else %}
-              <i class="c-sidebar-nav-icon cil-bell"></i>
-              {% endif %}
-          </li> -->
           <li class="c-header-nav-item dropdown"><a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             <div class="cil-user"></div>
           </a>
@@ -133,10 +123,15 @@
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="https://dashboard.stripe.com/login">
               <i class="c-sidebar-nav-icon cil-file mr-2 mb-2"></i> {% trans "Bank Info" %}</a>
+
+              <a class="dropdown-item" href = "/restaurant_admin/set_language/es-mx">
+              <i class="c-sidebar-nav-icon cil-language mr-2 mb-2"></i> {% trans "Spanish" %}</a>
+
+              <a class="dropdown-item" href = "/restaurant_admin/set_language/en-us">
+              <i class="c-sidebar-nav-icon cil-language mr-2 mb-2"></i> {% trans "English" %}</a>
+
               <a class="dropdown-item" href="/restaurant_admin/logout">
               <i class="c-sidebar-nav-icon cil-account-logout mr-2 mb-2"></i> {% trans "Logout" %}</a>
-              <a href = "/restaurant_admin/set_language/es-mx">{% trans "Spanish" %}</a> /
-              <a href = "/restaurant_admin/set_language/en-us">{% trans "English" %}</a>
             </div>
           </li>
         </ul>

@@ -21,16 +21,27 @@
   }
 
 </style>
+<!-- navbar -->
+<nav class="navbar navbar-dark bg-dark">
+  <a class="navbar-brand" href="/customers/{{ restaurant.id }}">
+  <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+    <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h6.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
+  </svg>
+  </a>
+</nav>
+<!-- end navbar -->
+
 <!-- logo -->
-<div class="jumbotron">
-  <div class="row justify-content-center">
-    <div class="thumbnail thumb">
-      {% if restaurant.photo_path %}
+{% if restaurant.photo_path %}
+  <div class="jumbotron">
+    <div class="row justify-content-center">
+      <div class="thumbnail thumb">
         <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
-      {% endif %}
+      </div>
     </div>
   </div>
-</div>
+{% endif %}
 <!-- end logo -->
 
 <div class="container-fluid mb-5">

@@ -18,7 +18,8 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.i18n import i18n_patterns
-
+from qr import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,4 +31,5 @@ urlpatterns = [
     path('react',TemplateView.as_view(template_name='index.html')),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'), #for translation in js code
     path('shift_admin/', include('shift_admin.urls')),
-]
+    path('accounts/', include('allauth.urls')),
+] +  static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

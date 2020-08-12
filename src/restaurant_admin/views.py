@@ -68,6 +68,18 @@ def register_view(request):
             restaurant = rest_form.save(commit=False)
             restaurant.user = user
             restaurant.save()
+            #create qr code for restaurant
+            qr_path = 'R{user}/photos/qr/'.format(user = str(restaurant.id))
+            qr_url = 'https://cluster-mvp.herokuapp.com/customers/{rest_id}/'.format(rest_id = restaurant.id)
+            qr_code = pyqrcode.create(qr_url)
+            qr_png = qr_code.png('QR'+str(restaurant.id)+'.png', scale=6, module_color=[0, 0, 0, 128], background=[0xff, 0xff, 0xff])
+            file_storage = FileStorage()
+            doc_path = os.path.join(qr_path, "QR"+str(restaurant.id)+'.png') #set path for file to be stored in
+            file_storage.save(doc_path, open("QR"+str(restaurant.id)+'.png', 'rb'))
+            restaurant.qr_code_path = doc_path
+            os.unlink('QR'+str(restaurant.id)+'.png')
+            restaurant.save()
+            #get form data
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             email = form.cleaned_data.get('email')
@@ -235,7 +247,7 @@ def answer_about(request):
 
                 #     curr_rest.order_stream = False
                 # curr_rest.save()
-                return redirect('/restaurant_admin/my_menus')
+            return redirect('/restaurant_admin/my_menus')
 
     #otherwise render the about page
     else:
@@ -249,11 +261,20 @@ def my_menus(request):
     me = Restaurant.objects.get(user = request.user)
     # test_cart = Cart.objects.all().first()
     # send_order_email(from_email = settings.EMAIL_HOST_USER,to=me.order_stream_email,order =test_cart)
-
     menus = Menu.objects.filter(restaurant =me) #query set of all menus belonging to this restaurant
     form = MenuForm()
-    existing_items = MenuItem.objects.filter(restaurant = me)
-    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me})
+    aws_dir = me.qr_code_path
+    print(aws_dir)
+    s3 = boto3.resource('s3') #setup to get from AWS
+    bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    objs = bucket.objects.filter(Prefix=aws_dir) #get folder
+    print(objs)
+    url = "#"
+    for obj in objs: #iterate over file objects in folder
+         if os.path.split(obj.key)[1].split('.')[1] == 'png':
+            s3Client = boto3.client('s3')
+            url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
+    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me,'url':url})
 
 
 def add_menu(request):
@@ -286,16 +307,7 @@ def add_menu(request):
             new_menu = menu.save(commit = False)
             new_menu.restaurant = Restaurant.objects.get(user = request.user)
             new_menu.save()
-        #generate qr code for menu
-        qr_path = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(new_menu.id))
-        qr_url = 'https://cluster-mvp.herokuapp.com/customers/{rest_id}/{men_id}'.format(rest_id = new_menu.restaurant.id, men_id = new_menu.id)
-        qr_code = pyqrcode.create(qr_url)
-        qr_png = qr_code.png('QR'+str(new_menu.id)+'.png', scale=6, module_color=[0, 0, 0, 128], background=[0xff, 0xff, 0xff])
-        file_storage = FileStorage()
-        doc_path = os.path.join(qr_path, "QR"+str(new_menu.id)+'.png') #set path for file to be stored in
-        file_storage.save(doc_path, open("QR"+str(new_menu.id)+'.png', 'rb'))
-        new_menu.qr_code_path = doc_path
-        os.unlink('QR'+str(new_menu.id)+'.png')
+
         new_menu.save()
         #redirect to the edit menu so they can add new stuff to it
         return redirect('edit_menu/{menu}'.format(menu = new_menu.id))
@@ -961,8 +973,8 @@ def sales(request):
             top5_sales = [(i+1,tup[0].name,tup[1][0]) for i,tup in enumerate(top5_sales)]
             top5_quantity = sorted(item_scores.items(),key=lambda item: item[1][1], reverse=True)[:5]
             top5_quantity = [(i+1,tup[0].name,tup[1][1]) for i,tup in enumerate(top5_quantity)]
-            total_cash = sum([cart.total for cart in carts if cart.cash_code  != None])
-            total_card = sum([cart.total for cart in carts if cart.cash_code == None])
+            total_cash = sum([cart.total for cart in carts if cart.cash_payment])
+            total_card = sum([cart.total for cart in carts if (cart.cash_payment == None or cart.cash_payment == False)])
             form = DatesForm()
             #hanlde division by zero for percentages
             if total_cash == 0:
@@ -1003,3 +1015,13 @@ def set_language(request, language):
     response = HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
     return response
+
+def toggle_menu_display_status(request, menu_id):
+    print(request.POST)
+    menu = Menu.objects.get(id=menu_id)
+    if "toggle_menu_status" in request.POST:
+        menu.displaying = True
+    else:
+        menu.displaying = False
+    menu.save()
+    return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
