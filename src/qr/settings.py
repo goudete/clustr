@@ -97,17 +97,17 @@ django_heroku.settings(locals())
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 #
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#           'NAME': env('DB_NAME'),
-#           'USER': env('DB_USER'),
-#           'PASSWORD': env("DB_PASS"),
-#           'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
-#           'PORT': '',
-#     }
-#  }
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': env('DB_NAME'),
+          'USER': env('DB_USER'),
+          'PASSWORD': env("DB_PASS"),
+          'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
+          'PORT': '',
+    }
+ }
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -169,7 +169,7 @@ TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
 LOGIN_REDIRECT_URL = 'restaurant_admin/my_menus'
 LOGOUT_REDIRECT_URL = 'restaurant_admin/logout_view'
 #AWS stuff
-STATIC_URL = 'https://s3.console.aws.amazon.com/s3/buckets/cluster-pro-bucket/'
+STATIC_URL = 'https://s3.console.aws.amazon.com/s3/buckets/cluster-dev-bucket/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 #AWS stuff
 AWS_S3_FILE_OVERWRITE = True
