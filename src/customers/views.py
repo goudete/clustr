@@ -24,10 +24,10 @@ from django.contrib.auth import logout
 
 
 #this method is only for development, it shows all the menus you have on your local db
-def show_all_menus(request, restaurant_id):
+def show_all_menus(request, cart_id, restaurant_id):
     curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
     active_menus = Menu.objects.filter(restaurant = curr_rest, displaying = True)
-    return render(request, 'customers/all_menus.html', {'menus': active_menus, 'restaurant': curr_rest})
+    return render(request, 'customers/all_menus.html', {'menus': active_menus, 'restaurant': curr_rest, 'c_id': cart_id})
 
 #sets the language of the menu based on the restaurant admin
 def set_language(response, language):
@@ -35,9 +35,7 @@ def set_language(response, language):
     response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
     return response
 
-#this method just creates a cart object and then redirects to the menu
-#method needs to be a post, otherwise someone could accidentally create 2 carts
-def create_cart(request, restaurant_id, menu_id):
+def create_cart(request, restaurant_id):
     if request.method == 'GET':
         cart = Cart()
         cart.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
@@ -45,12 +43,12 @@ def create_cart(request, restaurant_id, menu_id):
         cart.total_with_tip = 0
         cart.save()
         #redirect to view menu page
-        response = HttpResponseRedirect('/customers/view_menu/{cart_id}/{rest_id}/{m_id}'.format(cart_id = cart.id, rest_id = restaurant_id, m_id = menu_id))
+        response = HttpResponseRedirect('/customers/menus/{c_id}/{r_id}'.format(c_id = cart.id, r_id = restaurant_id))
         set_language(response, Restaurant.objects.filter(id = restaurant_id).first().language)
         return response
     #otherwise it sends you to the page w/ all the menus
     else:
-        return redirect('/customers')
+        return redirect('/customers/{r_id}'.format(r_id = restaurant_id))
 
 def check_time(rest):
     if (not rest.opening_time) or (not rest.closing_time):

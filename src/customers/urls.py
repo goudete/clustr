@@ -4,8 +4,8 @@ from restaurant_admin.views import ajax_receipt, receipt_page
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('<int:restaurant_id>', views.show_all_menus), #this one is for showing all menus in your db
-    path('<int:restaurant_id>/<int:menu_id>', views.create_cart),
+    path('<int:restaurant_id>', views.create_cart),
+    path('menus/<int:cart_id>/<int:restaurant_id>', views.show_all_menus), #this one is for showing all menus in your db
     path('view_menu/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.view_menu),
     path('about/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.about_page),
     path('view_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.view_item),
