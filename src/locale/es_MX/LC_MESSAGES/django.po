@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-11 20:22-0500\n"
+"POT-Creation-Date: 2020-08-12 13:27-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -339,20 +339,20 @@ msgstr "Gracias"
 msgid "We have received your message and will get back to you shortly at"
 msgstr "Hemos recibido tu mensaje y te mandaremos una respuesta pronto a"
 
-#: src/customers/templates/customers/about.html:41
-#: src/customers/templates/customers/menu.html:93
+#: src/customers/templates/customers/about.html:52
+#: src/customers/templates/customers/menu.html:104
 #: src/restaurant_admin/templates/restaurant/menu.html:96
 msgid "Menu"
 msgstr "Menú"
 
-#: src/customers/templates/customers/about.html:45
-#: src/customers/templates/customers/menu.html:97
+#: src/customers/templates/customers/about.html:56
+#: src/customers/templates/customers/menu.html:108
 #: src/restaurant_admin/templates/restaurant/menu.html:100
 msgid "About"
 msgstr "Acerca"
 
 #: src/customers/templates/customers/all_menus.html:114
-#: src/customers/templates/customers/all_menus.html:151
+#: src/customers/templates/customers/all_menus.html:169
 #: src/restaurant_admin/templates/restaurant/base.html:134
 msgid "Logout"
 msgstr "Cerrar Sesión"
@@ -364,28 +364,37 @@ msgstr "Cerrar Sesión"
 msgid "Login"
 msgstr "Iniciar Sesión"
 
-#: src/customers/templates/customers/all_menus.html:136
-#: src/customers/templates/customers/all_menus.html:143
+#: src/customers/templates/customers/all_menus.html:137
+#: src/customers/templates/customers/all_menus.html:148
+msgid "Welcome to"
+msgstr "¡Bienvenido a"
+
+#: src/customers/templates/customers/all_menus.html:142
+#: src/customers/templates/customers/all_menus.html:153
+msgid "Select a catalog, view items and pay."
+msgstr "Selecciona un catálogo, explora los productos y paga."
+
+#: src/customers/templates/customers/all_menus.html:161
 msgid "Welcome,"
 msgstr "Bienvenido/a, "
 
-#: src/customers/templates/customers/all_menus.html:162
+#: src/customers/templates/customers/all_menus.html:180
 msgid "Login with Google"
 msgstr "Iniciar Sesión"
 
-#: src/customers/templates/customers/all_menus.html:175
+#: src/customers/templates/customers/all_menus.html:193
 msgid "Authentication"
 msgstr ""
 
-#: src/customers/templates/customers/all_menus.html:193
+#: src/customers/templates/customers/all_menus.html:211
 msgid "Welcome"
 msgstr "Bienvenido/a, "
 
-#: src/customers/templates/customers/all_menus.html:206
+#: src/customers/templates/customers/all_menus.html:224
 msgid "Login to save your details for next time!"
 msgstr "¡Inicia tu sesión para recordarte a la próxima!"
 
-#: src/customers/templates/customers/all_menus.html:229
+#: src/customers/templates/customers/all_menus.html:247
 msgid "Check it out"
 msgstr "Ver Productos"
 
@@ -428,12 +437,12 @@ msgstr "Salir"
 msgid "Are you sure you want to sign out?"
 msgstr "¿Seguro que quieres salirte?"
 
-#: src/customers/templates/customers/menu.html:64
+#: src/customers/templates/customers/menu.html:75
 #: src/restaurant_admin/templates/restaurant/menu.html:64
 msgid "Welcome to "
 msgstr "Bienvenido a "
 
-#: src/customers/templates/customers/menu.html:79
+#: src/customers/templates/customers/menu.html:90
 msgid ""
 "Browse our menu, order and pay right from your phone! You'll get notified by "
 "text when your order is ready."
@@ -441,13 +450,13 @@ msgstr ""
 "Ve nuestro menú, ordena y paga desde tu celular. Te notificamos cuando esté "
 "listo tu pedido. ¡Provecho!"
 
-#: src/customers/templates/customers/menu.html:127
+#: src/customers/templates/customers/menu.html:138
 #: src/restaurant_admin/templates/restaurant/menu.html:129
 msgid "No Items on Menu!"
 msgstr "Está vacio el Menú!"
 
-#: src/customers/templates/customers/menu.html:160
-#: src/customers/templates/customers/menu.html:164
+#: src/customers/templates/customers/menu.html:171
+#: src/customers/templates/customers/menu.html:175
 #: src/customers/templates/customers/view_item.html:172
 #: src/customers/templates/customers/view_item.html:174
 #: src/restaurant_admin/templates/restaurant/menu.html:161
@@ -455,7 +464,7 @@ msgstr "Está vacio el Menú!"
 msgid "View Cart $"
 msgstr "Ver Carrito $"
 
-#: src/customers/templates/customers/menu.html:168
+#: src/customers/templates/customers/menu.html:179
 #: src/customers/templates/customers/view_item.html:176
 #: src/restaurant_admin/templates/restaurant/menu.html:169
 msgid "View Cart"
@@ -494,24 +503,31 @@ msgstr "Regresar a Menu"
 msgid "Payment"
 msgstr "Pago"
 
-#: src/customers/templates/customers/payment.html:90
+#: src/customers/templates/customers/payment.html:93
 msgid "Credit or Debit Card"
 msgstr "Crédito o Débito"
 
-#: src/customers/templates/customers/payment.html:106
-#: src/customers/templates/customers/payment.html:130
+#: src/customers/templates/customers/payment.html:103
+msgid "Previous Card"
+msgstr "Tarjetas Anteriores"
+
+#: src/customers/templates/customers/payment.html:110
+msgid "Pay with card ending in "
+msgstr "Usar tarjeta acabando con "
+
+#: src/customers/templates/customers/payment.html:119
+msgid "New Card"
+msgstr "Nueva Tarjeta"
+
+#: src/customers/templates/customers/payment.html:134
 msgid "Submit Payment"
 msgstr "Enviar Pago"
 
-#: src/customers/templates/customers/payment.html:120
-msgid "Pay with same card as last time"
-msgstr "¿Quieres pagar con la misma tarjeta que usaste la vez pasada?"
-
-#: src/customers/templates/customers/payment.html:150
+#: src/customers/templates/customers/payment.html:158
 msgid "Cash"
 msgstr "Efectivo"
 
-#: src/customers/templates/customers/payment.html:154
+#: src/customers/templates/customers/payment.html:165
 msgid "Pay Cash"
 msgstr "Pagar en Efectivo"
 
@@ -1293,6 +1309,9 @@ msgstr "Preferencias Actualizadas"
 #: src/restaurant_admin/views.py:706
 msgid "Login Not Available"
 msgstr "Inicio de Sesión no Disponible"
+
+#~ msgid "Pay with same card as last time"
+#~ msgstr "¿Quieres pagar con la misma tarjeta que usaste la vez pasada?"
 
 #~ msgid "Please show the cashier this code:"
 #~ msgstr "Muéstrale el código al cajero para pagar:"
