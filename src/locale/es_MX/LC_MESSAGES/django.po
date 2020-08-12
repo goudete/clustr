@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 13:27-0500\n"
+"POT-Creation-Date: 2020-08-12 13:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -286,7 +286,7 @@ msgstr "Agregar Platillos al pedido"
 msgid "Add"
 msgstr "Agregar"
 
-#: src/cashier/views.py:107 src/customers/views.py:637
+#: src/cashier/views.py:107 src/customers/views.py:635
 msgid "Your Receipt"
 msgstr "Tu Recibo"
 
@@ -394,7 +394,7 @@ msgstr "Bienvenido/a, "
 msgid "Login to save your details for next time!"
 msgstr "¡Inicia tu sesión para recordarte a la próxima!"
 
-#: src/customers/templates/customers/all_menus.html:247
+#: src/customers/templates/customers/all_menus.html:244
 msgid "Check it out"
 msgstr "Ver Productos"
 
@@ -496,8 +496,8 @@ msgid "Feedback about this app?"
 msgstr "Que podemos mejorar?"
 
 #: src/customers/templates/customers/order_confirmation.html:172
-msgid "Back to Menu"
-msgstr "Regresar a Menu"
+msgid "Back to Menus"
+msgstr "Regresar a Menús"
 
 #: src/customers/templates/customers/payment.html:73
 msgid "Payment"
