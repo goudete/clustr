@@ -38,7 +38,7 @@ ALLOWED_HOSTS = ['cluster-mvp.herokuapp.com', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'cashier',
+    'django.contrib.sites',
     'customers',
     'kitchen',
     'restaurant_admin',
@@ -55,7 +55,12 @@ INSTALLED_APPS = [
     'stripe',
     'django_extensions',
     'phonenumber_field',
-    'comms'
+    'comms',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'cashier',
 ]
 
 MIDDLEWARE = [
@@ -180,7 +185,9 @@ AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 
 
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend','cashier.auth_backend.PasswordlessAuthBackend']
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',
+                           'cashier.auth_backend.PasswordlessAuthBackend',
+                           'allauth.account.auth_backends.AuthenticationBackend']
 
 #Email Configuration
 EMAIL_HOST = 'smtp.gmail.com'
@@ -188,3 +195,17 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "clustrfood@gmail.com"
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
+
+SITE_ID = 4
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
