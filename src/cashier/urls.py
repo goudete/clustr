@@ -22,13 +22,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('base/<int:rest_id>/<int:log_no>',views.baseView),
     path('mark_entered/<int:rest_id>/<int:log_no>/<int:cart_id>', views.mark_entered),
-    path('cash_payment/<int:log_no>',views.cashPaymentView, name = 'cash_payment'),
-    path('review_order/<int:log_no>',views.reviewOrderView, name = 'review_order'),
     path('cashier_login/<int:rest_id>',views.loginCashier, name = 'cashier_login'),
-    path('order_history/<int:log_no>',views.orderHistoryView, name = 'order_history'),
-    path('ajax/ajax_change_order_quantity/<int:log_no>', views.ajax_change_order_quantity, name = 'change_order_quantity'),
-    path('ajax/ajax_add_item/<int:log_no>',views.ajax_add_item, name = 'add_item'),
-    path('logout/<int:log_no>', views.cashier_logout, name='logout'),
     path('receipt', TemplateView.as_view(template_name="emails/receipt/receipt.html")),
     path('ajax/chack_new_orders', views.check_new_orders, name = "check_new_orders"),
     path('mark_ready/<int:restaurant_id>/<int:log_no>/<int:tracker_id>', views.mark_order_done),
