@@ -3,295 +3,237 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
-<html>
+  <div class="container">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
 
-  <head>
-    <style>
-      /* #xOut {
-        float: left;
-        margin-top: 0px;
-      } */
-
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
-
-          <!-- <div class ='card-header'> -->
-          {% if messages %}
-          {% for message in messages %}
-          {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-          <div class="row justify-content-center alert alert-primary pt-3 pb-3" role="alert">
-            <!-- <div class="card shadow p-3 m-2 bg-white rounded" style="width: 25rem;"> -->
-              <div class="col-md-8">
-                <h4>{{ message }}</h4>
-              </div>
-            <!-- </div> -->
-          </div>
-          {% endif %}
-          {% endfor %}
-          {% endif %}
-          <!-- the alert card if they havent picked to handle payments or not -->
-          {% if me.answered_pay_question == False %}
-            <div class = 'row justify-content-center mt-4'>
-              <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
-                <div class = 'card-body'>
-
-                  <div class="card-title">
-                    <h4>{% trans 'Would You Like to Accept Payments?' %}</h4>
-                  </div>
-
-                  <div class = 'row justify-content-center mt-5'>
-                    <div class = 'col'>
-                      <form action = '/restaurant_admin/answer_question' method = 'post'>
-                        {% csrf_token %}
-
-                        <div class="custom-control custom-radio custom-control-inline">
-                          <input type="radio" id="no" name="answer" value="no" class="custom-control-input">
-                          <label class="custom-control-label" for="no">{% trans 'No' %}</label>
-                        </div>
-
-                        <div class="custom-control custom-radio custom-control-inline">
-                          <input type="radio" id="yes" name="answer" value="yes" class="custom-control-input">
-                          <label class="custom-control-label" for="yes">{% trans 'Yes' %}</label>
-                        </div>
-
-                        <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
-
-                      </form>
-
-                      <hr>
-
-                      <p class="card-text">{% trans "We charge a fixed fee and a percentage of the transaction each time you accept a credit or debit card payment (3.6% + 3 MXN). The price is the same for all cards. There’s no additional fee for international cards or failed charges. We pay out on a rolling daily basis to the account you indicate." %}</p>
-                      <a href="https://stripe.com/es-mx/pricing" class="card-link">{% trans "More Information" %}</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <!-- <div class ='card-header'> -->
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+        <div class="row justify-content-center alert alert-primary pt-3 pb-3" role="alert">
+          <!-- <div class="card shadow p-3 m-2 bg-white rounded" style="width: 25rem;"> -->
+            <div class="col-md-8">
+              <h4>{{ message }}</h4>
             </div>
-          {% endif %}
-
-          <!-- the alert card if they havent put their logo and about info -->
-          {% if me.info_input == False %}
-          <div class = 'row justify-content-center mb-4 mt-4'>
+          <!-- </div> -->
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        <!-- the alert card if they havent picked to handle payments or not -->
+        {% if me.answered_pay_question == False %}
+          <div class = 'row justify-content-center mt-4'>
             <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
-              <div class="card-body">
-                <div class = 'row'>
-                  <div class = 'col'>
-                    <h4>{% trans 'Tell Us About Your Restaurant' %}</h4>
-                  </div>
+              <div class = 'card-body'>
+
+                <div class="card-title">
+                  <h4>{% trans 'Would You Like to Accept Payments?' %}</h4>
                 </div>
 
-                <div class = 'row justify-content-center mt-3'>
+                <div class = 'row justify-content-center mt-5'>
                   <div class = 'col'>
-                    <form id = 'questions_form' action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
+                    <form action = '/restaurant_admin/answer_question' method = 'post'>
                       {% csrf_token %}
 
-                      <div class="form-group">
-                        <b><label for="tagline">{% trans 'Your Menu Tagline' %}</label></b>
-                        <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
-                        <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your Restaurant name to the customer" %}</small>
+                      <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="no" name="answer" value="no" class="custom-control-input">
+                        <label class="custom-control-label" for="no">{% trans 'No' %}</label>
                       </div>
 
-                      <div class="form-group">
-                        <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
-                        <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
-                        <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
+                      <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="yes" name="answer" value="yes" class="custom-control-input">
+                        <label class="custom-control-label" for="yes">{% trans 'Yes' %}</label>
                       </div>
 
-                      <div class = "form-group">
-                        <b><label for = "hours">{% trans 'Hours of Operation' %}</label></b>
-                        <div class = 'row' id = 'hours'>
-                          <div class = 'col'>
-                            <input type = 'time' id = 'timepicker' name = 'opening' {% if me.opening_time %} value = {{me.opening_time}} {% endif %}>
-                          </div>
-                          {% trans 'to' %}
-                          <div class = 'col'>
-                            <input type = 'time' id = 'timepicker2' name = 'closing' {% if me.closing_time %} value = {{me.closing_time}} {% endif %}>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class = 'row mt-3'>
-                        <div class="col">
-                          <b><label for = 'dine-in1'>{% trans 'Do You Currently Offer Dine In?' %}</label></b>
-                        </div>
-                      </div>
-
-                      <div class="form-check">
-                        <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in1' value = 'no' {% if not me.dine_in %}checked{% endif %}>
-                        <label for = 'dine-in1'>{% trans 'No' %}</label>
-                      </div>
-
-                      <div class="form-check">
-                        <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in2' value = 'yes' {% if me.dine_in %}checked{% endif %}>
-                        <label for = 'dine-in2'>{% trans 'Yes' %}</label>
-                      </div>
-
-                      <div class = 'row mt-3'>
-                        <div class="col">
-                          <b><label for = 'inputGroupFile04'>{% trans 'Restaurant Logo' %}</label></b>
-                        </div>
-                      </div>
-
-                        <div class="input-group">
-                          <div class="custom-file">
-                            <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                            <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
-                          </div>
-                        </div>
-
-                      <button id = 'question_form_button' name='preferences_submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+                      <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
 
                     </form>
+
+                    <hr>
+
+                    <p class="card-text">{% trans "We charge a fixed fee and a percentage of the transaction each time you accept a credit or debit card payment (3.6% + 3 MXN). The price is the same for all cards. There’s no additional fee for international cards or failed charges. We pay out on a rolling daily basis to the account you indicate." %}</p>
+                    <a href="https://stripe.com/es-mx/pricing" class="card-link">{% trans "More Information" %}</a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          {% endif %}
+        {% endif %}
 
-            <div class = 'row justify-content-center mb-2'>
-              <h2>{% trans "Your Menus" %}</h2>
-              <a href="#" data-toggle="popover" title=" {% trans 'Your Menus' %} " data-content=" {% trans 'Create new menus and edit existing ones' %} ">
-                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                  <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
-                  <circle cx="8" cy="4.5" r="1"/>
-                </svg>
-              </a>
-            </div>
-
-            <!-- Add Menu Icon -->
-            <div class="row justify-content-center">
-              <h1>
-              <a onclick = 'menuForm()' style = 'cursor: pointer;'>
-                <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#create_menu">
-                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
-                </svg>
-              </a>
-              </h1>
-            </div>
-            <br>
-            <div class = 'row justify-content-center'>
-              <a class = 'btn btn-primary' href = "{{ url }}">{% trans 'View QR Code' %}</a>
-            </div>
-
-            <div class="modal fade bd-example-modal-lg" id="create_menu" tabindex="-1" role="dialog">
-              <div class="modal-dialog modal-lg" role="document">
-                <div class = 'modal-content'>
-                  <div class="modal-body">
-                    <!-- <div class = 'row justify-content-center'> -->
-                      <!-- <div class = 'card mt-5 mb-5' id = 'menu_form' style = 'width:40rem;' > -->
-
-                        <!-- <div class ='card-header'> -->
-                          <!-- X out of the card button -->
-                          <!-- <div class = 'row justify-content-begin'>
-                            <a id = 'xOut' onclick = 'closeMenuForm()' style = 'cursor: pointer; color: red'>
-                              <svg class="bi bi-x-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-                                <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"/>
-                                <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z"/>
-                              </svg>
-                            </a>
-                          </div> -->
-
-                          <div class = 'row justify-content-center'>
-                            <h3>{% trans 'Create New Menu' %}<h3>
-                          </div>
-                        <!-- </div> -->
-
-                        <div class = 'row justify-content-center'>
-                          <form method = 'post' action = '/restaurant_admin/add_menu' enctype="multipart/form-data">
-                            {% csrf_token %}
-
-                            <div class = 'row justify-content-center'>
-                              <div class = 'col'>
-                                {{form.name|as_crispy_field}}
-                              </div>
-                            </div>
-                            <div class = 'row justify-content-center mt-3'>
-                                <div class = 'col'>
-                                  <label for="photo2">{% trans 'Photo' %}</label>
-                                  <div class="input-group" id = 'photo2'>
-                                    <div class="custom-file">
-                                      <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
-                                      <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
-                                    </div>
-                                  </div>
-                                </div>
-                            </div>
-
-                            <!-- Buttons -->
-                            <div class="row justify-content-center mt-5 mb-3">
-                                <div class="btn-group">
-                                    <button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
-                                </div>
-                            </div>
-
-                          </form>
-                        </div>
-                      <!-- </div> -->
-                    <!-- </div> -->
-                  </div>
-                </div>
+        <!-- the alert card if they havent put their logo and about info -->
+        {% if me.info_input == False %}
+        <div class = 'row justify-content-center mb-4 mt-4'>
+          <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
+            <div class="card-body">
+              <div class = 'row'>
+                <div class = 'col'>
+                  <h4>{% trans 'Tell Us About Your Restaurant' %}</h4>
                 </div>
               </div>
 
-          <!-- </div> -->
+              <div class = 'row justify-content-center mt-3'>
+                <div class = 'col'>
+                  <form id = 'questions_form' action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
+                    {% csrf_token %}
 
-          <!-- <div class = 'card-body'> -->
-            {% if menus|length == 0 %}
-            <div class = 'row justify-content-center mt-5'>
-              <h3>{% trans 'No Menus Yet' %}</h3>
-            </div>
-            {% else %}
-            <div id = 'menu_container' class = 'row justify-content-center mt-5'>
-
-                {% for menu in menus %}
-                <div class = 'card mr-2 mt-2' style = 'width: 26rem;'>
-                  <div class = 'card-body'>
-
-                    <div class = 'row justify-content-center mb-2'>
-                        <b style = 'color:black;'>{{ menu.name }}</b>
+                    <div class="form-group">
+                      <b><label for="tagline">{% trans 'Your Menu Tagline' %}</label></b>
+                      <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
+                      <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your Restaurant name to the customer" %}</small>
                     </div>
 
-                    <div class = 'row justify-content-center'>
-                        {% if menu.photo_path is not none %}
-                          <img src = "{% static menu.photo_path %}" border=3 height=400 width=400>
-                        {% else %}
-                        <div style = 'width: 25rem; height: 25rem;'>
-                          <div class = 'row justify-content-center mt-5'>
-                            <h5>{% trans 'No Photo' %}</h5>
-                          </div>
+                    <div class="form-group">
+                      <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
+                      <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
+                      <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
+                    </div>
+
+                    <div class = "form-group">
+                      <b><label for = "hours">{% trans 'Hours of Operation' %}</label></b>
+                      <div class = 'row' id = 'hours'>
+                        <div class = 'col'>
+                          <input type = 'time' id = 'timepicker' name = 'opening' {% if me.opening_time %} value = {{me.opening_time}} {% endif %}>
                         </div>
-                        {% endif %}
-                    </div>
-
-                    <div class = 'row justify-content-center mt-2'>
-                      <div class = 'col-2'>
-                        <a type = 'button' class = 'btn btn-secondary' href = '/restaurant_admin/view_menu/{{menu.id}}'>{% trans 'View' %}</a>
-                      </div>
-
-                      <div class = 'col-2'>
-                        <a type = 'button' class = 'btn btn-secondary' href = '/restaurant_admin/edit_menu/{{menu.id}}'>{% trans 'Edit' %}</a>
+                        {% trans 'to' %}
+                        <div class = 'col'>
+                          <input type = 'time' id = 'timepicker2' name = 'closing' {% if me.closing_time %} value = {{me.closing_time}} {% endif %}>
+                        </div>
                       </div>
                     </div>
 
+                    <div class = 'row mt-3'>
+                      <div class="col">
+                        <b><label for = 'dine-in1'>{% trans 'Do You Currently Offer Dine In?' %}</label></b>
+                      </div>
+                    </div>
+
+                    <div class="form-check">
+                      <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in1' value = 'no' {% if not me.dine_in %}checked{% endif %}>
+                      <label for = 'dine-in1'>{% trans 'No' %}</label>
+                    </div>
+
+                    <div class="form-check">
+                      <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in2' value = 'yes' {% if me.dine_in %}checked{% endif %}>
+                      <label for = 'dine-in2'>{% trans 'Yes' %}</label>
+                    </div>
+
+                    <div class = 'row mt-3'>
+                      <div class="col">
+                        <b><label for = 'inputGroupFile04'>{% trans 'Restaurant Logo' %}</label></b>
+                      </div>
+                    </div>
+
+                      <div class="input-group">
+                        <div class="custom-file">
+                          <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                          <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                        </div>
+                      </div>
+
+                    <button id = 'question_form_button' name='preferences_submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Add Menu Icon -->
+        <div class="row mb-3">
+          <div class="col-6 text-right">
+            <!-- View QR code button -->
+            <a class = 'btn btn-primary' href = "{{ url }}">{% trans 'View QR Code' %}</a>
+            <!-- end qr code button -->
+          </div>
+
+          <div class="col-4">
+            <button onclick = 'menuForm()' data-toggle="modal" data-target="#create_menu" type="button" class="btn btn-primary">{% trans "New Menu" %}</button>
+          </div>
+        </div>
+
+        <!-- New Menu Modal Form -->
+        <div class="modal fade" id="create_menu" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class = 'modal-content'>
+              <div class="modal-header">
+                <h5 class="modal-title">{% trans 'Create New Menu' %}<h5>
+              </div>
+              <div class="modal-body">
+                <form method = 'post' action = '/restaurant_admin/add_menu' enctype="multipart/form-data">
+                  {% csrf_token %}
+
+                  <!-- Name Input -->
+                  <div class="form-group">
+                    <label for="name">{% trans 'Name' %}</label>
+                    <input type="text" class="form-control" id="name" name = 'name' placeholder="Name">
+                  </div>
+                  <!-- name ends -->
+
+                  <!-- Photo input -->
+                  <label for="photo2">{% trans 'Photo' %}</label>
+                  <div class="input-group" id = 'photo2'>
+                    <div class="custom-file">
+                      <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile05" aria-describedby="inputGroupFileAddon05">
+                      <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                    </div>
+                  </div>
+                  <!-- Photo input ends -->
+
+                  <!-- Buttons -->
+                  <div class="row justify-content-center mt-5 mb-3">
+                      <div class="btn-group">
+                        <button style="width: 765px;" type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+                      </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- New Menu Modal Form ends -->
+
+          {% if menus|length == 0 %}
+          <div class = 'row justify-content-center mt-5'>
+            <h3>{% trans 'No Menus Yet' %}</h3>
+          </div>
+          {% else %}
+          <div id = 'menu_container' class = 'row justify-content-center mt-2'>
+
+              {% for menu in menus %}
+              <div class = 'card mr-2' style = 'width: 25rem;'>
+                <div class="card-header">
+                  <b>{{ menu.name }}</b>
+                </div>
+                <div class = 'card-body'>
+                  <div class = 'row justify-content-center'>
+                      {% if menu.photo_path is not none %}
+                        <img src = "{% static menu.photo_path %}" border=3 height=200 width=200>
+                      {% else %}
+                        <div class = 'row justify-content-center mt-5'>
+                          <h5>{% trans 'No Photo' %}</h5>
+                        </div>
+                      {% endif %}
                   </div>
                 </div>
-                {% endfor %}
+                <div class="card-footer bg-transparent">
+                  <div class = 'row justify-content-center'>
+                    <div class = 'col-6 text-right'>
+                      <a type = 'button' style="width:80px;" class = 'btn btn-secondary' href = '/restaurant_admin/view_menu/{{menu.id}}'>{% trans 'View' %}</a>
+                    </div>
 
-            </div>
-            {% endif %}
-          <!-- </div> -->
-        <!-- </div> -->
+                    <div class = 'col-6'>
+                      <a type = 'button' style="width:80px;" class = 'btn btn-secondary' href = '/restaurant_admin/edit_menu/{{menu.id}}'>{% trans 'Edit' %}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+          </div>
+          {% endif %}
 
-    </div>
-  </body>
+  </div>
 
   <script>
       $('#inputGroupFile04').on('change',function(){
@@ -335,7 +277,4 @@
 
     }, false);
   </script>
-
-</html>
-
 {% endblock %}
