@@ -128,6 +128,8 @@ def check_new_orders(request):
 def mark_order_done(request, restaurant_id, log_no, tracker_id):
     if request.method == 'POST':
         tracker = OrderTracker.objects.filter(id = tracker_id).first()
+        if not tracker:
+            return redirect('/cashier/base/{r_id}/{l_no}'.format(r_id = restaurant_id, l_no = log_no))
         tracker.is_complete = True
         tracker.save()
         #twilio stuff

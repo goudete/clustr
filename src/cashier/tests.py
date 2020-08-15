@@ -76,3 +76,38 @@ class CashierTestCase(TestCase):
         get = c.get('http://localhost:8000/cashier/mark_entered/{r}/{l}/{c}'.format(r = rest.id, l = cashier.login_number, c = cart.id))
         print('get requst: ', get.status_code)
         print("")
+
+    def test_check_orders_API(self):
+        self.setup()
+        rest = Restaurant.objects.first()
+        cashier = CashierProfile.objects.first()
+        cart = Cart.objects.first()
+        c = Client()
+        print('check for new orders ajax listener')
+        #as a post request
+        post_req = c.post('http://localhost:8000/cashier/ajax/check_new_orders', {'random_data':123})
+        print('on recieve post request: ', post_req.status_code)
+        #invalid restaurant id
+        bad_rest_id = c.get('http://localhost:8000/cashier/ajax/check_new_orders', {'dict_length':123, 'rest_id': 0, 'id_array':'[1,5,11,19]'})
+        print('invalid restaurant id: ', bad_rest_id.status_code)
+        #invalid id array input
+        bad_id_array = c.get('http://localhost:8000/cashier/ajax/check_new_orders', {'dict_length':123, 'rest_id': 1, 'id_array':'[\^--=+,P.}'})
+        print('invalid id array data: ', bad_id_array.status_code)
+
+    def test_order_done_API(self):
+        self.setup()
+        rest = Restaurant.objects.first()
+        cashier = CashierProfile.objects.first()
+        cart = Cart.objects.first()
+        tracker = OrderTracker.objects.first()
+        c = Client()
+        print('check order as done API test')
+        #with invalid restaurant id
+        bad_rest_id = c.post('http://localhost:8000/cashier/mark_ready/{rid}/{login}/{tid}'.format(rid = 0, login = cashier.login_number, tid = tracker.id))
+        print('invalid restaurant id: ', bad_rest_id.status_code)
+        #with invalid login number
+        bad_log_no = c.post('http://localhost:8000/cashier/mark_ready/{rid}/{login}/{tid}'.format(rid = rest.id, login = 98765, tid = tracker.id))
+        print('invalid login number: ', bad_log_no.status_code)
+        #with invalid tracker id
+        bad_tracker = c.post('http://localhost:8000/cashier/mark_ready/{rid}/{login}/{tid}'.format(rid = rest.id, login = cashier.login_number, tid = 0))
+        print('invalid tracker id: ', bad_tracker.status_code)
