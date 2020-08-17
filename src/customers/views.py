@@ -425,19 +425,21 @@ def remove_item(request, cart_id, restaurant_id, menu_id, item_id):
                 curr_cart.total -= remove_price
                 curr_cart.total_with_tip -= remove_price
                 item_remove.delete()
+                curr_cart.save()
             else:
                 tip_percent = round(curr_cart.tip / curr_cart.total, 2) #calculate tip percentage
                 curr_cart.total -= remove_price
                 curr_cart.tip = round(curr_cart.total * tip_percent, 2)
                 curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
                 item_remove.delete()
+                curr_cart.save()
         else:
             curr_cart.total -= remove_price
             item_remove.delete()
+            curr_cart.save()
 
-        curr_cart.save()
-
-        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+        return HttpResponse(status=200)
+        #return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
     else:
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
