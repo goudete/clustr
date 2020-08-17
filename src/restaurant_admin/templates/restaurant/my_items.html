@@ -628,4 +628,14 @@ $('#add_modal').on('shown.bs.modal', function () {
    $('[data-toggle="popover"]').popover()
  })
 </script>
+<!-- Instagram api experiment -->
+<script type="text/javascript">
+  //fetch endpoint
+  fetch('"https://graph.facebook.com/v8.0/instagram_oembed?url=https://www.instagram.com/p/CDtq6ndghNU/&access_token=721565788406216"')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+</script>
+
+<!-- Experiment ends -->
 {% endblock %}
