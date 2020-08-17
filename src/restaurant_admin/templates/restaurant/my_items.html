@@ -4,7 +4,7 @@
 {% load static %}
 {% block content %}
 {% load widget_tweaks %}
-<html>
+
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
@@ -117,158 +117,124 @@ input:checked + .slider:before {
   	color:#a2a2a2 !important;
   }
 </style>
-  <body>
+
     <div class="container" id="daddy_div">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-            <div class = 'row mb-2'>
-              <div class = "col-2 text-right"
-                  <h2><span class="add_items_style">{% trans "Add Items" %}</span></h2>
-              </div>
-              <div class="col-4">
-                <a href="#" data-toggle="popover" title=" {% trans 'Add Items' %} " data-content=" {% trans 'Menu Items are the basic building blocks of your Menus. Add new items and edit existing ones.' %} ">
-                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                    <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
-                    <circle cx="8" cy="4.5" r="1"/>
-                  </svg>
-                </a>
-              </div>
+        <div class = 'row mb-3'>
+          <!-- Search Bar Begins -->
+          <div class="col-6 text-right">
+        		<form class="form-inline " onkeydown="return event.key != 'Enter';">
+              {% csrf_token %}
+        		<i id="search_icon" class="fas fa-search" aria-hidden="true"></i>
+            {% trans "Search" as search_trans %}
+        		<input id="user-input" class="form-control form-control-sm ml-3 w-75" type="text" placeholder="{{search_trans}}" aria-label="{{search_trans}}">
+        		</form>
+        	</div>
+          <!-- Search Bar Ends -->
 
-              <!-- <div class="col-3">
-                  <h3>
-                  <a style = 'cursor: pointer;'>
-                    <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
-                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
-                    </svg>
-                  </a>
-                  </h3>
-              </div> -->
+          <!-- Add items button begins -->
+          <div class="col-6 text-right">
+            <button data-toggle="modal" data-target="#add_modal" type="button" class="btn btn-primary">{% trans "Add Items" %}</button>
+          </div>
+          <!-- Button Ends -->
 
-              <div class="col-6 float-right">
-            		<form class="form-inline " onkeydown="return event.key != 'Enter';">
+        </div>
+
+        <!-- Add item Modal Begins -->
+        <div class="modal fade bd-example-modal-lg" id="add_modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class = 'modal-content'>
+              <div class="modal-header">
+                <h5 class="modal-title">{% trans "Create New Item" %}<h5>
+              </div>
+              <div class="modal-body">
+                <!--hidden form to add new item -->
+                <form method="post" enctype="multipart/form-data" id = "create_item_form">
                   {% csrf_token %}
-            		<i id="search_icon" class="fas fa-search" aria-hidden="true"></i>
-                {% trans "Search" as search_trans %}
-            		<input id="user-input" class="form-control form-control-sm ml-3 w-75" type="text" placeholder="{{search_trans}}" aria-label="{{search_trans}}">
-            		</form>
-            	</div>
-            </div>
 
-            <div class="row mb-5">
-              <div class="col-1 text-right">
-                <a style = 'cursor: pointer;'>
-                  <svg class="bi bi-plus-circle-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_modal">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-            <!-- modal that pops up when item is to be created-->
-            <div class="modal fade bd-example-modal-lg" id="add_modal" tabindex="-1" role="dialog">
-              <div class="modal-dialog modal-lg" role="document">
-                <div class = 'modal-content'>
-                  <div class="modal-body">
-                    <!--hidden form to add new item -->
-                    <!-- <div class = 'row justify-content-center'> -->
-                      <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
+                  <div class="form-group">
+                    <label for = 'new_item_name'>{% trans 'Name*' %}</label>
+                    <input type = 'text' class="form-control" name = 'name' id = 'new_item_name' required>
+                  </div>
 
-                        <div class ='row justify-content-center'>
-                          <h3>{% trans "Create New Item" %}</h3>
+                  <div class="row justify-content-center mt-2 mb-2">
+                    <div id = "name_errors" class="errors">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for = 'new_item_description'>{% trans 'Description' %}</label>
+                    <textarea class="form-control" id = 'description' name = 'description'></textarea>
+                  </div>
+
+                  <div class="row justify-content-center mt-2 mb-2">
+                    <div id = "description_errors" class="errors">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for = 'new_item_category'>{% trans 'Category*' %}</label>
+                    <input class="form-control" id = 'new_item_category' name = 'category' list = 'options' required>
+                    <small id="emailHelp" class="form-text text-muted">{% trans 'Add a category to organize your menu.' %}</small>
+                    <datalist id = 'options'>
+                      {% for option in selct_options %}
+                        <option value = "{{option.name}}">{{option.name}}</option>
+                      {% endfor %}
+                    </datalist>
+                  </div>
+
+                  <div class="row justify-content-center mt-2 mb-2">
+                    <div id = "category_errors" class="errors">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for = 'new_item_price'>{% trans 'Price*' %}</label>
+                    <input type = 'number' class="form-control" name = 'price' id = 'new_item_price' step = '0.01' required>
+                  </div>
+
+                  <div class="row justify-content-center mt-2 mb-2">
+                    <div id = "price_errors" class="errors">
+                    </div>
+                  </div>
+
+                  <div class="row justify-content-center mt-3 mb-2">
+                    <div class = 'col'>
+                      <label for = 'photo'>{% trans 'Item Photo' %}</label>
+                      <div class="input-group" id = 'photo'>
+                        <div class="custom-file">
+                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                          <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
                         </div>
+                      </div>
+                    </div>
+                  </div>
 
-                        <div class="row justify-content-center">
-                          <form method="post" enctype="multipart/form-data" id = "create_item_form">
-                            {% csrf_token %}
+                  <div class="row justify-content-center mt-2 mb-2">
+                    <div id = "photo_errors" class="errors">
+                    </div>
+                  </div>
 
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div class = 'col'>
-                                <label for = 'new_item_name'>{%trans 'Name*' %}</label><br>
-                                <input type = 'text' name = 'name' id = 'new_item_name' style = 'width: 450px;' required>
-                              </div>
-                            </div>
+                  <!-- Buttons -->
+                  <div class="row justify-content-center mt-3 mb-2">
+                    <div class="btn-group">
+                        <button style="width: 765px;" type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
+                    </div>
+                  </div>
 
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div id = "name_errors" class="errors">
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div class = 'col'>
-                                <label for = 'new_item_description'>{% trans 'Description' %}</label><br>
-                                <textarea rows = '6' cols = '60' id = 'description' name = 'description' style = 'width: 450px;'></textarea>
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div id = "description_errors" class="errors">
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div class = 'col'>
-                                <label for = 'new_item_category'>{% trans 'Category*' %}</label><br>
-                                <input id = 'new_item_category' name = 'category' list = 'options' style = 'width: 450px;' required>
-                                <datalist id = 'options'>
-                                  {% for option in selct_options %}
-                                    <option value = "{{option.name}}">{{option.name}}</option>
-                                  {% endfor %}
-                                </datalist>
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div id = "category_errors" class="errors">
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div class = 'col'>
-                                <label for = 'new_item_price'>{% trans 'Price*' %}</label><br>
-                                <input type = 'number' name = 'price' id = 'new_item_price' step = '0.01' style = 'width: 450px;' required>
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div id = "price_errors" class="errors">
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-3 mb-2">
-                              <div class = 'col'>
-                                <label for = 'photo'>{% trans 'Item Photo' %}</label>
-                                <div class="input-group" id = 'photo'>
-                                  <div class="custom-file">
-                                    <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                                    <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="row justify-content-center mt-2 mb-2">
-                              <div id = "photo_errors" class="errors">
-                              </div>
-                            </div>
-
-                            <!-- Buttons -->
-                            <div class="row justify-content-center mt-3 mb-2">
-                              <div class = 'col'>
-                                <div class="btn-group">
-                                    <button type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
-                                </div>
-                              </div>
-                            </div>
-
-                          </form>
-                        </div>
-                      <!-- </div> -->
-                  <!-- </div> -->
+                </form>
               </div>
             </div>
           </div>
         </div>
-          <!-- </div> -->
+      <!-- Add item modal ends -->
+        {% if category_items|length == 0 %}
+        <div class = 'row justify-content-center mt-5'>
+          <h3>{% trans 'No Menu Items Yet!' %}</h3>
+        </div>
+
+        {% else %}
           <div id="replaceable-content">
               {% for category, items in category_items.items %}
               <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
@@ -454,11 +420,11 @@ input:checked + .slider:before {
                 </div>
               {% endfor %}
         </div>
-          <!-- </div> -->
+        {% endif %}
         </div>
         <!-- hidden input to store language code -->
         <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
-  </body>
+
   <script>
     function asd(a)
     {
@@ -482,7 +448,7 @@ input:checked + .slider:before {
       else document.getElementById('menu_form').style.display = 'block'
     }
   </script>
-</html>
+
 <script>
 $('#add_modal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
