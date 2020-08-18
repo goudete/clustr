@@ -9,6 +9,7 @@ urlpatterns = [
     path('view_menu/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.view_menu),
     path('about/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.about_page),
     path('view_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.view_item),
+    path('c_view_item/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.cart_to_item), #for creating a cart then redirecting to specific menu item
     path('add_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.add_item), #for adding item to cart
     path('remove_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.remove_item), #for removing item from cart
     path('view_cart/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.view_cart),
