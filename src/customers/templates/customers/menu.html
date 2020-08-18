@@ -21,6 +21,12 @@
   max-height: 250px;
 }
 
+.card-img-top {
+    width: 100%;
+    height: 40vw;
+    object-fit: cover;
+}
+
 div.scrollmenu {
   /* background-color: #333; */
   overflow: auto;
@@ -42,13 +48,26 @@ div.scrollmenu a:hover {
 </style>
 
 <!-- navbar -->
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar sticky-top navbar-dark bg-dark">
   <a class="navbar-brand" href="/customers/menus/{{ cart.id }}/{{ restaurant.id }}">
   <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
     <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h6.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
   </svg>
   </a>
+  {% if cart.total %}
+  <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-cart3" fill="yellow" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+    </svg>
+  </a>
+  {% else %}
+  <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-cart3" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+    </svg>
+  </a>
+  {% endif %}
 </nav>
 <!-- end navbar -->
 
@@ -98,7 +117,7 @@ div.scrollmenu a:hover {
 </div>
 
   <!-- Menu and About Buttons -->
-  <div class="row justify-content-center pt-4 pb-4">
+  <!-- <div class="row justify-content-center pt-4 pb-4">
     <div class="col">
       <div class="d-flex justify-content-end">
         <a href="#" class="btn btn-dark btn-circle btn-sm" role="button">{% trans "Menu" %}</a>
@@ -107,11 +126,11 @@ div.scrollmenu a:hover {
     <div class="col">
       <a href="/customers/about/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">{% trans "About" %}</a>
     </div>
-  </div>
+  </div> -->
   <!-- End Menu and About buttons -->
 
   <!-- Restaurant Name and info -->
-  <div class="row ml-1 mb-2 justify-content-center">
+  <div class="row ml-1 mb-2 mt-4 justify-content-center">
     <h5>{{ restaurant.name }}</h5>
   </div>
   {% if restaurant.info %}
@@ -119,75 +138,58 @@ div.scrollmenu a:hover {
       <h6>{{ restaurant.info }}</h6>
     </div>
   {% endif %}
+  <hr>
   <!-- End  -->
 
   <!-- Button Categories Start -->
-  <div class="scrollmenu mb-5">
+  <div class="scrollmenu mb-3">
     {% for category in categories %}
         <button class="btn btn-light cat_button" name="category_button_{{category.id}}">{{ category.name }}</button>
     {% endfor %}
   </div>
   <!-- Button Categories End -->
 
-  <!-- <hr> -->
-
   <!-- Menu Items -->
-  <ul class="list-unstyled">
+
     {% if category_items|length == 0 %}
       <div class="row justify-content-center mt-5">
         <h4>{% trans "No Items on Menu!" %}</h4>
       </div>
     {% else %}
+      <!-- Product Cards Begin -->
       {% for key, value in category_items.items %}
         <div class="MenuItems" id="display_category_category_button_{{key.id}}" style="display:none">
-        {% for v in value %}
+        <div class="row justify-content-center">
+          {% for v in value %}
             <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ v.id }}" style="text-decoration:none; color:#000000">
-            <div class="media">
-              <div class="media-body">
-                <h5 class="mt-0 mb-2">{{ v.name }}</h5>
-                {% if v.description %}
-                <p>{{ v.description }}<br>
-                {% endif %}
-                ${{ v.price}}</p> <br>
-              </div>
-              {% if v.photo_path %}
-              <img src="{% static v.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
-              {% endif %}
-            </div>
+              <!-- Product Card -->
+                <div class="card shadow bg-white rounded text-center mt-2 m-1" style="width:10rem;">
+                  {% if v.photo_path %}
+                    <img src="{% static v.photo_path %}" class="card-img-top" alt="...">
+                  {% else %}
+                  <img src="https://cluster-media.s3-us-west-2.amazonaws.com/img-placeholder.png" class="card-img-top" alt="...">
+                  {% endif %}
+                  <div class="card-body">
+                    <h5 class="card-title">{{ v.name }}</h5>
+                    <div class="mt-3">
+                      <b>${{ v.price}}</b>
+                    </div>
+                  </div>
+                </div>
+              <!-- End Product Card -->
             </a>
-            <hr>
-        {% endfor %}
+          {% endfor %}
+        </div>
         </div>
       {% endfor %}
+      <!-- Product Cards end -->
     {% endif %}
-  </ul>
-  <!-- Menu Items Ends -->
 
-  {% if restaurant.handle_payment and restaurant.stripe_account_id %}
-  <!-- View Cart Button -->
-  <div class="fixed-bottom">
-    {% if cart.total_with_tip %}
-    <div class="row justify-content-center mb-3">
-        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
-    </div>
-    {% elif cart.total %}
-    <div class="row justify-content-center mb-3">
-        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total }}</a>
-    </div>
-    {% else %}
-    <div class="row justify-content-center mb-3">
-        <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
-    </div>
-    {% endif %}
-  </div>
-  <!-- Cart Button ends -->
-  {% endif %}
+  <!-- Menu Items Ends -->
 
   <footer class="page-footer pt-4">
       <div class="row justify-content-center mb-5">
-        <!-- <div class="col-12"> -->
-          <!-- <a href="/customers/payment/{{ cart.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">Place Order $</a> -->
-        <!-- </div> -->
+
       </div>
   </footer>
 </div>
