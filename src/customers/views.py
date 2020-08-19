@@ -50,6 +50,21 @@ def create_cart(request, restaurant_id):
     else:
         return redirect('/customers/{r_id}'.format(r_id = restaurant_id))
 
+def cart_to_item(request, restaurant_id, menu_id, item_id):
+    if request.method == 'GET':
+        cart = Cart()
+        cart.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
+        cart.total = 0
+        cart.total_with_tip = 0
+        cart.save()
+        #redirect to view menu page
+        response = HttpResponseRedirect('/customers/view_item/{c_id}/{r_id}/{m_id}/{i_id}'.format(c_id = cart.id, r_id = restaurant_id, m_id = menu_id, i_id = item_id))
+        set_language(response, Restaurant.objects.filter(id = restaurant_id).first().language)
+        return response
+    #otherwise it sends you to the page w/ all the menus
+    else:
+        return redirect('/customers/{r_id}'.format(r_id = restaurant_id))
+
 def check_time(rest):
     if (not rest.opening_time) or (not rest.closing_time):
         return True

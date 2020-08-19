@@ -290,6 +290,8 @@ input:checked + .slider:before {
               {{ item.description }}<br>
               {% endif %}
               ${{ item.price}} <br>
+              <br>
+              <b>{% trans 'Specific URL:' %}</b> http://localhost:8000/customers/c_view_item/{{item.restaurant.id}}/{{menu.id}}/{{item.id}}<br>
               <!--jst to add spacing-->
               <a style = 'cursor: pointer;'>
                 <svg class="bi bi-pencil" width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#edit_modal{{item.id}}">
