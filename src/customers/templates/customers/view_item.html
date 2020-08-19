@@ -21,17 +21,68 @@
   #item_img{
     max-height: 250px;
   }
+  /*
+  Experiment Begins
+  */
+  .container-radio {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border-radius: 50%;
+  }
+
+  .container-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .container-radio input:checked ~ .checkmark {
+    background-color: #05122A;
+  }
+  /*
+  Experiment Ends
+  */
 </style>
 
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar sticky-top navbar-dark bg-dark">
   <a class="navbar-brand" href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
   <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
     <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h6.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
   </svg>
   </a>
+  {% if cart.total %}
+  <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-cart3" fill="yellow" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+    </svg>
+  </a>
+  {% else %}
+  <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-cart3" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+    </svg>
+  </a>
+  {% endif %}
 </nav>
+
 <div class="container-fluid">
   <!-- Item image -->
   <div class="row justify-content-center">
@@ -69,9 +120,9 @@
     <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
       {% for key, value in addon_dict.items %}
       <div class="row mb-3">
-        <div class="col-1">
+        <!-- <div class="col-1">
 
-        </div>
+        </div> -->
         <div class="col-11">
           <b>{{ key.name }}</b>
         </div>
@@ -80,8 +131,9 @@
         <div class="row">
           <div class="col-8">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="radio_addon_{{ key.name }}" value="{{ v.id }}" required>
-              <label class="form-check-label" for="radio_addon">
+              <label class="container-radio" for="radio_addon">
+                <input type="radio" name="radio_addon_{{ key.name }}" checked="checked" value="{{ v.id }}" required>
+                <span class="checkmark"></span>
                 {{ v.name }}
               </label>
             </div>
@@ -89,15 +141,16 @@
           <div class="col-4">
             + ${{ v.price }}
           </div>
-          <hr>
         </div>
+        <hr>
         {% endfor %}
       <!-- no addon -->
       <div class="row mb-3">
         <div class="col-8">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="radio_addon_{{ key.name }}" value="-1">
-            <label class="form-check-label" for="radio_addon">
+            <label class="container-radio" for="radio_addon">
+              <input type="radio" name="radio_addon_{{ key.name }}" value="-1">
+              <span class="checkmark"></span>
               {% trans 'None' %}
             </label>
           </div>
@@ -115,16 +168,31 @@
     <input type="hidden" id="group_names_arr" value="{{ group_names }}">
     <input type="hidden" id="item_id" value="{{ item.id }}" cart_id="{{ cart.id}}">
 
-    <div class="row justify-content-center mb-2">
-      <textarea class="form-control" name="custom_instructions" placeholder=" {% trans 'Custom Instructions...' %} " rows="3"></textarea>
+    <div class="form-group">
+      <label for="custom_instructions">{% trans "Additional Information" %}</label>
+      <textarea class="form-control" name="custom_instructions" id="custom_instructions" placeholder=" {% trans 'Custom Instructions...' %} " rows="3"></textarea>
     </div>
 
-    <div class="row justify-content-center">
-      <input class="form-control" type="number" name="quantity" min="1" value="1" placeholder="Quantity">
+    <!-- Quantity -->
+    <div class="form-group">
+      <label for="quantity">{% trans "Quantity" %}</label>
+      <select class="form-control" name="quantity" id="quantity">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>10</option>
+      </select>
     </div>
+    <!-- Quantity ends -->
 
     <div class="row justify-content-center mb-4 mt-4">
-      <button type="submit" class="btn btn-dark btn-circle btn-xl">{% trans "Add to Cart" %}</button>
+      <button type="submit" class="btn btn-dark btn-lg active w-100 shadow">{% trans "Add to Cart" %}</button>
     </div>
 
   </form>
@@ -164,9 +232,9 @@
 {% endif %}
 
 <!-- Displayed only if the restaurant is handling payments -->
-{% if restaurant.handle_payment and restaurant.stripe_account_id %}
+<!-- {% if restaurant.handle_payment and restaurant.stripe_account_id %} -->
   <!-- View Cart Button -->
-  <div class="fixed-bottom">
+  <!-- <div class="fixed-bottom">
     <div class="row justify-content-center mb-3">
       {% if cart.total_with_tip %}
       <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
@@ -176,9 +244,9 @@
       <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
       {% endif %}
     </div>
-  </div>
+  </div> -->
   <!-- Cart Button ends -->
-{% endif %}
+<!-- {% endif %} -->
 
 <footer class="page-footer pt-4">
     <div class="row justify-content-center mb-3">

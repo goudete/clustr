@@ -12,7 +12,6 @@ urlpatterns = [
     path('add_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.add_item), #for adding item to cart
     path('remove_item/<int:cart_id>/<int:restaurant_id>/<int:menu_id>/<int:item_id>', views.remove_item), #for removing item from cart
     path('view_cart/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.view_cart),
-    # path('decrease_quantity<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.decrease_quantity),
     path('change_instructions/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.change_instructions),
     path('payment/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.payment),
     path('order_confirmation/<int:cart_id>', views.order_confirmation),
@@ -26,6 +25,5 @@ urlpatterns = [
     path('ajax/ajax_receipt', ajax_receipt, name = 'ajax_receipt'),
     path('ajax/receipt_page', receipt_page, name = 'receipt_page'),
     path('ajax/dine_in_option', views.dine_in_option, name = 'dine_in_option'),
-    #path('logout/',TemplateView.as_view(template_name="customers/logout.html"), name= 'logout')
     path('logout/<int:restaurant_id>', views.logout_view),
 ]

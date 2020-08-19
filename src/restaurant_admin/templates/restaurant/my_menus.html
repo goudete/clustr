@@ -200,36 +200,35 @@
           </div>
           {% else %}
           <div id = 'menu_container' class = 'row justify-content-center mt-2'>
-
-              {% for menu in menus %}
-              <div class = 'card mr-2' style = 'width: 25rem;'>
-                <div class="card-header">
-                  <b>{{ menu.name }}</b>
+            {% for menu in menus %}
+            <div class = 'card mr-2' style = 'width: 25rem;'>
+              <div class="card-header">
+                <b>{{ menu.name }}</b>
+              </div>
+              <div class = 'card-body'>
+                <div class = 'row justify-content-center'>
+                    {% if menu.photo_path is not none %}
+                      <img src = "{% static menu.photo_path %}" border=3 height=200 width=200>
+                    {% else %}
+                      <div class = 'row justify-content-center mt-5'>
+                        <h5>{% trans 'No Photo' %}</h5>
+                      </div>
+                    {% endif %}
                 </div>
-                <div class = 'card-body'>
-                  <div class = 'row justify-content-center'>
-                      {% if menu.photo_path is not none %}
-                        <img src = "{% static menu.photo_path %}" border=3 height=200 width=200>
-                      {% else %}
-                        <div class = 'row justify-content-center mt-5'>
-                          <h5>{% trans 'No Photo' %}</h5>
-                        </div>
-                      {% endif %}
+              </div>
+              <div class="card-footer bg-transparent">
+                <div class = 'row justify-content-center'>
+                  <div class = 'col-6 text-right'>
+                    <a type = 'button' style="width:80px;" class = 'btn btn-secondary' href = '/restaurant_admin/view_menu/{{menu.id}}'>{% trans 'View' %}</a>
                   </div>
-                </div>
-                <div class="card-footer bg-transparent">
-                  <div class = 'row justify-content-center'>
-                    <div class = 'col-6 text-right'>
-                      <a type = 'button' style="width:80px;" class = 'btn btn-secondary' href = '/restaurant_admin/view_menu/{{menu.id}}'>{% trans 'View' %}</a>
-                    </div>
 
-                    <div class = 'col-6'>
-                      <a type = 'button' style="width:80px;" class = 'btn btn-secondary' href = '/restaurant_admin/edit_menu/{{menu.id}}'>{% trans 'Edit' %}</a>
-                    </div>
+                  <div class = 'col-6'>
+                    <a type = 'button' style="width:80px;" class = 'btn btn-secondary' href = '/restaurant_admin/edit_menu/{{menu.id}}'>{% trans 'Edit' %}</a>
                   </div>
                 </div>
               </div>
-              {% endfor %}
+            </div>
+            {% endfor %}
           </div>
           {% endif %}
 
