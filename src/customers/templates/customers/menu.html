@@ -131,22 +131,25 @@ div.scrollmenu a:hover {
 
   <!-- Restaurant Name and info -->
   <div class="row ml-1 mb-2 mt-4 justify-content-center">
-    <h5>{{ restaurant.name }}</h5>
+    <h2>{{ restaurant.name }}</h2>
   </div>
   {% if restaurant.info %}
     <div class="row ml-1 mb-4 justify-content-center">
-      <h6>{{ restaurant.info }}</h6>
+      <h4>{{ restaurant.info }}</h4>
     </div>
   {% endif %}
-  <hr>
   <!-- End  -->
 
   <!-- Button Categories Start -->
-  <div class="scrollmenu mb-3">
-    {% for category in categories %}
-        <button class="btn btn-light cat_button" name="category_button_{{category.id}}">{{ category.name }}</button>
-    {% endfor %}
-  </div>
+  <hr>
+    <div class="scrollmenu m-2">
+      <div class="btn-group" role="group" aria-label="Basic example">
+      {% for category in categories %}
+        <button class="btn btn-dark cat_button" name="category_button_{{category.id}}">{{ category.name }}</button>
+      {% endfor %}
+      </div>
+    </div>
+  <hr>
   <!-- Button Categories End -->
 
   <!-- Menu Items -->
@@ -158,28 +161,33 @@ div.scrollmenu a:hover {
     {% else %}
       <!-- Product Cards Begin -->
       {% for key, value in category_items.items %}
-        <div class="MenuItems" id="display_category_category_button_{{key.id}}" style="display:none">
-        <div class="row justify-content-center">
-          {% for v in value %}
-            <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ v.id }}" style="text-decoration:none; color:#000000">
-              <!-- Product Card -->
-                <div class="card shadow bg-white rounded text-center mt-2 m-1" style="width:10rem;">
-                  {% if v.photo_path %}
-                    <img src="{% static v.photo_path %}" class="card-img-top" alt="...">
-                  {% else %}
-                  <img src="https://cluster-media.s3-us-west-2.amazonaws.com/img-placeholder.png" class="card-img-top" alt="...">
-                  {% endif %}
-                  <div class="card-body">
-                    <h5 class="card-title">{{ v.name }}</h5>
-                    <div class="mt-3">
-                      <b>${{ v.price}}</b>
+        <div class="MenuItems" id="display_category_category_button_{{key.id}}" >
+          <div class="row ml-1 mt-5">
+            <div class="col cat_title_{{key.id}}">
+              <h3>{{key.name}}</h3>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            {% for v in value %}
+              <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ v.id }}" style="text-decoration:none; color:#000000">
+                <!-- Product Card -->
+                  <div class="card shadow bg-white rounded text-center mt-2 m-1" style="width:10rem;">
+                    {% if v.photo_path %}
+                      <img src="{% static v.photo_path %}" class="card-img-top" alt="...">
+                    {% else %}
+                    <img src="https://cluster-media.s3-us-west-2.amazonaws.com/img-placeholder.png" class="card-img-top" alt="...">
+                    {% endif %}
+                    <div class="card-body">
+                      <h5 class="card-title">{{ v.name }}</h5>
+                      <div class="mt-3">
+                        <b>${{ v.price}}</b>
+                      </div>
                     </div>
                   </div>
-                </div>
-              <!-- End Product Card -->
-            </a>
-          {% endfor %}
-        </div>
+                <!-- End Product Card -->
+              </a>
+            {% endfor %}
+          </div>
         </div>
       {% endfor %}
       <!-- Product Cards end -->
@@ -197,19 +205,30 @@ div.scrollmenu a:hover {
 <script>
 
   $(document).ready(function () {
-    var category_name = $(".cat_button").attr("name");
+    var category_name = $("").attr("name");
     $('#display_category_' + category_name).show()
 
-    if (sessionStorage.getItem('#myModal') !== 'true'){
+    if (sessionStorage.getItem('#myModal') !== 'true') {
       $('#myModal').modal('show');
       sessionStorage.setItem('#myModal', 'true');
     }
 
-    $(".cat_button").click(function(){
-       $('.MenuItems').hide();
-      var category_name = $(this).attr("name");
-      $('#display_category_' + category_name).show(400);
+    //Opens specific category
+    // $(".cat_button").click(function(){
+    //    $('.MenuItems').hide();
+    //   var category_name = $(this).attr("name");
+    //   $('#display_category_' + category_name).show(400);
+    //
+    // });
 
+    //scroll to div experiment
+    //know which button was clicked
+    $(".cat_button").click(function() {
+      var category_name = $(this).attr("name");
+      console.log('category name:' + category_name)
+      $('html, body').animate({
+          scrollTop: $('#display_category_' + category_name).offset().top
+      }, 1300);
     });
 
   });
