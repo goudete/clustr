@@ -34,5 +34,10 @@ urlpatterns = [
     path('ajax/ajax_add_item',views.ajax_add_item, name="ajax_add_item"),
     path('ajax/ajax_edit_item',views.ajax_edit_item, name="ajax_edit_item"),
     path('set_language/<str:language>', views.set_language),
-    path('toggle_menu_display_status/<int:menu_id>', views.toggle_menu_display_status)
+    path('toggle_menu_display_status/<int:menu_id>', views.toggle_menu_display_status),
+    path('ajax/ajax_remove_addon/<int:add_on_id>', views.ajax_remove_addon, name ="ajax_remove_addon"),
+    path('ajax/ajax_remove_addon_group/<int:addon_group_id>/<int:item_id>', views.ajax_remove_addon_group, name ="ajax_remove_addon_group"),
+    path('ajax/ajax_add_addon/<str:name>/<str:price>/<int:group_id>', views.ajax_add_addon, name ="ajax_add_addon"),
+    path('set_addon_groups/<int:item_id>', views.set_addon_groups, name = 'set_addon_group'),
+    path('ajax/ajax_create_addon_group/<str:group_name>/<int:item_id>', views.ajax_create_addon_group, name ="ajax_create_addon_group"),
 ]

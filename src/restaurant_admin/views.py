@@ -405,6 +405,8 @@ def edit_menu(request, menu_id):
         all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
         #generate pre-signed url to download the QR code
 
+        print(addon_dict)
+
         s3 = boto3.resource('s3') #setup to get from AWS
         aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
         bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
@@ -724,14 +726,15 @@ def my_items(request):
     curr_rest = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
     language_code = curr_rest.language
+    all_items = MenuItem.objects.filter(restaurant=curr_rest).all()
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     if url_parameter:
         for cat in categories:
-            category_items[cat]  = MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat).filter(name__icontains=url_parameter)
+            category_items[cat]  = item_addon_dict(MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat).filter(name__icontains=url_parameter))
     else:
         for cat in categories:
-            category_items[cat]  = MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat)
+            category_items[cat]  = item_addon_dict(MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat))
     form = MenuItemForm()
     # edit_form = EditMenuItemForm()
 
@@ -751,7 +754,8 @@ def my_items(request):
     selct_options = SelectOption.objects.filter(restaurant = curr_rest)
 
     return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items,
-                  'selct_options':selct_options, 'item_form': form, 'language_code':language_code})
+                  'selct_options':selct_options, 'item_form': form, 'language_code':language_code,
+                  'all_items':all_items})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
@@ -1025,3 +1029,39 @@ def toggle_menu_display_status(request, menu_id):
         menu.displaying = False
     menu.save()
     return redirect('/restaurant_admin/edit_menu/{menu}'.format(menu = menu_id))
+
+def ajax_remove_addon(request, add_on_id):
+    addon_item = AddOnItem.objects.get(id = add_on_id)
+    group = addon_item.group
+    addon_item.delete()
+    return JsonResponse({})
+
+def ajax_remove_addon_group(request, addon_group_id, item_id):
+    item = MenuItem.objects.get(id = item_id)
+    group = AddOnGroup.objects.get(id = addon_group_id)
+    group.menu_items.remove(item)
+    return JsonResponse({})
+
+def ajax_add_addon(request, name, price, group_id):
+    group = AddOnGroup.objects.get(id = group_id)
+    addon_item = AddOnItem.objects.create(name = name, price = price, group = group)
+    addon_item.save()
+    return JsonResponse({'name': name, 'price' : price, 'addon_item_id': addon_item.id})
+
+def set_addon_groups(request, item_id):
+    item = MenuItem.objects.get(id = item_id) #item we are copying addons to
+    from_item = MenuItem.objects.get(id = int(request.POST['set_addon_group'])) #item we are copying addons from
+    previous_addon_groups = AddOnGroup.objects.filter(menu_items=item)
+    for group in previous_addon_groups:
+        group.menu_items.remove(item)
+    new_addon_groups = AddOnGroup.objects.filter(menu_items=from_item)
+    for group in new_addon_groups:
+        group.menu_items.add(item)
+    return redirect('/restaurant_admin/my_items')
+
+def ajax_create_addon_group(request, group_name, item_id):
+    item = MenuItem.objects.get(id = item_id)
+    new_group = AddOnGroup.objects.create(name = group_name, restaurant = request.user.restaurant)
+    new_group.menu_items.add(item)
+    new_group.save()
+    return JsonResponse({})
