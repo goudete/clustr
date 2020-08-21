@@ -2,7 +2,7 @@ from django.template.loader import get_template
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.utils.translation import gettext as _
-from qr import settings
+from clustr import settings
 from django.http import HttpResponse, HttpResponseRedirect
 
 

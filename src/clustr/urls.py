@@ -1,4 +1,4 @@
-"""qr URL Configuration
+"""clustr URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -18,7 +18,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.i18n import i18n_patterns
-from qr import settings
+from clustr import settings
 from django.conf.urls.static import static
 
 urlpatterns = [

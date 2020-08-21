@@ -3,7 +3,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from qr import settings
+from clustr import settings
 from django.template.loader import get_template
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _

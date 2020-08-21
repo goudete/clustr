@@ -1,2 +1,2 @@
 
-web: gunicorn qr.wsgi --log-file -
+web: gunicorn clustr.wsgi --log-file -

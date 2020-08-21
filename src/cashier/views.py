@@ -11,7 +11,7 @@ from django.shortcuts import redirect
 from django.contrib.auth import update_session_auth_hash
 from itertools import chain
 from django.core.mail import send_mail, EmailMultiAlternatives
-from qr import settings
+from clustr import settings
 from kitchen.models import OrderTracker
 from django.utils.translation import gettext as _
 import datetime
