@@ -5,13 +5,21 @@
 {% block content %}
 {% load widget_tweaks %}
 
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
 <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> <!-- search icon -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<!-- JQuery CDN -->
+
+<!-- needs for bootstrap-select -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.js"></script>
+
+<!-- bootstrap -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<!-- bootstrap-select additional library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.17/css/bootstrap-select.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.17/js/bootstrap-select.min.js"></script>
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+
 
 <style>
 .switch {
@@ -117,10 +125,7 @@ input:checked + .slider:before {
   	color:#a2a2a2 !important;
   }
 </style>
-
     <div class="container" id="daddy_div">
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
         <div class = 'row mb-3'>
           <!-- Search Bar Begins -->
           <div class="col-6 text-right">
@@ -236,7 +241,7 @@ input:checked + .slider:before {
 
         {% else %}
           <div id="replaceable-content">
-              {% for category, items in category_items.items %}
+              {% for category, addon_dict in category_items.items %}
               <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
                   <div class="navbar-header">
                     <h4>{{category}}</h4>
@@ -256,7 +261,7 @@ input:checked + .slider:before {
       				        </tr>
       				    </thead>
       				    <tbody>
-              {% for item in items %}
+              {% for item, list in addon_dict.items %}
 
                   <tr colspan="5" data-toggle="collapse" data-target="#demo{{item.id}}" onclick="event.preventDefault();" >
                   <!-- <tr colspan="5"> -->
@@ -292,6 +297,7 @@ input:checked + .slider:before {
                                          </label>
                                         </div>
                                     </div>
+                                    <!-- marker -->
                               	    </div>
                               	    <div class="col-md-5">
                               	        <h4>{{item.name}}</h4>
@@ -324,7 +330,6 @@ input:checked + .slider:before {
                                   </div>
                                 </div>
                                 <br>
-                                <div>
                                   <div class="row justify-content-center">
                                     <form action = '/restaurant_admin/edit_item/{{item.id}}/my_items/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
                                       {% csrf_token %}
@@ -406,11 +411,49 @@ input:checked + .slider:before {
                                       </div>
                                       </form>
                                   </div>
-                                </div>
+                                  <br>
+                                  <div class="form-group row ml-1">
+                                     <h6 name="{{item.id}}" class="ml-1">OPTIONS:</h6> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+                                   </div>
+                                   <div class="form-group row ml-1">
+                                       {% if list|length == 0 %}
+                                       <h6>No Add ons on this item yet</h6>
+                                       {% endif %}
+                                       {% for inner_dict in list %}
+                                       <div class="col-sm">
+                                         {% for group, item_set in inner_dict.items %}
+                                         <div class="row justify-content-center">
+                                           <h6>{{group.name}}</h6><span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-times fa-2x addon_group_delete" name="{{group.id}}" style="color: red; margin-bottom: 10px;"></i></span>
+                                         </div>
+                                           <ul class="list-group" name = "{{group.id}}">
+                                           {% for addon_item in item_set %}
+                                             <li class="list-group-item">{{addon_item.name}} <span class="badge">+ ${{addon_item.price}}</span> <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span></li>
+                                             {% endfor %}
+                                             {% endfor %}
+                                             <li class="list-group-item add_addon" ><a><i class="fas fa-plus" style="color: green;"></i></a></li>
+                                           </ul>
+                                       </div>
+                                             {% endfor %}
+                                   </div>
+                                   <div class="form-group row ml-1">
+                                     <form class="form-inline"action= "/restaurant_admin/set_addon_groups/{{item.id}}" method="post">
+                                       {% csrf_token %}
+                                       <div class="form-group mb-2">
+                                         <label for="exampleFormControlSelect1"><h6>{% trans "Choose Same Addons As Another Item" %}</h6></label>
+                                       </div>
+                                       <div class="form-group mx-sm-3 mb-2">
+                                           <select name = "set_addon_group" class="form-control" id="exampleFormControlSelect1">
+                                             {% for menu_item in all_items %}
+                                                 <option value="{{menu_item.id}}">{{menu_item.name}}</option>
+                                             {% endfor %}
+                                           </select>
+                                       </div>
+                                       <button type="submit" class="btn btn-primary mb-2">{% trans "Set" %}</button>
+                                     </form>
+                                   </div>
               	            </div>
 	                        </div>
                       </div>
-
                     </td>
                   </tr>
               {% endfor %}
@@ -425,30 +468,144 @@ input:checked + .slider:before {
         <!-- hidden input to store language code -->
         <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
 
-  <script>
-    function asd(a)
-    {
-        if(document.getElementById("menu_form").style.display=="block") document.getElementById("menu_form").style.display = 'none';
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(document).on("click", ".add_addon", function(){
+          var ul = $(this).parent()[0];
+          console.log("ul");
+          console.log(ul);
+          var li = document.createElement("li");
+          li.classList.add("list-group-item");
 
-        else
-            document.getElementById("menu_form").style.display="block";
-    }
-    function showItemForm(a){
-      if(document.getElementById('item'+a).style.display == 'block') document.getElementById('item'+a).style.display = 'none';
-      else document.getElementById('item'+a).style.display = 'block';
-    }
-    function newItemForm(){
-      if(document.getElementById('new_item_form').style.display == 'block') document.getElementById('new_item_form').style.display = 'none';
-      else document.getElementById('new_item_form').style.display = 'block';
-    }
-  </script>
+          li.innerHTML = `<input class="form-control form-control-sm ml-1 w-75" type="text" placeholder="name" aria-label="name">
+                            <span style="margin-left: 10px;" class="float-right">
+                              <i class="fas fa-check save_addon" style="color: green;"></i>
+                            </span>
+                          <br>
+                          <input class="form-control form-control-sm ml-1 w-75" type="text" placeholder="price" aria-label="price">
+                          <span style="margin-left: 10px;" class="float-right">
+                            <i class="fas fa-times delete_edit" style="color: red;""></i>
+                          </span>`
+          ul.insertBefore(li, $(this)[0]);
+      });
+    $(document).on("click", ".delete_edit", function(){
+          $(this).parent().parent().remove()
+      });
+      $(document).on("click", ".delete_group_edit", function(){
+          console.log("here");
+          console.log();
+            $(this).parent().parent().parent()[0].innerHTML = `<h6 class="ml-1">OPTIONS:</h6> <span id="plus_sign" name="{{item.id}}" style="margin-left: 20px;" class="float-right">
+                                                            <i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i>
+                                                          </span>`;
+        });
+
+    $(document).on("click", ".save_addon", function(){
+        var li = $(this).parent().parent();
+        console.log(li);
+        var name = li.children("input")[0].value ;
+        var price = li.children("input")[1].value ;
+        var ul = li.parent();
+        var group_id = ul.attr('name');
+
+        $.ajax({
+          url: `/restaurant_admin/ajax/ajax_add_addon/${name}/${price}/${group_id}`,
+          data: {
+            'name': name,
+            'price': price,
+            'group_id': group_id,
+          },
+          dataType: 'json',
+          success: function (data) {
+            console.log("here");
+            var newli = document.createElement("li");
+            newli.classList.add("list-group-item");
+            li[0].innerHTML = `${data.name} <span class="badge">+ ${data.price}</span>
+            <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name=${data.addon_item_id} style="color: red;"></i></span>`;
+          }
+        });
+      });
+    $(document).on("click", ".addon_delete", function(){
+        var li = $(this).parent().parent();
+        var addon_id = $(this).attr('name');
+        console.log(addon_id);
+        $.ajax({
+          url: `/restaurant_admin/ajax/ajax_remove_addon/${addon_id}`,
+          data: {
+            'addon_id': addon_id,
+          },
+          dataType: 'json',
+          success: function (data) {
+            li.remove()
+            console.log("add on deleted ");
+          }
+        });
+      });
+      $(document).on("click", ".addon_group_delete", function(){
+          var col = $(this).parent().parent().parent();
+          var addon_group_id = $(this).attr('name');
+          var item_id = $(this).parent().attr('name');
+          $.ajax({
+            url: `/restaurant_admin/ajax/ajax_remove_addon_group/${addon_group_id}/${item_id}`,
+            data: {
+              'addon_group_id': addon_group_id,
+              'item_id': item_id
+            },
+            dataType: 'json',
+            success: function (data) {
+              col.remove()
+            }
+          });
+        });
+        $(document).on("click", ".add_addon_group", function(){
+            var row = $(this).parent().parent()
+            var addon_row = $(this).parent().parent().next();
+            var addon_group_id = $(this).attr('name');
+            var item_id = $(this).parent().attr('name');
+            var newHTML= ` <div class="col-4">
+                            <input class="form-control form-control-sm ml-1" type="text" placeholder="option name" aria-label="name">
+                            <br>
+                           </div>
+                           <div class="row">
+                             <span style="margin-left: 10px;" class="float-left">
+                               <i class="fas fa-check fa-2x save_addon_group" style="color: green;"></i>
+                             </span>
+                             <br>
+                             <br>
+                             <br>
+                             <span style="margin-left: 10px;" class="float-left">
+                               <i class="fas fa-times fa-2x delete_group_edit" style="color: red;""></i>
+                             </span>
+                           </ div>`;
+            row.append(newHTML);
+            $(this).remove();
+          });
+          $(document).on("click", ".save_addon_group", function(){
+              var group_name = $(this).parent().parent().prev().children('input').val();
+              var row = $(this).parent().parent().parent().next();
+              console.log(row);
+              var item_id = row.prev().children("h6")[0].getAttribute('name');
+              console.log(item_id);
+              $.ajax({
+                url: `/restaurant_admin/ajax/ajax_create_addon_group/${group_name}/${item_id}`,
+                data: {
+                  'group_name': group_name,
+                  'item_id': item_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                  location.reload();
+                }
+              });
+            });
+  });
+</script>
+
   <script>
     function menuForm(){
       if(document.getElementById('menu_form').style.display == 'block') document.getElementById('menu_form').style.display = 'none'
       else document.getElementById('menu_form').style.display = 'block'
     }
   </script>
-
 <script>
 $('#add_modal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
@@ -627,14 +784,6 @@ $('#add_modal').on('shown.bs.modal', function () {
  $(function () {
    $('[data-toggle="popover"]').popover()
  })
-</script>
-<!-- Instagram api experiment -->
-<script type="text/javascript">
-  //fetch endpoint
-  fetch('"https://graph.facebook.com/v8.0/instagram_oembed?url=https://www.instagram.com/p/CDtq6ndghNU/&access_token=721565788406216"')
-  .then(response => response.json())
-  .then(data => console.log(data));
-
 </script>
 
 <!-- Experiment ends -->
