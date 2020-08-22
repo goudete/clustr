@@ -445,9 +445,9 @@ def add_item(request, menu_id):
     #otherwise the user created a new item, and it must be added to the menu
     else:
         if "existing_item_select" in request.POST:
-            item_name = request.POST.get("existing_item", None)
-            item = MenuItem.objects.filter(restaurant=request.user.restaurant).get(name=item_name)
-            menu = Menu.objects.filter(id = menu_id).first()
+            item_id = request.POST.get("existing_item", None)
+            item = MenuItem.objects.get(id=item_id)
+            menu = Menu.objects.get(id = menu_id)
             item.menus.add(menu)
             item.save()
             #check if category exists but menu didnt contain it

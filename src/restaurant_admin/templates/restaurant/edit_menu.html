@@ -164,7 +164,7 @@ input:checked + .slider:before {
         <div class="form-group mx-sm-3 mb-2">
             <select name = "existing_item" class="form-control" id="exampleFormControlSelect1">
               {% for item in existing_items %}
-              <option>{{item.name}}</option>
+              <option value="{{item.id}}">{{item.name}}</option>
               {% endfor %}
             </select>
         </div>
