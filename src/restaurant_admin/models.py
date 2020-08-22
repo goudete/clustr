@@ -60,5 +60,5 @@ class AddOnGroup(models.Model):
 
 class AddOnItem(models.Model):
     name = models.CharField(_('Name'), default='', max_length=200)
-    price = models.DecimalField(_('Price'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
     group = models.ForeignKey(AddOnGroup, null=True, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default = 0)

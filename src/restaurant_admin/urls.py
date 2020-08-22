@@ -31,6 +31,7 @@ urlpatterns = [
     path('edit_addon_item/<int:menu_id>/<int:addon_item_id>', views.edit_addon_item),
     path('add_existing_group/<int:menu_id>/<int:item_id>/<int:addon_group_id>', views.add_existing_addon_group),
     path('sales', views.sales, name = 'sales'),
+    path('ajax/ajax_edit_addon/<int:addon_id>', views.ajax_edit_addon),
     path('ajax/ajax_add_item',views.ajax_add_item, name="ajax_add_item"),
     path('ajax/ajax_edit_item',views.ajax_edit_item, name="ajax_edit_item"),
     path('set_language/<str:language>', views.set_language),

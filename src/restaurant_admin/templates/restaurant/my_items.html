@@ -427,7 +427,18 @@ input:checked + .slider:before {
                                          </div>
                                            <ul class="list-group" name = "{{group.id}}">
                                            {% for addon_item in item_set %}
-                                             <li class="list-group-item">{{addon_item.name}} <span class="badge">+ ${{addon_item.price}}</span> <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span></li>
+                                             <li class="list-group-item">{{addon_item.name}} <span class="badge"> ({{addon_item.quantity}})</span> <span style = "margin-left: 10px;" name = "edit-addon-form{{addon_item.id}}"><i class="fas fa-pencil-alt addon_edit"></i></span><span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span></li>
+                                             <li class="list-group-item" id = "edit-addon-form{{addon_item.id}}" style = 'display:none;'>
+                                               <label for = 'name_item_{{addon_item.quantity}}'>{% trans 'Name' %}</label>
+                                               <input class="form-control form-control-sm ml-1 w-75" type="text" id = 'name_item_{{addon_item.id}}' value="{{addon_item.name}}">
+                                               <span style="margin-left: 10px;" class="float-right">
+                                                 <i class="fas fa-check save_edit" style="color: green;"></i>
+                                               </span>
+                                               <br>
+                                               <label for = 'qty_{{addon_item.quantity}}'>{% trans 'Quantity' %}</label>
+                                               <input class="form-control form-control-sm ml-1 w-75" type="number" id = 'qty_{{addon_item.id}}' value="{{addon_item.quantity}}" min = "0">
+                                               <input type = 'number' value = '{{addon_item.id}}' hidden = 'true' readonly>
+                                             </li>
                                              {% endfor %}
                                              {% endfor %}
                                              <li class="list-group-item add_addon" ><a><i class="fas fa-plus" style="color: green;"></i></a></li>
@@ -472,8 +483,6 @@ input:checked + .slider:before {
   $(document).ready(function(){
     $(document).on("click", ".add_addon", function(){
           var ul = $(this).parent()[0];
-          console.log("ul");
-          console.log(ul);
           var li = document.createElement("li");
           li.classList.add("list-group-item");
 
@@ -482,7 +491,7 @@ input:checked + .slider:before {
                               <i class="fas fa-check save_addon" style="color: green;"></i>
                             </span>
                           <br>
-                          <input class="form-control form-control-sm ml-1 w-75" type="text" placeholder="price" aria-label="price">
+                          <input class="form-control form-control-sm ml-1 w-75" type="text" placeholder="quantity" aria-label="quantity">
                           <span style="margin-left: 10px;" class="float-right">
                             <i class="fas fa-times delete_edit" style="color: red;""></i>
                           </span>`
@@ -499,31 +508,59 @@ input:checked + .slider:before {
                                                           </span>`;
         });
 
-    $(document).on("click", ".save_addon", function(){
-        var li = $(this).parent().parent();
-        console.log(li);
-        var name = li.children("input")[0].value ;
-        var price = li.children("input")[1].value ;
-        var ul = li.parent();
-        var group_id = ul.attr('name');
-
-        $.ajax({
-          url: `/restaurant_admin/ajax/ajax_add_addon/${name}/${price}/${group_id}`,
-          data: {
-            'name': name,
-            'price': price,
-            'group_id': group_id,
-          },
-          dataType: 'json',
-          success: function (data) {
-            console.log("here");
-            var newli = document.createElement("li");
-            newli.classList.add("list-group-item");
-            li[0].innerHTML = `${data.name} <span class="badge">+ ${data.price}</span>
-            <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name=${data.addon_item_id} style="color: red;"></i></span>`;
-          }
-        });
+      $(document).on("click", ".addon_edit", function(){
+        var name = $(this).parent().attr('name');
+        var li = $(`#${name}`);
+        li.show();
       });
+
+      $(document).on("click", ".save_edit", function(){
+          var li = $(this).parent().parent();
+          console.log(li);
+          var name = li.children("input")[0].value;
+          var qty = li.children("input")[1].value;
+          var id = li.children("input")[2].value;
+
+          $.ajax({
+            url: `/restaurant_admin/ajax/ajax_edit_addon/${id}`,
+            data: {
+              'name': name,
+              'qty': qty,
+            },
+            dataType: 'json',
+            success: function (data) {
+              var sib = li.prev()[0];
+              sib.innerHTML = `${data.name} <span class="badge"> (${data.qty})</span> <span style = "margin-left: 10px;" name = "edit-addon-form{{addon_item.id}}"><i class="fas fa-pencil-alt addon_edit"></i></span><span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span>`
+              li.hide();
+            }
+          });
+        });
+
+      $(document).on("click", ".save_addon", function(){
+          var li = $(this).parent().parent();
+          console.log(li);
+          var name = li.children("input")[0].value ;
+          var qty = li.children("input")[1].value ;
+          var ul = li.parent();
+          var group_id = ul.attr('name');
+
+          $.ajax({
+            url: `/restaurant_admin/ajax/ajax_add_addon/${name}/${qty}/${group_id}`,
+            data: {
+              'name': name,
+              'qty': qty,
+              'group_id': group_id,
+            },
+            dataType: 'json',
+            success: function (data) {
+              console.log("here");
+              var newli = document.createElement("li");
+              newli.classList.add("list-group-item");
+              li[0].innerHTML = `${data.name} <span class="badge"> (${data.price})</span>
+              <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name=${data.addon_item_id} style="color: red;"></i></span>`;
+            }
+          });
+        });
     $(document).on("click", ".addon_delete", function(){
         var li = $(this).parent().parent();
         var addon_id = $(this).attr('name');

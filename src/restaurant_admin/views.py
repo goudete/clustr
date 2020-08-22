@@ -967,9 +967,21 @@ def ajax_remove_addon_group(request, addon_group_id, item_id):
 
 def ajax_add_addon(request, name, price, group_id):
     group = AddOnGroup.objects.get(id = group_id)
-    addon_item = AddOnItem.objects.create(name = name, price = price, group = group)
+    qty = request.GET['qty']
+    addon_item = AddOnItem.objects.create(name = name, group = group, quantity = qty)
     addon_item.save()
     return JsonResponse({'name': name, 'price' : price, 'addon_item_id': addon_item.id})
+
+def ajax_edit_addon(request, addon_id):
+    addon = AddOnItem.objects.filter(id = addon_id).first()
+    print(addon)
+    print(request.GET)
+    if addon:
+        addon.name = request.GET['name']
+        addon.quantity = request.GET['qty']
+        addon.save()
+        return JsonResponse({'name': addon.name, 'qty': addon.quantity})
+    return JsonResponse({'name': addon.name, 'qty':addon.quantity})
 
 def set_addon_groups(request, item_id):
     item = MenuItem.objects.get(id = item_id) #item we are copying addons to
