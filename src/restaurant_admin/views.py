@@ -67,6 +67,7 @@ def register_view(request):
             user = form.save()
             restaurant = rest_form.save(commit=False)
             restaurant.user = user
+            restaurant.order_stream_email = user.email
             restaurant.save()
             #create qr code for restaurant
             qr_path = 'R{user}/photos/qr/'.format(user = str(restaurant.id))

@@ -29,7 +29,7 @@ class Restaurant(models.Model):
     closing_time = models.TimeField(null = True, auto_now = False, auto_now_add = False)
     order_stream_email = models.EmailField(null=True,max_length=254)
     #whether emailing order info to order_stream_email is active or not.
-    order_stream = models.BooleanField(default = False)
+    order_stream = models.BooleanField(default = True)
     qr_code_path = models.CharField(null = True, max_length = 255)
 
 class Menu(models.Model):
