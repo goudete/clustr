@@ -214,8 +214,8 @@ def answer_about(request):
             if request.POST['tagline'] != "":
                 curr_rest.info = request.POST['tagline']
             #check for about
-            if request.POST['about'] != "":
-                curr_rest.about = request.POST['about']
+            # if request.POST['about'] != "":
+            #     curr_rest.about = request.POST['about']
             #check for dine in vs togo only
             if is_dine_in(request.POST['dine-in']):
                 curr_rest.dine_in = True

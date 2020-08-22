@@ -86,7 +86,7 @@ input:checked + .slider:before {
       <form action="/restaurant_admin/toggle_menu_display_status/{{menu.id}}" method="post">
         {% csrf_token %}
         <div class="form-group row justify-content-center">
-          <label class="form-control-label col-1">{% trans "Display menu to customers" %}?</label>
+          <label class="form-control-label col-1">{% trans "Display catalogue to customers" %}?</label>
           <div class="col-1">
             <label class="switch">
               {% if menu.displaying %}
@@ -146,7 +146,7 @@ input:checked + .slider:before {
   <div class = "row justify-content-center">
     <div class="col-6 justify-content-center">
       <h4 style="text-align: center;">
-        {% trans 'Add New Item' %}
+        {% trans 'Add New Product' %}
         <a style = 'cursor: pointer;'>
           <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#add_item_modal">
             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
@@ -159,7 +159,7 @@ input:checked + .slider:before {
       <form class="form-inline"action= "/restaurant_admin/add_item/{{menu.id}}" method="post">
         {% csrf_token %}
         <div class="form-group mb-2">
-          <label for="exampleFormControlSelect1"><h4>{% trans "Add Existing Item" %}</h4></label>
+          <label for="exampleFormControlSelect1"><h4>{% trans "Add Existing Product" %}</h4></label>
         </div>
         <div class="form-group mx-sm-3 mb-2">
             <select name = "existing_item" class="form-control" id="exampleFormControlSelect1">
@@ -178,7 +178,7 @@ input:checked + .slider:before {
     <div class="modal-dialog modal-lg" role="document">
       <div class = 'modal-content'>
         <div class="modal-header">
-          <h5 class="modal-title">{% trans "Create New Item" %}<h5>
+          <h5 class="modal-title">{% trans "Create New Product" %}<h5>
         </div>
 
         <div class="modal-body">
@@ -208,7 +208,7 @@ input:checked + .slider:before {
             <div class="form-group">
               <label for = 'category_add'>{% trans 'Category*' %}</label>
               <input class="form-control" id = 'category_add' name = 'category' list = 'options' placeholder = "{{item.category}}" required>
-              <small class="form-text text-muted">{% trans 'Add a category to organize your menu.' %}</small>
+              <small class="form-text text-muted">{% trans 'Add a category to organize your catalogue.' %}</small>
               <datalist id = 'options'>
                 {% for option in selct_options %}
                   <option value = "{{option.name}}">
@@ -233,7 +233,7 @@ input:checked + .slider:before {
 
             <div class="row justify-content-center mt-3 mb-2">
               <div class = 'col'>
-                <label for = 'photo'>{% trans 'Item Photo' %}</label>
+                <label for = 'photo'>{% trans 'Product Photo' %}</label>
                 <div class="input-group" id = 'photo'>
                   <div class="custom-file">
                     <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile06" aria-describedby="inputGroupFileAddon06">
@@ -278,7 +278,7 @@ input:checked + .slider:before {
     <ul class="list-unstyled">
       {% if addon_dict|length == 0 %}
       <div class="row justify-content-center mt-5">
-        <h4>{% trans "No Items on Menu!" %}</h4>
+        <h4>{% trans "No Products on Catalogue!" %}</h4>
       </div>
       {% else %}
         {% for item, list in addon_dict.items %}
@@ -310,7 +310,7 @@ input:checked + .slider:before {
                         <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
 
                             <div class ='row justify-content-center'>
-                              <h3 class="card-title">{% trans "Edit Item" %}</h3>
+                              <h3 class="card-title">{% trans "Edit Product" %}</h3>
                             </div>
                             <!-- <div class = 'card-body'> -->
                               <div class="row justify-content-center">
@@ -410,7 +410,7 @@ input:checked + .slider:before {
                                           <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
                                       </div>
                                       <div class = 'col mt-4'>
-                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/{{menu.id}}/edit_menu/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/{{menu.id}}/edit_menu/{{item.id}}'>{% trans 'Remove This Product' %}</a>
                                       </div>
                                     </div>
                                   </div>
@@ -541,7 +541,7 @@ input:checked + .slider:before {
     </ul>
     <!-- Menu Items Ends -->
     <div class = 'row justify-content-center mt-2 mb-2'>
-      <a style = 'color:red;' href = '/restaurant_admin/remove_menu/{{menu.id}}'>{% trans 'Delete This Menu' %}</a>
+      <a style = 'color:red;' href = '/restaurant_admin/remove_menu/{{menu.id}}'>{% trans 'Delete This Catalogue' %}</a>
     </div>
 
   </div>

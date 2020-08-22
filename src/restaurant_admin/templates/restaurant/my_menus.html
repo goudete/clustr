@@ -68,7 +68,7 @@
             <div class="card-body">
               <div class = 'row'>
                 <div class = 'col'>
-                  <h4>{% trans 'Tell Us About Your Restaurant' %}</h4>
+                  <h4>{% trans 'Tell Us About Your Business' %}</h4>
                 </div>
               </div>
 
@@ -78,18 +78,18 @@
                     {% csrf_token %}
 
                     <div class="form-group">
-                      <b><label for="tagline">{% trans 'Your Menu Tagline' %}</label></b>
+                      <b><label for="tagline">{% trans 'Your Business Tagline' %}</label></b>
                       <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
-                      <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your Restaurant name to the customer" %}</small>
+                      <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your business name to your customers." %}</small>
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                       <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
                       <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
                       <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
-                    </div>
+                    </div> -->
 
-                    <div class = "form-group">
+                    <!-- <div class = "form-group">
                       <b><label for = "hours">{% trans 'Hours of Operation' %}</label></b>
                       <div class = 'row' id = 'hours'>
                         <div class = 'col'>
@@ -100,7 +100,7 @@
                           <input type = 'time' id = 'timepicker2' name = 'closing' {% if me.closing_time %} value = {{me.closing_time}} {% endif %}>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
 
                     <div class = 'row mt-3'>
                       <div class="col">
@@ -142,13 +142,13 @@
 
         <!-- Add Menu Icon -->
         <div class="row mb-3">
-          <div class="col-6 text-right">
-            <!-- View QR code button -->
-            <a class = 'btn btn-primary' href = "{{ url }}">{% trans 'View QR Code' %}</a>
-            <!-- end qr code button -->
+          <div class="col-9">
+
+            <!-- <a class = 'btn btn-primary' href = "{{ url }}">{% trans 'View QR Code' %}</a> -->
+
           </div>
 
-          <div class="col-4">
+          <div class="col-3">
             <button onclick = 'menuForm()' data-toggle="modal" data-target="#create_menu" type="button" class="btn btn-primary">{% trans "New Menu" %}</button>
           </div>
         </div>

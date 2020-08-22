@@ -140,7 +140,7 @@ input:checked + .slider:before {
 
           <!-- Add items button begins -->
           <div class="col-6 text-right">
-            <button data-toggle="modal" data-target="#add_modal" type="button" class="btn btn-primary">{% trans "Add Items" %}</button>
+            <button data-toggle="modal" data-target="#add_modal" type="button" class="btn btn-primary">{% trans "Add Products" %}</button>
           </div>
           <!-- Button Ends -->
 
@@ -151,7 +151,7 @@ input:checked + .slider:before {
           <div class="modal-dialog modal-lg" role="document">
             <div class = 'modal-content'>
               <div class="modal-header">
-                <h5 class="modal-title">{% trans "Create New Item" %}<h5>
+                <h5 class="modal-title">{% trans "Create New Product" %}<h5>
               </div>
               <div class="modal-body">
                 <!--hidden form to add new item -->
@@ -181,7 +181,7 @@ input:checked + .slider:before {
                   <div class="form-group">
                     <label for = 'new_item_category'>{% trans 'Category*' %}</label>
                     <input class="form-control" id = 'new_item_category' name = 'category' list = 'options' required>
-                    <small id="emailHelp" class="form-text text-muted">{% trans 'Add a category to organize your menu.' %}</small>
+                    <small id="emailHelp" class="form-text text-muted">{% trans 'Add a category to organize your catalogue.' %}</small>
                     <datalist id = 'options'>
                       {% for option in selct_options %}
                         <option value = "{{option.name}}">{{option.name}}</option>
@@ -236,7 +236,7 @@ input:checked + .slider:before {
       <!-- Add item modal ends -->
         {% if category_items|length == 0 %}
         <div class = 'row justify-content-center mt-5'>
-          <h3>{% trans 'No Menu Items Yet!' %}</h3>
+          <h3>{% trans 'No Products Yet!' %}</h3>
         </div>
 
         {% else %}
@@ -253,7 +253,7 @@ input:checked + .slider:before {
                 <table class="table table-hover table-bordered" style="border-collapse:collapse;">
       				    <thead>
       				        <tr>
-                            <th>{% trans 'Item Name' %}</th>
+                            <th>{% trans 'Product Name' %}</th>
                             <th>{% trans 'Price' %}</th>
                             <th>{% trans 'Category' %}</th>
                             <th>{% trans 'In Stock' %}?</th>
@@ -311,7 +311,7 @@ input:checked + .slider:before {
                                         <br>
                                         <br>
                                         <div class = 'col mt-2'>
-                                          <a style = 'color:red; font-size: 1.2em;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Item' %}</a>
+                                          <a style = 'color:red; font-size: 1.2em;' href = '/restaurant_admin/remove_item/1/my_items/{{item.id}}'>{% trans 'Remove This Product' %}</a>
                                         </div>
                               	    </div>
                               	</div>
@@ -439,7 +439,7 @@ input:checked + .slider:before {
                                      <form class="form-inline"action= "/restaurant_admin/set_addon_groups/{{item.id}}" method="post">
                                        {% csrf_token %}
                                        <div class="form-group mb-2">
-                                         <label for="exampleFormControlSelect1"><h6>{% trans "Choose Same Addons As Another Item" %}</h6></label>
+                                         <label for="exampleFormControlSelect1"><h6>{% trans "Choose Same Addons As Another Product" %}</h6></label>
                                        </div>
                                        <div class="form-group mx-sm-3 mb-2">
                                            <select name = "set_addon_group" class="form-control" id="exampleFormControlSelect1">
