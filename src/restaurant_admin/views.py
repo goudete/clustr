@@ -27,6 +27,7 @@ from django.utils import timezone
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template, render_to_string
 from .email_handlers import send_order_email
+from kitchen.models import OrderTracker
 
 #  your views here.
 
@@ -181,17 +182,6 @@ def is_dine_in(resp):
     return False
 
 
-#helper function to save the time
-def save_time(open, time, rest):
-    # time = clean_time(time)
-    if open:
-        rest.opening_time = time
-        rest.save()
-    else:
-        rest.closing_time = time
-        rest.save()
-
-
 def answer_about(request):
     #query restaurant
     curr_rest = Restaurant.objects.filter(user = request.user).first()
@@ -221,9 +211,6 @@ def answer_about(request):
                 curr_rest.dine_in = True
             else:
                 curr_rest.dine_in = False
-            #save
-            save_time(True, request.POST['opening'], curr_rest)
-            save_time(False, request.POST['closing'], curr_rest)
             curr_rest.info_input = True
             curr_rest.save()
             #redirect either way post vs get
@@ -658,70 +645,6 @@ def view_item(request, menu_id, item_id):
         return redirect('/restaurant_admin/view_item/{m_id}/{i_id}'.format(m_id = menu_id, i_id = item_id))
 
 
-"""this method is to create a new Cashier"""
-
-def register_cashier(request):
-    #if method is a post, then the user submitted a registration from
-    if request.method == 'POST':
-        # form = UserForm(request.POST)
-        cashier_form = CashierForm(request.POST)
-        cashier_form.restaurant_id = Restaurant.objects.get(user = request.user).id
-        if cashier_form.is_valid():
-        # if cashier_form.login_number(request.POST['login_number'], Restaurant.objects.filter(user = request.user).first().id):
-            cashier = cashier_form.save(commit=False)
-            cashier.restaurant = Restaurant.objects.filter(user = request.user).first()
-            cashier.save()
-            return redirect('/restaurant_admin/cashiers')
-        else:
-            context = {'form' : cashier_form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first()),
-                       'is_valid':False}
-            return render(request, 'restaurant/cashiers.html', context)
-    #if method is get, then user is filling out form
-    else:
-        form = CashierForm()
-        cashiers = CashierProfile.objects.filter(restaurant = Restaurant.objects.filter(user = request.user).first())
-        context = {'form' : form, 'me': Restaurant.objects.filter(user = request.user).first(), 'cashiers': cashiers,
-                   'is_valid':True}
-        return render(request, 'restaurant/cashiers.html', context)
-
-def register_kitchen(request):
-    #if method is a post, then the user submitted a registration from
-    if request.method == 'POST':
-        # form = UserForm(request.POST)
-        kitchen_form = KitchenForm(request.POST)
-        kitchen_form.restaurant_id = Restaurant.objects.get(user = request.user).id
-        if kitchen_form.is_valid():
-        # if cashier_form.login_number(request.POST['login_number'], Restaurant.objects.filter(user = request.user).first().id):
-            kitchen = kitchen_form.save(commit=False)
-            kitchen.restaurant = Restaurant.objects.filter(user = request.user).first()
-            kitchen.save()
-            return redirect('/restaurant_admin/kitchen')
-        else:
-            context = {'form' : kitchen_form, 'restaurant': Restaurant.objects.filter(user = request.user).first()}
-            return render(request, 'restaurant/kitchen.html', context)
-    #if method is get, then user is filling out form
-    else:
-        form = KitchenForm()
-        context = {'form' : form, 'restaurant': Restaurant.objects.filter(user = request.user).first()}
-        return render(request, 'restaurant/kitchen.html', context)
-
-
-"""for seeing/changing kitchen login"""
-def kitchen_no(request):
-    #if method is a post, then the user submitted a registration from
-    if request.method == 'POST':
-        curr_rest = Restaurant.objects.filter(user = request.user).first()
-        if Restaurant.objects.filter(kitchen_login_no = request.POST['login_no']).exists():
-            messages.info(request, _('Login Not Available'))
-        else:
-            curr_rest.kitchen_login_no = request.POST['login_no']
-            curr_rest.save()
-        return redirect('/restaurant_admin/kitchen')
-    #if method is get, then user is filling out form
-    else:
-        curr_rest = Restaurant.objects.filter(user = request.user).first()
-        return render(request, 'restaurant/kitchen.html', {'restaurant':curr_rest})
-
 def my_items(request):
     curr_rest = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
@@ -1044,9 +967,21 @@ def ajax_remove_addon_group(request, addon_group_id, item_id):
 
 def ajax_add_addon(request, name, price, group_id):
     group = AddOnGroup.objects.get(id = group_id)
-    addon_item = AddOnItem.objects.create(name = name, price = price, group = group)
+    qty = request.GET['qty']
+    addon_item = AddOnItem.objects.create(name = name, group = group, quantity = qty)
     addon_item.save()
     return JsonResponse({'name': name, 'price' : price, 'addon_item_id': addon_item.id})
+
+def ajax_edit_addon(request, addon_id):
+    addon = AddOnItem.objects.filter(id = addon_id).first()
+    print(addon)
+    print(request.GET)
+    if addon:
+        addon.name = request.GET['name']
+        addon.quantity = request.GET['qty']
+        addon.save()
+        return JsonResponse({'name': addon.name, 'qty': addon.quantity})
+    return JsonResponse({'name': addon.name, 'qty':addon.quantity})
 
 def set_addon_groups(request, item_id):
     item = MenuItem.objects.get(id = item_id) #item we are copying addons to
@@ -1065,3 +1000,57 @@ def ajax_create_addon_group(request, group_name, item_id):
     new_group.menu_items.add(item)
     new_group.save()
     return JsonResponse({})
+
+
+def cart_query(restaurant_id):
+    carts = Cart.objects.filter(restaurant = Restaurant.objects.filter(id = restaurant_id).first()).filter(is_paid = True)
+    list = []
+    for item in MenuItemCounter.objects.all():
+        if item.cart in carts:
+            list.append(item)
+    return list
+
+
+def orders_dict(restaurant_id):
+    restaurant = Restaurant.objects.filter(id = restaurant_id).first()
+    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
+    items = cart_query(restaurant_id)
+    tracker_item_dict = {}
+    for i in range(len(trackers)):
+        item_list = []
+        for item in items:
+            if item.cart == trackers[i].cart:
+                item_list.append(item)
+        if len(item_list) > 0:
+            tracker_item_dict[trackers[i]] = item_list
+    return tracker_item_dict
+
+def my_orders(request):
+    if request.method == 'GET':
+        rest = Restaurant.objects.filter(user = request.user).first()
+        if not rest:
+            return redirect('/restaurant_admin')
+        order_trackers = get_active_orders(rest.id)
+        orders = orders_dict(rest.id)
+        return render(request,'restaurant/my_orders.html',{'orders': orders, 'rest_id': rest.id})
+    return redirect('/restaurant_admin')
+
+""" helper function to find number of active orders """
+def get_active_orders(rest_id):
+    #should only get size from payed orders
+    restaurant = Restaurant.objects.filter(id = rest_id).first()
+    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
+    paid_orders = []
+    for tracker in trackers:
+        if tracker.cart.is_paid:
+            paid_orders.append(tracker.id)
+    return paid_orders
+
+def mark_order_done(request):
+    if request.method == 'POST':
+        id_no = request.POST['tracker_id']
+        tracker = OrderTracker.objects.filter(id = id_no).first()
+        if tracker:
+            tracker.is_complete = True
+            tracker.save()
+    return redirect('/restaurant_admin/my_orders')

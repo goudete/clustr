@@ -1,0 +1,205 @@
+{% extends 'restaurant/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+{% load widget_tweaks %}
+
+
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> <!-- search icon -->
+
+<!-- needs for bootstrap-select -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.js"></script>
+
+<!-- bootstrap -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<!-- bootstrap-select additional library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.17/css/bootstrap-select.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.17/js/bootstrap-select.min.js"></script>
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+
+
+<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>
+<!-- ajax search css -->
+<style>
+  @keyframes blinker {
+      from {opacity: 1.0;}
+      to {opacity: 0.0;}
+    }
+
+  .blink {
+      text-decoration: blink;
+      animation-name: blinker;
+      animation-duration: 0.6s;
+      animation-iteration-count:infinite;
+      animation-timing-function:ease-in-out;
+      animation-direction: alternate;
+    }
+
+    .add_items_style{
+      font-size: 200%;
+    }
+</style>
+<style>
+  .table tr {
+      cursor: pointer;
+  }
+  .table{
+  	background-color: #fff !important;
+  }
+  .hedding h1{
+  	color:#fff;
+  	font-size:25px;
+  }
+  .main-section{
+  	margin-top: 120px;
+  }
+  .hiddenRow {
+      padding: 0 4px !important;
+      background-color: #eeeeee;
+      font-size: 13px;
+  }
+  .accordian-body span{
+  	color:#a2a2a2 !important;
+  }
+</style>
+    <div class="container" id="daddy_div">
+
+        {% if orders|length == 0 %}
+        <div class = 'row justify-content-center mt-5'>
+          <h3>{% trans 'No Orders!' %}</h3>
+        </div>
+
+        {% else %}
+          <div id="replaceable-content">
+                <table class="table table-hover table-bordered" style="border-collapse:collapse;">
+      				    <thead>
+      				        <tr>
+                            <th>{% trans 'Name' %}</th>
+                            <th>{% trans 'Total' %}</th>
+                            <th>{% trans 'Email' %}</th>
+                            <!-- <th>Actions</th> -->
+      				        </tr>
+      				    </thead>
+      				    <tbody>
+              {% for order, list in orders.items %}
+
+                  <tr colspan="5" data-toggle="collapse" data-target="#demo{{order.id}}" onclick="event.preventDefault();" >
+                  <!-- <tr colspan="5"> -->
+                      <input type = 'number' class = 'tracker_id_number' value = '{{order.id}}' hidden = 'true' readonly>
+                      <td data-toggle="collapse">Blank For Now</td>
+                      <td data-toggle="collapse">{{order.cart.total}}</td>
+                      <td data-toggle="collapse">{% if order.cart.email %}{{order.cart.email}}{% else %}{% trans 'no email' %}{% endif %}</td>
+                  </tr>
+                  <tr class="p">
+                      <td colspan="5" class="hiddenRow">
+                        <div class="accordian-body collapse p-3" id="demo{{order.id}}">
+                          <div class="card shadow">
+              	            <div class="card-body">
+                              {% for item in list %}
+                              <div class="row justify-content-center">
+                                <p>-<b>{{item.quantity}}</b> {{item.item.name}}</p>
+                              </div>
+                                {% if item.custom_instructions %}
+                                <div class = 'row justify-content-center'>
+                                  <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
+                                </div>
+                                {% endif %}
+
+                                {% if item.addon_items %}
+                                  {% for i in item.addon_items.all %}
+                                  <div class = 'row justify-content-center'>
+                                    <div class="col ml-1">
+                                    <h7 style = 'color:red;'> -- {{i.name}}</h7>
+                                    </div>
+                                  </div>
+                                  {% endfor %}
+                                {% endif %}
+                              {% endfor %}
+              	            </div>
+                            <div class = 'card-footer'>
+                              <div class = 'row justify-content-center'>
+                                <form action = 'mark_order_done' method = 'post'>
+                                  {% csrf_token %}
+                                  <input type = 'number' value = '{{order.id}}' name = 'tracker_id' hidden = 'true' readonly>
+                                  <button type = 'submit' class = 'btn btn-success'>{% trans 'Order Complete' %}</button>
+                                </form>
+                              </div>
+                            </div>
+	                        </div>
+                      </div>
+                    </td>
+                  </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+        </div>
+                </div>
+        </div>
+        {% endif %}
+        </div>
+        <!-- hidden input to store language code -->
+        <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
+{% endblock %}

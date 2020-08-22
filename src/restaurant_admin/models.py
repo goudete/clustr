@@ -24,9 +24,6 @@ class Restaurant(models.Model):
     dine_in = models.BooleanField(default = False)
     #language
     language = models.CharField(default = 'en-us', max_length = 10)
-    #open and closing time
-    opening_time = models.TimeField(null = True, auto_now = False, auto_now_add = False)
-    closing_time = models.TimeField(null = True, auto_now = False, auto_now_add = False)
     order_stream_email = models.EmailField(null=True,max_length=254)
     #whether emailing order info to order_stream_email is active or not.
     order_stream = models.BooleanField(default = False)
@@ -63,5 +60,5 @@ class AddOnGroup(models.Model):
 
 class AddOnItem(models.Model):
     name = models.CharField(_('Name'), default='', max_length=200)
-    price = models.DecimalField(_('Price'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
     group = models.ForeignKey(AddOnGroup, null=True, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default = 0)

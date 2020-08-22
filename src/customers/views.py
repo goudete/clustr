@@ -65,16 +65,6 @@ def cart_to_item(request, restaurant_id, menu_id, item_id):
     else:
         return redirect('/customers/{r_id}'.format(r_id = restaurant_id))
 
-def check_time(rest):
-    if (not rest.opening_time) or (not rest.closing_time):
-        return True
-    curr_time = datetime.datetime.now().time()
-    if curr_time < rest.opening_time:
-        return False
-    elif curr_time > rest.closing_time:
-        return False
-    return True
-
 #helper function that checks if any category is empty
 def empty_categories(curr_rest, curr_menu):
     #gets categories that are empty (in the case all items were disabled)
@@ -93,9 +83,6 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         curr_cart = Cart.objects.get(id = cart_id)
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-        if not check_time(curr_rest):
-            return render(request, 'customers/closed.html', {'restaurant': curr_rest})
-
         #get empty categories, if any exist
         empty_cats = empty_categories(curr_rest, curr_menu)
         if empty_cats:
