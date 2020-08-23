@@ -4,6 +4,8 @@
 {% include 'customers/base.html' %}
 {% block content %}
 {% load crispy_forms_tags %}
+
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> <!-- search icon -->
 <!-- slider styling -->
 <style>
 .switch {
@@ -290,8 +292,6 @@ input:checked + .slider:before {
               {{ item.description }}<br>
               {% endif %}
               ${{ item.price}} <br>
-              <br>
-              <b>{% trans 'Specific URL:' %}</b> http://localhost:8000/customers/c_view_item/{{item.restaurant.id}}/{{menu.id}}/{{item.id}}<br>
               <!--jst to add spacing-->
               <a style = 'cursor: pointer;'>
                 <svg class="bi bi-pencil" width="1.25em" height="1.25em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="modal" data-target="#edit_modal{{item.id}}">
@@ -299,6 +299,9 @@ input:checked + .slider:before {
                   <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
                 </svg>
               </a>
+              <br>
+              <b>{% trans 'Specific URL:' %}</b> http://localhost:8000/customers/c_view_item/{{item.restaurant.id}}/{{menu.id}}/{{item.id}}<br>
+              <br>
               <br>
               <!-- modal that pops up when item is to be edited-->
               <div class="modal fade bd-example-modal-lg" id="edit_modal{{item.id}}" tabindex="-1" role="dialog">
@@ -419,6 +422,59 @@ input:checked + .slider:before {
                             <!-- </div> -->
                         <!-- </div> -->
                     <!-- </div> -->
+                    <!-- addon item stuff -->
+                    <div class="form-group row ml-1">
+                       <h6 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h6> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+                     </div>
+                     <div class="form-group row ml-1">
+                         {% if list|length == 0 %}
+                         <h6>{% trans 'No Add ons on this item yet' %}</h6>
+                         {% endif %}
+                         {% for inner_dict in list %}
+                         <div class="col-sm">
+                           {% for group, item_set in inner_dict.items %}
+                           <div class="row justify-content-center">
+                             <h6>{{group.name}}</h6><span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-times fa-2x addon_group_delete" name="{{group.id}}" style="color: red; margin-bottom: 10px;"></i></span>
+                           </div>
+                             <ul class="list-group" name = "{{group.id}}">
+                             {% for addon_item in item_set %}
+                               <li class="list-group-item">{{addon_item.name}} <span class="badge"> ({{addon_item.quantity}})</span> <span style = "margin-left: 10px;" name = "edit-addon-form{{addon_item.id}}"><i class="fas fa-pencil-alt addon_edit"></i></span><span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span></li>
+                               <li class="list-group-item" id = "edit-addon-form{{addon_item.id}}" style = 'display:none;'>
+                                 <label for = 'name_item_{{addon_item.quantity}}'>{% trans 'Name' %}</label>
+                                 <input class="form-control form-control-sm ml-1 w-75" type="text" id = 'name_item_{{addon_item.id}}' value="{{addon_item.name}}">
+                                 <span style="margin-left: 10px;" class="float-right">
+                                   <i class="fas fa-check save_edit" style="color: green;"></i>
+                                 </span>
+                                 <br>
+                                 <label for = 'qty_{{addon_item.quantity}}'>{% trans 'Quantity' %}</label>
+                                 <input class="form-control form-control-sm ml-1 w-75" type="number" id = 'qty_{{addon_item.id}}' value="{{addon_item.quantity}}" min = "0">
+                                 <input type = 'number' value = '{{addon_item.id}}' hidden = 'true' readonly>
+                               </li>
+                               {% endfor %}
+                               {% endfor %}
+                               <li class="list-group-item add_addon" ><a><i class="fas fa-plus" style="color: green;"></i></a></li>
+                             </ul>
+                         </div>
+                               {% endfor %}
+                     </div>
+                     <div class="form-group row ml-1">
+                       <form class="form-inline"action= "/restaurant_admin/set_addon_groups_menu/{{item.id}}" method="post">
+                         {% csrf_token %}
+                         <div class="form-group mb-2">
+                           <label for="exampleFormControlSelect1"><h6>{% trans "Choose the same options from another product." %}</h6></label>
+                         </div>
+                         <div class="form-group mx-sm-3 mb-2">
+                             <select name = "set_addon_group" class="form-control" id="exampleFormControlSelect1">
+                               {% for menu_item in all_items %}
+                                   <option value="{{menu_item.id}}">{{menu_item.name}}</option>
+                               {% endfor %}
+                             </select>
+                         </div>
+                         <input type = 'number' value = '{{menu.id}}' name = 'menu_id' hidden = 'true' readonly>
+                         <button type="submit" class="btn btn-primary mb-2">{% trans "Set" %}</button>
+                       </form>
+                     </div>
+                     <!-- end addon item stuff -->
                 </div>
               </div>
             </div>
@@ -429,110 +485,6 @@ input:checked + .slider:before {
             {% endif %}
           </div>
 
-          <!-- start of addon stuff -->
-          <br>
-          <b>{% trans 'Add Ons' %}</b><br>
-          <div class = 'row'>
-          {% for inner_dict in list %}
-            <div class = 'mt-2 ml-3' id = 'addon_groups_{{item.id}}'>
-              {% for group, item_set in inner_dict.items %}
-                  <button class = 'btn btn-primary' onclick = 'showItems({{item.id}},{{group.id}})'>{{group.name}}</button>
-                  <br>
-                  <br>
-                  <div id = 'addon_items_{{item.id}}_{{group.id}}' style = 'display:none;'>
-
-                    {% trans 'new addon item' %}
-                    <a style = 'cursor:pointer;' onclick = 'newAddonItem({{item.id}},{{group.id}})'>
-                      <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
-                      </svg>
-                    </a>
-                    <div class = 'card' id = 'new_item_form_{{item.id}}_{{group.id}}' style = 'width:15rem; display:none;'>
-                      <div class = 'card-header'>
-                        {% trans 'new item' %}
-                      </div>
-                      <div class = 'card-body'>
-                        <form class = 'md-form' action = '/restaurant_admin/create_addon_item/{{menu.id}}/{{group.id}}' method = 'post'>
-                          {% csrf_token %}
-                          <label for = 'addon_group_name'>{% trans 'Item Name' %}</label>
-                          <input type = 'text' name = 'addon_item_name' id = 'addon_item_name' required>
-                          <label for = 'addon_item_price'>{% trans 'Item Price' %}</label>
-                          <input type = 'number' step = '0.01' name = 'addon_item_price' id = 'addon_item_price' required>
-                          <button type = 'submit' class = 'btn btn-link'>{% trans 'create' %}</button>
-                        </form>
-                      </div>
-                    </div>
-
-                    <br>
-                    <br>
-                  {% for addon_item in item_set %}
-                    <div class = 'mt-2'>
-                      <b>{{addon_item.name}}</b> (${{addon_item.price}})
-                      <a style = 'cursor:pointer;' onclick = 'editAddonItem({{item.id}},{{addon_item.id}})'>
-                        <svg class="bi bi-pencil" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
-                          <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
-                        </svg>
-                      </a>
-                      <div class = 'card' id = 'edit_item_form_{{item.id}}_{{addon_item.id}}' style = 'width:15rem; display:none;'>
-                        <div class = 'card-header'>
-                          {% trans 'edit item' %}
-                        </div>
-                        <div class = 'card-body'>
-                          <form class = 'md-form' action = '/restaurant_admin/edit_addon_item/{{menu.id}}/{{addon_item.id}}' method = 'post'>
-                            {% csrf_token %}
-                            <label for = 'addon_item_name'>{% trans 'Item Name' %}</label>
-                            <input type = 'text' name = 'addon_item_name' id = 'addon_item_name' value = "{{addon_item.name}}"required>
-                            <label for = 'addon_item_price'>{% trans 'Item Price' %}</label>
-                            <input type = 'number' step = '0.01' name = 'addon_item_price' id = 'addon_item_price' value = {{addon_item.price}} required>
-                            <button type = 'submit' class = 'btn btn-link'>{% trans 'update' %}</button>
-                          </form>
-                        </div>
-                      </div>
-                      <br>
-                      <br>
-                    </div>
-                  {% endfor %}
-                  </div>
-              {% endfor %}
-              </div>
-          {% endfor %}
-          </div>
-          {% trans 'new group' %}
-          <a style = 'cursor:pointer;' onclick = 'newGroup({{item.id}})'>
-            <svg class="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4a.5.5 0 0 0-1 0v3.5H4a.5.5 0 0 0 0 1h3.5V12a.5.5 0 0 0 1 0V8.5H12a.5.5 0 0 0 0-1H8.5V4z"/>
-            </svg>
-          </a>
-          <div class = 'card' id = 'new_group_form_{{item.id}}' style = 'width:15rem; display:none;'>
-            <div class = 'card-header'>
-              {% trans 'new group' %}
-            </div>
-            <div class = 'card-body'>
-              <form class = 'md-form' action = '/restaurant_admin/create_addon_group/{{menu.id}}/{{item.id}}' method = 'post'>
-                {% csrf_token %}
-                <label for = 'addon_group_name'>{% trans 'Group Name' %}</label>
-                <input type = 'text' name = 'addon_group_name' id = 'addon_group_name' required>
-                <button type = 'submit' class = 'btn btn-link'>{% trans 'create' %}</button>
-              </form>
-            </div>
-            <div class = 'card-footer'>
-              {% trans 'add existing group' %}
-              <div class = 'row'>
-                {% for grp in all_addon_groups %}
-                <div class = 'ml-1 mt-2'>
-                  <form class = 'md-form' action = '/restaurant_admin/add_existing_group/{{menu.id}}/{{item.id}}/{{grp.id}}' method = 'post'>
-                    {% csrf_token %}
-                    <button type = 'submit' class = 'btn btn-primary'>{{grp.name}}</button>
-                  </form>
-                </div>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-          <!-- end addon stuff -->
-
-          <hr>
         </div>
 
         <!-- <hr> -->
@@ -712,5 +664,162 @@ $('#add_item').on('shown.bs.modal', function () {
         },
     });
  })
+</script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(document).on("click", ".add_addon", function(){
+          var ul = $(this).parent()[0];
+          var li = document.createElement("li");
+          li.classList.add("list-group-item");
+
+          li.innerHTML = `<input class="form-control form-control-sm ml-1 w-75" type="text" placeholder="name" aria-label="name">
+                            <span style="margin-left: 10px;" class="float-right">
+                              <i class="fas fa-check save_addon" style="color: green;"></i>
+                            </span>
+                          <br>
+                          <input class="form-control form-control-sm ml-1 w-75" type="text" placeholder="quantity" aria-label="quantity">
+                          <span style="margin-left: 10px;" class="float-right">
+                            <i class="fas fa-times delete_edit" style="color: red;""></i>
+                          </span>`
+          ul.insertBefore(li, $(this)[0]);
+      });
+    $(document).on("click", ".delete_edit", function(){
+          $(this).parent().parent().remove()
+      });
+      $(document).on("click", ".delete_group_edit", function(){
+          console.log("here");
+          console.log();
+            $(this).parent().parent().parent()[0].innerHTML = `<h6 class="ml-1">OPTIONS:</h6> <span id="plus_sign" name="{{item.id}}" style="margin-left: 20px;" class="float-right">
+                                                            <i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i>
+                                                          </span>`;
+        });
+
+      $(document).on("click", ".addon_edit", function(){
+        var name = $(this).parent().attr('name');
+        var li = $(`#${name}`);
+        li.show();
+      });
+
+      $(document).on("click", ".save_edit", function(){
+          var li = $(this).parent().parent();
+          console.log(li);
+          var name = li.children("input")[0].value;
+          var qty = li.children("input")[1].value;
+          var id = li.children("input")[2].value;
+
+          $.ajax({
+            url: `/restaurant_admin/ajax/ajax_edit_addon/${id}`,
+            data: {
+              'name': name,
+              'qty': qty,
+            },
+            dataType: 'json',
+            success: function (data) {
+              var sib = li.prev()[0];
+              sib.innerHTML = `${data.name} <span class="badge"> (${data.qty})</span> <span style = "margin-left: 10px;" name = "edit-addon-form{{addon_item.id}}"><i class="fas fa-pencil-alt addon_edit"></i></span><span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span>`
+              li.hide();
+            }
+          });
+        });
+
+      $(document).on("click", ".save_addon", function(){
+          var li = $(this).parent().parent();
+          console.log(li);
+          var name = li.children("input")[0].value ;
+          var qty = li.children("input")[1].value ;
+          var ul = li.parent();
+          var group_id = ul.attr('name');
+
+          $.ajax({
+            url: `/restaurant_admin/ajax/ajax_add_addon/${name}/${qty}/${group_id}`,
+            data: {
+              'name': name,
+              'qty': qty,
+              'group_id': group_id,
+            },
+            dataType: 'json',
+            success: function (data) {
+              console.log("here");
+              var newli = document.createElement("li");
+              newli.classList.add("list-group-item");
+              li[0].innerHTML = `${data.name} <span class="badge"> (${data.price})</span>
+              <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name=${data.addon_item_id} style="color: red;"></i></span>`;
+            }
+          });
+        });
+    $(document).on("click", ".addon_delete", function(){
+        var li = $(this).parent().parent();
+        var addon_id = $(this).attr('name');
+        console.log(addon_id);
+        $.ajax({
+          url: `/restaurant_admin/ajax/ajax_remove_addon/${addon_id}`,
+          data: {
+            'addon_id': addon_id,
+          },
+          dataType: 'json',
+          success: function (data) {
+            li.remove()
+            console.log("add on deleted ");
+          }
+        });
+      });
+      $(document).on("click", ".addon_group_delete", function(){
+          var col = $(this).parent().parent().parent();
+          var addon_group_id = $(this).attr('name');
+          var item_id = $(this).parent().attr('name');
+          $.ajax({
+            url: `/restaurant_admin/ajax/ajax_remove_addon_group/${addon_group_id}/${item_id}`,
+            data: {
+              'addon_group_id': addon_group_id,
+              'item_id': item_id
+            },
+            dataType: 'json',
+            success: function (data) {
+              col.remove()
+            }
+          });
+        });
+        $(document).on("click", ".add_addon_group", function(){
+            var row = $(this).parent().parent()
+            var addon_row = $(this).parent().parent().next();
+            var addon_group_id = $(this).attr('name');
+            var item_id = $(this).parent().attr('name');
+            var newHTML= ` <div class="col-4">
+                            <input class="form-control form-control-sm ml-1" type="text" placeholder="{% trans 'option name' %}" aria-label="name">
+                            <br>
+                           </div>
+                           <div class="row">
+                             <span style="margin-left: 10px;" class="float-left">
+                               <i class="fas fa-check fa-2x save_addon_group" style="color: green;"></i>
+                             </span>
+                             <br>
+                             <br>
+                             <br>
+                             <span style="margin-left: 10px;" class="float-left">
+                               <i class="fas fa-times fa-2x delete_group_edit" style="color: red;""></i>
+                             </span>
+                           </ div>`;
+            row.append(newHTML);
+            $(this).remove();
+          });
+          $(document).on("click", ".save_addon_group", function(){
+              var group_name = $(this).parent().parent().prev().children('input').val();
+              var row = $(this).parent().parent().parent().next();
+              console.log(row);
+              var item_id = row.prev().children("h6")[0].getAttribute('name');
+              console.log(item_id);
+              $.ajax({
+                url: `/restaurant_admin/ajax/ajax_create_addon_group/${group_name}/${item_id}`,
+                data: {
+                  'group_name': group_name,
+                  'item_id': item_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                  location.reload();
+                }
+              });
+            });
+  });
 </script>
 {% endblock %}

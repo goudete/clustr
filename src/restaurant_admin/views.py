@@ -405,7 +405,7 @@ def edit_menu(request, menu_id):
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'language_code':language_code})
+                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'language_code':language_code, 'all_items': items})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -984,6 +984,8 @@ def ajax_edit_addon(request, addon_id):
     return JsonResponse({'name': addon.name, 'qty':addon.quantity})
 
 def set_addon_groups(request, item_id):
+    if request.method == 'GET':
+        return redirect('/restaurant_admin')
     item = MenuItem.objects.get(id = item_id) #item we are copying addons to
     from_item = MenuItem.objects.get(id = int(request.POST['set_addon_group'])) #item we are copying addons from
     previous_addon_groups = AddOnGroup.objects.filter(menu_items=item)
@@ -993,6 +995,19 @@ def set_addon_groups(request, item_id):
     for group in new_addon_groups:
         group.menu_items.add(item)
     return redirect('/restaurant_admin/my_items')
+
+def set_addon_groups_menu(request, item_id):
+    if request.method == 'GET':
+        return redirect('/restaurant_admin')
+    item = MenuItem.objects.get(id = item_id) #item we are copying addons to
+    from_item = MenuItem.objects.get(id = int(request.POST['set_addon_group'])) #item we are copying addons from
+    previous_addon_groups = AddOnGroup.objects.filter(menu_items=item)
+    for group in previous_addon_groups:
+        group.menu_items.remove(item)
+    new_addon_groups = AddOnGroup.objects.filter(menu_items=from_item)
+    for group in new_addon_groups:
+        group.menu_items.add(item)
+    return redirect('/restaurant_admin/edit_menu/{id}'.format(id = request.POST['menu_id']))
 
 def ajax_create_addon_group(request, group_name, item_id):
     item = MenuItem.objects.get(id = item_id)
