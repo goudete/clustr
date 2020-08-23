@@ -84,7 +84,7 @@ input:checked + .slider:before {
             {% if me.handle_payment %}
               <p class="card-text">{% trans 'You are currently accepting payments.' %}</p>
             {% else %}
-              <p class="card-text">{% trans 'Payments are disabled on your menu.' %}</p>
+              <p class="card-text">{% trans 'Payments are disabled on your catalogues.' %}</p>
             {% endif %}
 
             <div class = 'row justify-content-center mt-5'>
@@ -107,7 +107,7 @@ input:checked + .slider:before {
                 </form>
 
                 <hr>
-                <p class="card-text">{% trans "If you disable payments, your customers will only be able to see your menu." %}</p>
+                <p class="card-text">{% trans "If you disable payments, your customers will only be able to see your catalogue." %}</p>
               </div>
             </div>
           </div>
@@ -162,7 +162,7 @@ input:checked + .slider:before {
       <div class="card-body">
         <div class = 'row'>
           <div class = 'col'>
-            <h4>{% trans 'Tell Us About Your Restaurant' %}</h4>
+            <h4>{% trans 'Tell Us About Your Business' %}</h4>
           </div>
         </div>
 
@@ -172,16 +172,16 @@ input:checked + .slider:before {
               {% csrf_token %}
 
               <div class="form-group">
-                <b><label for="tagline">{% trans 'Your Menu Tagline' %}</label></b>
+                <b><label for="tagline">{% trans 'Your Business Tagline' %}</label></b>
                 <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
-                <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your Restaurant name to the customer" %}</small>
+                <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your business name to your customer." %}</small>
               </div>
 
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
                 <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
                 <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
-              </div>
+              </div> -->
 
               <div class = 'row mt-3'>
                 <div class="col">
@@ -201,7 +201,7 @@ input:checked + .slider:before {
 
               <div class = 'row mt-3'>
                 <div class="col">
-                  <b><label for = 'inputGroupFile04'>{% trans 'Restaurant Logo' %}</label></b>
+                  <b><label for = 'inputGroupFile04'>{% trans 'Logo' %}</label></b>
                 </div>
               </div>
 

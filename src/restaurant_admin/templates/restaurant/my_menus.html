@@ -107,7 +107,7 @@
 
                     <div class = 'row mt-3'>
                       <div class="col">
-                        <b><label for = 'inputGroupFile04'>{% trans 'Restaurant Logo' %}</label></b>
+                        <b><label for = 'inputGroupFile04'>{% trans 'Logo' %}</label></b>
                       </div>
                     </div>
 
@@ -136,7 +136,7 @@
           </div>
 
           <div class="col-3">
-            <button onclick = 'menuForm()' data-toggle="modal" data-target="#create_menu" type="button" class="btn btn-primary">{% trans "New Menu" %}</button>
+            <button onclick = 'menuForm()' data-toggle="modal" data-target="#create_menu" type="button" class="btn btn-primary">{% trans "New Catalogue" %}</button>
           </div>
         </div>
 
@@ -145,7 +145,7 @@
           <div class="modal-dialog modal-lg" role="document">
             <div class = 'modal-content'>
               <div class="modal-header">
-                <h5 class="modal-title">{% trans 'Create New Menu' %}<h5>
+                <h5 class="modal-title">{% trans 'Create New Catalogue' %}<h5>
               </div>
               <div class="modal-body">
                 <form method = 'post' action = '/restaurant_admin/add_menu' enctype="multipart/form-data">
@@ -183,7 +183,7 @@
 
           {% if menus|length == 0 %}
           <div class = 'row justify-content-center mt-5'>
-            <h3>{% trans 'No Menus Yet' %}</h3>
+            <h3>{% trans 'No Catalogues Yet' %}</h3>
           </div>
           {% else %}
           <div id = 'menu_container' class = 'row justify-content-center mt-2'>
@@ -197,9 +197,7 @@
                     {% if menu.photo_path is not none %}
                       <img src = "{% static menu.photo_path %}" border=3 height=200 width=200>
                     {% else %}
-                      <div class = 'row justify-content-center mt-5'>
-                        <h5>{% trans 'No Photo' %}</h5>
-                      </div>
+                      <img src = "https://cluster-media.s3-us-west-2.amazonaws.com/no-photo.png" height=200 width=250>
                     {% endif %}
                 </div>
               </div>

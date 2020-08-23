@@ -8,11 +8,11 @@
     <div class = 'card mt-5 mb-5'>
       <div class = 'card-header'>
         {% if menu %}
-          <h3>{% trans 'Are You Sure You Want to Delete ' %}{{menu.name}}?</h3>
-          <a href = "/restaurant_admin/edit_menu/{{menu.id}}"><h5>{% trans 'Cancel' %}</h5></a>
+          <h3>{% trans 'Are you sure you want to delete ' %}'{{menu.name}}'?</h3>
+          <!-- <a href = "/restaurant_admin/edit_menu/{{menu.id}}"><h5>{% trans 'Cancel' %}</h5></a> -->
         {% else %}
-          <h3>{% trans 'Are You Sure You Want to Remove ' %}{{items.name}} {% trans 'from this catalogue?' %} </h3>
-          <a href = "/restaurant_admin/edit_menu/{{url_id.id}}">{% trans 'Cancel' %}</a>
+          <h3>{% trans 'Are you sure you want to remove ' %}{{items.name}} {% trans 'from this catalogue?' %} </h3>
+          <!-- <a href = "/restaurant_admin/edit_menu/{{url_id.id}}">{% trans 'Cancel' %}</a> -->
         {% endif %}
       </div>
       <div class = 'card-body'>
@@ -25,7 +25,7 @@
           <table class = 'table'>
             <thead>
               <tr>
-                <th scope = 'col' style='color:red;'>{% trans 'All These Items Will Be Deleted as Well' %}</th>
+                <th scope = 'col'>{% trans 'All these items will be deleted as well:' %}</th>
               </tr>
             </thead>
             <tbody>
@@ -55,14 +55,25 @@
 
       </div>
       <div class = 'card-footer'>
-        <form action = "" method = 'post'>
-          {% csrf_token %}
-          {% if menu %}
-          <button type = submit class = 'btn btn-danger'>{% trans 'Yes, Delete This Menu' %}</button>
-          {% else %}
-          <button type = submit class = 'btn btn-danger'>{% trans 'Yes, Remove This Item' %}</button>
-          {% endif %}
-        </form>
+        <div class="row">
+          <div class="col-2">
+            {% if menu %}
+              <a href = "/restaurant_admin/edit_menu/{{menu.id}}"><h5>{% trans 'Cancel' %}</h5></a>
+            {% else %}
+              <a href = "/restaurant_admin/edit_menu/{{url_id.id}}">{% trans 'Cancel' %}</a>
+            {% endif %}
+          </div>
+          <div class="col-10">
+            <form action = "" method = 'post'>
+              {% csrf_token %}
+              {% if menu %}
+              <button type = submit class = 'btn btn-primary'>{% trans 'Yes, Delete This Menu' %}</button>
+              {% else %}
+              <button type = submit class = 'btn btn-primary'>{% trans 'Yes, Remove This Item' %}</button>
+              {% endif %}
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>

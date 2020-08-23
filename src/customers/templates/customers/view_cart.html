@@ -116,6 +116,7 @@
 
         {% else %}
         <div class="tip_and_total">
+
           <!-- Tip Section Begins -->
           <div class="row pl-3 pt-3">
             <h5>{% trans "Tip" %}</h5>
@@ -136,13 +137,13 @@
                   {% csrf_token %}
 
                   <div class = 'row justify-content-center'>
-                    <!-- <div class = 'col'> -->
+
                     <label for="custom_tip">{% trans "Custom Tip $" %}</label>
                     <input class="form-control" type="number" step="0.01" value="1.00" id="tip" name="tip" min="1" placeholder="Custom Tip...">
-                    <!-- </div> -->
+
                   </div>
 
-                  <!-- Buttons -->
+
                   <div class="row justify-content-center mt-3 mb-3">
                       <div class="btn-group">
                           <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>

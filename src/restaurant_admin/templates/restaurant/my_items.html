@@ -413,11 +413,11 @@ input:checked + .slider:before {
                                   </div>
                                   <br>
                                   <div class="form-group row ml-1">
-                                     <h6 name="{{item.id}}" class="ml-1">OPTIONS:</h6> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+                                     <h6 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h6> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
                                    </div>
                                    <div class="form-group row ml-1">
                                        {% if list|length == 0 %}
-                                       <h6>No Add ons on this item yet</h6>
+                                       <!-- <h6>{% trans 'No Add ons on this item yet</h6> -->
                                        {% endif %}
                                        {% for inner_dict in list %}
                                        <div class="col-sm">
@@ -450,7 +450,7 @@ input:checked + .slider:before {
                                      <form class="form-inline"action= "/restaurant_admin/set_addon_groups/{{item.id}}" method="post">
                                        {% csrf_token %}
                                        <div class="form-group mb-2">
-                                         <label for="exampleFormControlSelect1"><h6>{% trans "Choose Same Addons As Another Product" %}</h6></label>
+                                         <label for="exampleFormControlSelect1"><h6>{% trans "Choose the same options from another product." %}</h6></label>
                                        </div>
                                        <div class="form-group mx-sm-3 mb-2">
                                            <select name = "set_addon_group" class="form-control" id="exampleFormControlSelect1">
@@ -599,7 +599,7 @@ input:checked + .slider:before {
             var addon_group_id = $(this).attr('name');
             var item_id = $(this).parent().attr('name');
             var newHTML= ` <div class="col-4">
-                            <input class="form-control form-control-sm ml-1" type="text" placeholder="option name" aria-label="name">
+                            <input class="form-control form-control-sm ml-1" type="text" placeholder="{% trans 'option name' %}" aria-label="name">
                             <br>
                            </div>
                            <div class="row">

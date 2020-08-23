@@ -85,9 +85,9 @@ input:checked + .slider:before {
 
       <form action="/restaurant_admin/toggle_menu_display_status/{{menu.id}}" method="post">
         {% csrf_token %}
-        <div class="form-group row justify-content-center">
-          <label class="form-control-label col-1">{% trans "Display catalogue to customers" %}?</label>
-          <div class="col-1">
+        <div class="form-group">
+          <label class="form-control-label">{% trans "Display catalogue to customers" %}?</label>
+          <div class="row justify-content-center">
             <label class="switch">
               {% if menu.displaying %}
               <input name = "toggle_menu_status" type="checkbox" checked>
@@ -97,7 +97,7 @@ input:checked + .slider:before {
               <span class="slider round"></span>
            </label>
           </div>
-          <div class="col-1">
+          <div class="row justify-content-center">
             <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
           </div>
         </div>
