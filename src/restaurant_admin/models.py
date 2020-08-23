@@ -26,7 +26,7 @@ class Restaurant(models.Model):
     language = models.CharField(default = 'en-us', max_length = 10)
     order_stream_email = models.EmailField(null=True,max_length=254)
     #whether emailing order info to order_stream_email is active or not.
-    order_stream = models.BooleanField(default = False)
+    order_stream = models.BooleanField(default = True)
     qr_code_path = models.CharField(null = True, max_length = 255)
 
 class Menu(models.Model):
