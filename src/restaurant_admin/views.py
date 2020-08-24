@@ -175,9 +175,9 @@ else:
 2nd it renders a page for them to view/edit their about info
 3rd sends a post request to this view
 """
-#helper function for saving dine in vs togo
-def is_dine_in(resp):
-    if resp == 'yes':
+#helper function for shipping & pickup
+def translateResponse(resp):
+    if resp != '':
         return True
     return False
 
@@ -203,18 +203,26 @@ def answer_about(request):
             #check for a tagline
             if request.POST['tagline'] != "":
                 curr_rest.info = request.POST['tagline']
-            #check for about
-            # if request.POST['about'] != "":
-            #     curr_rest.about = request.POST['about']
-            #check for dine in vs togo only
-            if is_dine_in(request.POST['dine-in']):
-                curr_rest.dine_in = True
+
+            #handles pickup
+            if 'pickup' not in request.POST:
+                curr_rest.offer_pickup = False
             else:
-                curr_rest.dine_in = False
+                curr_rest.offer_pickup = True
+                if request.POST['pickup_address'] != "":
+                    curr_rest.pickup_address = request.POST['pickup_address']
+
+            #handles shipping
+            if 'shipping' not in request.POST:
+                curr_rest.offer_shipping = False
+            else:
+                curr_rest.offer_shipping = True
+
             curr_rest.info_input = True
             curr_rest.save()
+
             #redirect either way post vs get
-            return redirect('/restaurant_admin/my_menus')
+            return redirect('/restaurant_admin/answer_about')
         else:
             if 'order_stream' in request.POST:
                 curr_rest.order_stream = True

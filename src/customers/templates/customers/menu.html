@@ -73,21 +73,19 @@ div.scrollmenu a:hover {
 
 <!-- logo -->
 {% if restaurant.photo_path %}
-<div class="jumbotron">
-  <div class="row justify-content-center">
-    <div class="thumbnail thumb">
-      <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
-    </div>
+<div class="jumbotron bg-light">
+  <div class="thumbnail thumb">
+    <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
   </div>
 </div>
 {% endif %}
 <!-- end logo -->
 
-<div class="container-fluid">
+<div class="container-fluid bg-light">
 
   <!-- Greeting About Modal -->
 
-  <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+  <div class="modal fade bg-light" tabindex="-1" role="dialog" id="myModal">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -116,31 +114,31 @@ div.scrollmenu a:hover {
   </div>
 </div>
 
-  <!-- Menu and About Buttons -->
-  <!-- <div class="row justify-content-center pt-4 pb-4">
-    <div class="col">
-      <div class="d-flex justify-content-end">
-        <a href="#" class="btn btn-dark btn-circle btn-sm" role="button">{% trans "Menu" %}</a>
-      </div>
-    </div>
-    <div class="col">
-      <a href="/customers/about/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-sm active" role="button" aria-pressed="true">{% trans "About" %}</a>
-    </div>
-  </div> -->
-  <!-- End Menu and About buttons -->
-
   <!-- Restaurant Name and info -->
-  <div class="row ml-1 mb-2 mt-4 justify-content-center">
+  <div class="row ml-1 mb-2 justify-content-center bg-light">
     <h2>{{ restaurant.name }}</h2>
   </div>
   {% if restaurant.info %}
-    <div class="row ml-1 mb-4 justify-content-center">
+    <div class="row ml-1 mb-4 justify-content-center bg-light">
       <h4>{{ restaurant.info }}</h4>
     </div>
   {% endif %}
   <!-- End  -->
 
   <!-- Button Categories Start -->
+  {% if category_items|length > 1 and category_items|length < 5 %}
+    <hr>
+    <div class="row justify-content-center">
+      <div class="scrollmenu m-2">
+        <div class="btn-group" role="group" aria-label="Basic example">
+        {% for category in categories %}
+          <button class="btn btn-dark cat_button" name="category_button_{{category.id}}">{{ category.name }}</button>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+    <hr>
+  {% else %}
   <hr>
     <div class="scrollmenu m-2">
       <div class="btn-group" role="group" aria-label="Basic example">
@@ -149,8 +147,19 @@ div.scrollmenu a:hover {
       {% endfor %}
       </div>
     </div>
+  </div>
   <hr>
+  {% endif %}
   <!-- Button Categories End -->
+
+  <!-- Catalogue Name -->
+  <div class="row mt-4">
+    <div class="col ml-3">
+      <h3>{{menu.name}}</h3>
+    </div>
+  </div>
+  <!-- End catalogue name -->
+
 
   <!-- Menu Items -->
 
@@ -197,7 +206,6 @@ div.scrollmenu a:hover {
 
   <footer class="page-footer pt-4">
       <div class="row justify-content-center mb-5">
-
       </div>
   </footer>
 </div>
@@ -212,14 +220,6 @@ div.scrollmenu a:hover {
       $('#myModal').modal('show');
       sessionStorage.setItem('#myModal', 'true');
     }
-
-    //Opens specific category
-    // $(".cat_button").click(function(){
-    //    $('.MenuItems').hide();
-    //   var category_name = $(this).attr("name");
-    //   $('#display_category_' + category_name).show(400);
-    //
-    // });
 
     //scroll to div experiment
     //know which button was clicked

@@ -3,6 +3,14 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+<style>
+  .card-img-top {
+      width: 100%;
+      height: 20vw;
+      object-fit: cover;
+  }
+</style>
+
   <div class="container">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
       <!-- <div class = 'card border-secondary bg-light mt-5 mb-5' id ='big_card_container'> -->
@@ -83,27 +91,30 @@
                       <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your business name to your customers." %}</small>
                     </div>
 
-                    <!-- <div class="form-group">
-                      <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
-                      <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
-                      <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
-                    </div> -->
+                    <hr>
 
                     <div class = 'row mt-3'>
                       <div class="col">
-                        <b><label for = 'dine-in1'>{% trans 'Do You Currently Offer Dine In?' %}</label></b>
+                        <h5>{% trans 'How do you want to get your product to your customers?' %}</h5>
                       </div>
                     </div>
 
                     <div class="form-check">
-                      <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in1' value = 'no' {% if not me.dine_in %}checked{% endif %}>
-                      <label for = 'dine-in1'>{% trans 'No' %}</label>
+                      <input class="form-check-input" type = 'radio' name = 'pickup' id = 'pickup' value = 'True' onclick="pickUpAddress()" {% if me.offer_pickup %} checked {% endif %}>
+                      <label for = 'pickup'>{% trans 'Pickup' %}</label>
                     </div>
 
-                    <div class="form-check">
-                      <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in2' value = 'yes' {% if me.dine_in %}checked{% endif %}>
-                      <label for = 'dine-in2'>{% trans 'Yes' %}</label>
+                    <div class="form-check mb-3" style = "display: none;" id="pickup_addy_section">
+                      <label for="pickup_address">{% trans 'Pickup Address' %}</label>
+                      <input type="text" class="form-control" name="pickup_address" id="pickup_address" value="{{me.pickup_address}}">
                     </div>
+
+                    <div class="form-check" id="shipping_section" display_int='0'>
+                      <input class="form-check-input" type = 'radio' name = 'shipping' id = 'shipping' value = 'True' onclick="uncheckShippingRadio()" {% if me.offer_shipping %} checked {% endif %} >
+                      <label for = 'shipping'>{% trans 'Shipping' %}</label>
+                    </div>
+
+                    <hr>
 
                     <div class = 'row mt-3'>
                       <div class="col">
@@ -195,9 +206,9 @@
               <div class = 'card-body'>
                 <div class = 'row justify-content-center'>
                     {% if menu.photo_path is not none %}
-                      <img src = "{% static menu.photo_path %}" border=3 height=200 width=200>
+                      <img src = "{% static menu.photo_path %}" class="card-img-top" border=3 height=200 width=200>
                     {% else %}
-                      <img src = "https://cluster-media.s3-us-west-2.amazonaws.com/no-photo.png" height=200 width=250>
+                      <img src = "https://cluster-media.s3-us-west-2.amazonaws.com/no-photo.png" class="card-img-top" height=200 width=250>
                     {% endif %}
                 </div>
               </div>
@@ -260,5 +271,31 @@
       else if(openingTime && closingTime)document.getElementById('questions_form').submit();
 
     }, false);
+  </script>
+
+  <script>
+    //to check and uncheck pickup radio button & display address form
+    function pickUpAddress() {
+        if (document.getElementById("pickup_addy_section").style.display=="block") {
+          document.getElementById("pickup_addy_section").style.display = 'none';
+          $( "#pickup" ).prop( "checked", false );
+        }
+
+        else {
+            document.getElementById("pickup_addy_section").style.display="block";
+        }
+    }
+
+    //to check and uncheck shipping radio button
+    function uncheckShippingRadio() {
+      if (document.getElementById("shipping_section").display_int=='0') {
+        document.getElementById("shipping_section").display_int = '1';
+        $( "#shipping" ).prop( "checked", false );
+      }
+      else {
+        document.getElementById("shipping_section").display_int = '0'
+      }
+    }
+
   </script>
 {% endblock %}

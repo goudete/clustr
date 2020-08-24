@@ -1,5 +1,6 @@
 {% extends 'customers/base.html'%}
 {% load i18n %}
+{% load static %}
 
 {% block content %}
 
@@ -25,6 +26,10 @@
     background-color: yellow;
   }
 
+  a {
+    color: #000000;
+  }
+
 
 </style>
   <nav class="navbar navbar-dark bg-dark">
@@ -36,9 +41,9 @@
     </a>
   </nav>
 <!-- Title -->
-  <div class="row justify-content-center pt-4 pb-4">
+  <div class="row justify-content-center mt-5">
     <!-- <h5>Cart </h5> -->
-    <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-cart3" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-cart3" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
     </svg>
   </div>
@@ -46,152 +51,106 @@
 
 <!-- Card Begins -->
   <div class="container-fluid">
-    <div class="card shadow p-3 bg-white rounded">
+    <div class="card shadow p-3 bg-white rounded mt-2">
       <div class="card-body">
         <div class="row pl-3">
-          <h5 class="cart-title">{% trans "Your Order" %}</h5>
+          <h4 class="cart-title">{% trans "Your Order" %}</h4>
         </div>
         <hr>
         {% if items|length == 0 %}
-        <div class="row justify-content-center mt-5">
+        <div class="row justify-content-center mt-4">
           <h4>{% trans "Your Cart is Empty!" %}</h4>
+        </div>
+        <div class="row justify-content-center mt-2">
+          <a href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true" id="back_to_menu">{% trans "Browse Items" %}</a>
         </div>
         {% else %}
         {% for item in items %}
-        <div class="col-2" hidden>
-          <span id="item_id_{{ forloop.counter }}"">{{ item.id }}</span>
-        </div>
-
-        <div id="item_row_{{ forloop.counter }}">
-          <div class="row mt-3">
-            <div class="col-8">
-              <h5 id="item_name_{{ forloop.counter }}">{{ item.item.name }}</h5>
-            </div>
-            <div class="col-4">
-              <span class="item_price_{{ forloop.counter }}"><h6>${{ item.price }}</h6></span>
-            </div>
+          <div class="col-2" hidden>
+            <span id="item_id_{{ forloop.counter }}"">{{ item.id }}</span>
           </div>
-          <!-- addon items -->
-          {% if item.addon_items %}
-          {% for addon in item.addon_items.all %}
-          <div class="row mb-1">
-            <div class="col-8">
-              + {{ addon.name }}
-            </div>
-            <div class="col-4">
-              ${{ addon.price }}
-            </div>
+          <!-- experiment begins -->
+          <div id="item_row_{{ forloop.counter }}">
+          <!-- <a href="/customers/view_item/{{cart.id}}/{{restaurant.id}}/{{menu.id}}/{{item.id}}"> -->
+              <div class="media mt-4 mb-3">
+                {% if item.item.photo_path %}
+                  <img src="{% static item.item.photo_path %}" height=60 width=60 class="rounded mr-3" alt="...">
+                {% else %}
+                <img src="https://cluster-media.s3-us-west-2.amazonaws.com/no-photo.png" height=60 width=60 class="rounded mr-3" alt="...">
+                {% endif %}
+                <div class="media-body">
+                  <!-- aqui va todo el contenido -->
+                  <div class="row">
+                    <div class="col-6">
+                      <h6 id="item_name_{{ forloop.counter }}">{{ item.item.name }}</h6>
+                    </div>
+                    <div class="col-6">
+                      <span class="item_price_{{ forloop.counter }}"><h6>${{ item.price }}</h6></span>
+                    </div>
+                  </div>
+                  <!-- addon items -->
+                  {% if item.addon_items %}
+                  {% for addon in item.addon_items.all %}
+                  <div class="row mb-1">
+                    <div class="col-8">
+                      + {{ addon.name }}
+                    </div>
+                    <div class="col-4">
+                      ${{ addon.price }}
+                    </div>
+                  </div>
+                  {% endfor %}
+                  {% endif %}
+                  <!-- addon items end -->
+
+                  {% if item.custom_instructions %}
+                  <div class="row mb-1">
+                    <div class="col-1">
+
+                    </div>
+                    <div class="col-11">
+                      <p>{{ item.custom_instructions }}</p>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  <!-- Edit Item Code goes here  -->
+                  <div class="row mt-2">
+                    <div class="col-10">
+                      <button class="minus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-minus-square fa-lg" style = "margin-left: 0cm;"></i></button>
+                        <span class="item_quantity_{{ forloop.counter }}" id="item_quantity"><b>{{ item.quantity }}</b></span>
+                      <button class="plus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-plus-square fa-lg"></i></button>
+                    </div>
+                  </div>
+                  <!-- Edit stuff ends here -->
+                  <!-- termina contenido -->
+                </div>
+              </div>
+            <!-- </a> -->
+            <hr>
           </div>
-          {% endfor %}
-          {% endif %}
-          <!-- addon items end -->
-
-          {% if item.custom_instructions %}
-          <div class="row mb-1">
-            <div class="col-1">
-
-            </div>
-            <div class="col-11">
-              <p>{{ item.custom_instructions }}</p>
-            </div>
-          </div>
-          {% endif %}
-
-          <!-- Edit Item Code goes here  -->
-          <div class="row mt-2">
-            <div class="col-10">
-              <button class="minus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-minus-square fa-lg" style = "margin-left: 0cm;"></i></button>
-                <span class="item_quantity_{{ forloop.counter }}" id="item_quantity"><b>{{ item.quantity }}</b></span>
-              <button class="plus_item" title="Add" value="{{ forloop.counter }}"><i class="far fa-plus-square fa-lg"></i></button>
-            </div>
-          </div>
-          <!-- Edit stuff ends here -->
-
-          <hr>
-        </div>
+        <!-- experiment ends -->
         {% endfor %}
         {% endif %}
 
         {% if items|length == 0 %}
 
         {% else %}
-        <div class="tip_and_total">
+        <div class="total-cart" id="total-cart">
 
-          <!-- Tip Section Begins -->
-          <div class="row pl-3 pt-3">
-            <h5>{% trans "Tip" %}</h5>
-          </div>
-
-          <div class="row pt-2 justify-content-center">
-            <div class="btn-group" role="group" aria-label="Basic example">
-              <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/10" role="button">10%</a>
-              <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/15" role="button">15%</a>
-              <a class="btn btn-secondary" aria-pressed="true" href="/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20" role="button">20%</a>
-              <a class="btn btn-secondary" onclick = 'Custom_Tip_Form()' id="custom_btn" style = 'cursor: pointer;'>{% trans "Custom" %}</a>
-            </div>
-          </div>
-
-          <div class = 'row justify-content-center mt-4'>
-            <div id = 'Custom_Tip_Form' style = 'display:none; width:20rem;' >
-                <form method = 'post' action = '/customers/calculate_tip/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/20'>
-                  {% csrf_token %}
-
-                  <div class = 'row justify-content-center'>
-
-                    <label for="custom_tip">{% trans "Custom Tip $" %}</label>
-                    <input class="form-control" type="number" step="0.01" value="1.00" id="tip" name="tip" min="1" placeholder="Custom Tip...">
-
-                  </div>
-
-
-                  <div class="row justify-content-center mt-3 mb-3">
-                      <div class="btn-group">
-                          <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
-                      </div>
-                  </div>
-
-                </form>
-              </div>
-          </div>
-
-
-          <div class="row pt-3">
+          <div class="row mt-5">
             <div class="col-6">
-              <h6>{% trans "Subtotal" %}</h6>
+              <h4>{% trans "Total" %}</h4>
             </div>
+
             <div class="col-6 d-flex flex-row-reverse">
-              <span class="cart_total">${{ cart.total }}</span>
+              <span class="cart_total"><h4>${{ cart.total }}</h4></span>
             </div>
           </div>
+          <div class="row mt-5">
+            <a href="/customers/pick_up_or_delivery/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active btn-block shadow" role="button" aria-pressed="true" id="place_order_button">{% trans "Place Order" %}</a>
+            <a href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" style="display: none;" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true" id="back_to_menu">{% trans "Browse Items" %}</a>
 
-
-          <div class="row pt-1">
-            <div class="col-6">
-              <h6>{% trans "Tip" %}</h6>
-            </div>
-            {% if cart.tip %}
-            <div class="col-6 d-flex flex-row-reverse">
-              <span class="cart_tip">${{ cart.tip }}</span>
-            </div>
-            {% else %}
-            <div class="col-6 d-flex flex-row-reverse">
-              $0.00
-            </div>
-            {% endif %}
-          </div>
-          <div class="row pt-1">
-            <div class="col-6">
-              <h5>{% trans "Total" %}</h5>
-            </div>
-            {% if cart.total_with_tip %}
-            <div class="col-6 d-flex flex-row-reverse">
-              <span class="cart_total_with_tip">${{ cart.total_with_tip }}</span>
-            </div>
-            {% else %}
-            <div class="col-6 d-flex flex-row-reverse">
-              <span class="cart_total">${{ cart.total }}</span>
-            </div>
-            {% endif %}
           </div>
         </div>
         <!-- Tip Section Ends -->
@@ -199,46 +158,10 @@
       </div>
     </div>
 
-    <!-- To Go or Dine In -->
-    {% if restaurant.dine_in %}
-    <data id="restaurant_dine_in" value="{{ restaurant.dine_in }}"></data>
-
-      <div class="card shadow p-3 bg-white rounded mt-3">
-        <div class="card-body">
-          <div class="row pl-3">
-            <h5 class="cart-title">{% trans "To Go or Dine In?" %}</h5>
-          </div>
-          <hr>
-          <form method="post" action="customers/dine_in_option/{{ cart.id }}" id="dine_in_form">
-            {% csrf_token %}
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="dine_in_radio" value="TOGO" checked>
-              <label class="form-check-label" for="dine_in_radio">
-                To Go
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="dine_in_radio" value="DINEIN">
-              <label class="form-check-label" for="dine_in_radio">
-                Dine In
-              </label>
-            </div>
-          </form>
-        </div>
-      </div>
-    {% endif %}
-    <!-- End To Go or Dine In -->
-
     <!-- Footer -->
     <footer class="page-footer pt-4">
         <div class="row justify-content-center mb-3">
-          <!-- <div class="col-12"> -->
-          {% if items|length == 0 %}
-          {% else%}
-            <a href="/customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true" id="place_order_button">{% trans "Place Order" %}</a>
-            <a href="/customers/view_menu/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" style="display: none;" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true" id="back_to_menu">{% trans "Browse Items" %}</a>
-          {% endif %}
-          <!-- </div> -->
+
         </div>
     </footer>
   <!-- Footer -->
@@ -247,20 +170,14 @@
 <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
 <script>
-  function Custom_Tip_Form(){
-    if(document.getElementById('Custom_Tip_Form').style.display == 'block') document.getElementById('Custom_Tip_Form').style.display = 'none'
-    else document.getElementById('Custom_Tip_Form').style.display = 'block'
-  }
 
   $(document).ready(function(){
     var cart_id = {{ cart.id }};
-    // console.log("cart_id:" + cart_id)
 
     // Increase Quantity on cart
     $(document).on("click", ".plus_item", function(){
       var index = String(this.value);
       var item = document.getElementById("item_name_" + index).textContent;
-      // console.log('ITEM:' + item)
 
         $.ajax({
         type: "GET",
@@ -271,22 +188,9 @@
         },
         dataType: 'json',
         success: function (data) {
-
-          //tip already included
-          if (data.cart_tip != 0){
-            console.log('getting in here')
-            $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>');
-            $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
-            $(".cart_total").html('$' + data.cart_total);
-            $(".cart_tip").html('$' + data.cart_tip);
-            $(".cart_total_with_tip").html('$' + data.cart_total_with_tip)
-          }
-          // tip not included
-          else {
-            $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>')
-            $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
-            $(".cart_total").html('$' + data.cart_total);
-          }
+          $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>')
+          $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
+          $(".cart_total").html('$' + data.cart_total);
         }
       });
     });
@@ -304,32 +208,25 @@
         },
         dataType: 'json',
         success: function (data) {
+          if (data.cart_total == 0) {
+            $('#place_order_button').hide();
+            $('.total-cart').hide();
+            $('#back_to_menu').show();
+          }
           //If data.quantity == 0, call remove_item view and remove div that contains item
           if (data.quantity == 0) {
             var item_id = document.getElementById("item_id_" + index).textContent;
             $.post("/customers/remove_item/{{ cart.id }}/{{ restaurant.id}}/{{ menu.id }}/" + item_id, {'csrfmiddlewaretoken': '{{ csrf_token }}'});
             $( "#item_row_" + index ).remove();
-          }
-          //tip already included
-          if (data.cart_tip != 0) {
-            $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>');
-            $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
             $(".cart_total").html('$' + data.cart_total);
-            $(".cart_tip").html('$' + data.cart_tip);
-            $(".cart_total_with_tip").html('$' + data.cart_total_with_tip)
           }
-          // tip not included
+
           else {
             $(".item_quantity_" + index).html('<b>' + data.quantity + '</b>')
             $(".item_price_" + index).html('<h6>$' + data.price + '</h6>');
             $(".cart_total").html('$' + data.cart_total);
           }
 
-          if (data.cart_total == 0) {
-            $('#place_order_button').hide();
-            $('.tip_and_total').hide();
-            $('#back_to_menu').show();
-          }
         }
       });
     });

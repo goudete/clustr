@@ -13,20 +13,18 @@ class CustomOrderForm(forms.ModelForm):
             'custom_instructions': forms.Textarea(attrs={'cols': 5, 'rows': 10})
         }
 
-class CustomTipForm(forms.Form):
-    tip = forms.DecimalField()
+class NameForm(forms.Form):
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
 
 class EmailForm(forms.Form):
     email_input = forms.EmailField(required=False, max_length=200)
-
 
 class PhoneForm(forms.Form):
     phone_number = PhoneNumberField(required = False)
 
 CHOICES = [('TOGO', 'To Go'), ('DINEIN', 'Dine In')]
 
-# class DineInForm(forms.Form):
-#     dine_in = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
 
 class FeedbackForm(forms.ModelForm):
     class Meta:

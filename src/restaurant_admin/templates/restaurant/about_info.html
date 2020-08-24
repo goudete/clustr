@@ -172,32 +172,35 @@ input:checked + .slider:before {
               {% csrf_token %}
 
               <div class="form-group">
-                <b><label for="tagline">{% trans 'Your Business Tagline' %}</label></b>
-                <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
+                <label for="tagline"><h5>{% trans 'Your Business Tagline' %}</h5></label>
+                <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' value = "{{me.info}}">
                 <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your business name to your customer." %}</small>
               </div>
 
-              <!-- <div class="form-group">
-                <b><label for="about">{% trans 'About Your Restaurant' %}</label></b>
-                <textarea class="form-control" rows="3" id = 'about' name = 'about' placeholder = "{{me.about}}"></textarea>
-                <small id="aboutHelp" class="form-text text-muted">{% trans "This will be displayed in your About section" %}</small>
-              </div> -->
+              <hr>
 
               <div class = 'row mt-3'>
                 <div class="col">
-                  <b><label for = 'dine-in1'>{% trans 'Do You Currently Offer Dine In?' %}</label></b>
+                  <h5>{% trans 'How do you want to get your product to your customers?' %}</h5>
                 </div>
               </div>
 
               <div class="form-check">
-                <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in1' value = 'no' {% if not me.dine_in %}checked{% endif %}>
-                <label for = 'dine-in1'>{% trans 'No' %}</label>
+                <input class="form-check-input" type = 'radio' name = 'pickup' id = 'pickup' value = 'True' onclick="pickUpAddress()" {% if me.offer_pickup %} checked {% endif %}>
+                <label for = 'pickup'>{% trans 'Have your customers pick it up' %}</label>
               </div>
 
-              <div class="form-check">
-                <input class="form-check-input" type = 'radio' name = 'dine-in' id = 'dine-in2' value = 'yes' {% if me.dine_in %}checked{% endif %}>
-                <label for = 'dine-in2'>{% trans 'Yes' %}</label>
+              <div class="form-check mb-3" style = "display: none;" id="pickup_addy_section">
+                <label for="pickup_address">{% trans 'Pickup Address' %}</label>
+                <input type="text" class="form-control" name="pickup_address" id="pickup_address" value="{{me.pickup_address}}">
               </div>
+
+              <div class="form-check" id="shipping_section" display_int='0'>
+                <input class="form-check-input" type = 'radio' name = 'shipping' id = 'shipping' value = 'True' onclick="uncheckShippingRadio()" {% if me.offer_shipping %} checked {% endif %} >
+                <label for = 'shipping'>{% trans 'Ship it to them' %}</label>
+              </div>
+
+              <hr>
 
               <div class = 'row mt-3'>
                 <div class="col">
@@ -263,5 +266,31 @@ input:checked + .slider:before {
     </div>
   </div>
 </div>
+
+<script>
+  //to check and uncheck pickup radio button & display address form
+  function pickUpAddress() {
+      if (document.getElementById("pickup_addy_section").style.display=="block") {
+        document.getElementById("pickup_addy_section").style.display = 'none';
+        $( "#pickup" ).prop( "checked", false );
+      }
+
+      else {
+          document.getElementById("pickup_addy_section").style.display="block";
+      }
+  }
+
+  //to check and uncheck shipping radio button
+  function uncheckShippingRadio() {
+    if (document.getElementById("shipping_section").display_int=='0') {
+      document.getElementById("shipping_section").display_int = '1';
+      $( "#shipping" ).prop( "checked", false );
+    }
+    else {
+      document.getElementById("shipping_section").display_int = '0'
+    }
+  }
+
+</script>
 
 {% endblock %}

@@ -10,7 +10,6 @@ class Restaurant(models.Model):
     name = models.CharField(_('Restaurant Name'), default = '', max_length = 200)
     info = models.TextField(_('Additional Info'), null = True, max_length = 255) #restaurant info
     photo_path = models.CharField(null = True, max_length = 255) #restaurant logo reference
-    about = models.TextField(_("Your Restaurant's Vision"), null = True, max_length = 255)
     created_at = models.DateTimeField(auto_now_add=True)
     kitchen_login_no = models.IntegerField(null = True, unique = True)
     #boolean field, if they answered whether or not they want us to handle payments (a popup is there if not)
@@ -21,7 +20,10 @@ class Restaurant(models.Model):
     info_input = models.BooleanField(default = False)
     #stripe account id
     stripe_account_id = models.CharField(null = True, default = '', max_length = 255)
-    dine_in = models.BooleanField(default = False)
+    # dine_in = models.BooleanField(default = False)
+    offer_pickup = models.BooleanField(default = False)
+    offer_shipping = models.BooleanField(default = False)
+    pickup_address = models.CharField(null = True, max_length=255)
     #language
     language = models.CharField(default = 'en-us', max_length = 10)
     order_stream_email = models.EmailField(null=True,max_length=254)

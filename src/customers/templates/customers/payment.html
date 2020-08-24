@@ -246,7 +246,7 @@
        if (result.error) {
          console.log(result.error.message);
          //display error
-         $( "#card-errors" ).append( "<p style='color:red;'>" + result.error.message + "</p>" );
+         // $( "#card-errors" ).append( "<p style='color:red;'>" + result.error.message + "</p>" );
        } else {
           // The payment has been processed!
          if (result.paymentIntent.status === 'succeeded') {
@@ -258,7 +258,7 @@
             // ***send paymentIntent id to views here*** Probs with AJAX
             // console.log('payment success');
            // console.log(cart_id)
-           location.href="/customers/card_email_receipt/" + cart_id+ "/" + rest_id + "/" + menu_id;
+           location.href="/customers/order_confirmation/" + cart_id;
 
          }
        }
@@ -270,8 +270,20 @@ var rest_id = document.getElementById('submit_cash').getAttribute('rest');
 var menu_id = document.getElementById('submit_cash').getAttribute('menu');
 
 $( "#submit_cash" ).click(function() {
-  location.href="/customers/cash_email_receipt/" + cart_id + "/" + rest_id + "/" + menu_id;
-});
+
+    $.ajax({
+    type: "GET",
+    url: "{% url 'cash_payment' %}",
+    data: {
+      'cart_id': cart_id,
+    },
+    dataType: 'json',
+    success: function (data) {
+      location.href="/customers/order_confirmation/" + cart_id;
+    }
+  });
+  });
+// });
 
 </script>
 <!-- Stripe JavaScript ends -->

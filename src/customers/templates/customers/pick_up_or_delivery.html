@@ -1,0 +1,112 @@
+{% extends 'customers/base.html'%}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<nav class="navbar navbar-dark bg-dark">
+  <a class="navbar-brand" href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+  <svg class="bi bi-arrow-left-short" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 0 1 0 .708L5.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+    <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h6.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
+  </svg>
+  </a>
+</nav>
+
+<div class="container-fluid">
+
+  <!-- icon -->
+  <div class="row justify-content-center mt-5">
+    <svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-truck" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5v7h-1v-7a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5v1A1.5 1.5 0 0 1 0 10.5v-7zM4.5 11h6v1h-6v-1z"/>
+      <path fill-rule="evenodd" d="M11 5h2.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5h-1v-1h1a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4.5h-1V5zm-8 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+      <path fill-rule="evenodd" d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+    </svg>
+  </div>
+  <!-- icon ends -->
+
+  <!-- Email Receipt Form -->
+  <div class="card shadow bg-white rounded mt-2">
+    <div class="card-header">
+    <h4>{% trans "How would you like to get your order?" %}</h4>
+    </div>
+
+    <div class="card-body">
+      <form method = 'post' action = '/customers/pick_up_or_delivery/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}'>
+        {% csrf_token %}
+
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+
+            <div class="form-check">
+              <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' id = 'delivery' value = 'delivery' onclick="deliveryAddress()">
+              <label for = 'dine-in1'><h5>{% trans 'Delivery' %}</h5></label>
+            </div>
+
+            <div class="form-check mb-3" style = "display: none;" id="delivery_addy_section">
+              <label for="delivery_address">{% trans 'Shipping Address' %}</label>
+              <input type="text" class="form-control" name="delivery_address" id="delivery_address">
+            </div>
+            <!-- <div class="dropdown">
+              <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Delivery
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">
+
+                  <h4>Google Places API</h4>
+
+                </a>
+
+              </div>
+            </div> -->
+
+          </li>
+          {% if restaurant.offer_pickup %}
+          <li class="list-group-item">
+            <div class="form-check">
+              <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' id = 'pickup' value = 'pickup' {% if me.dine_in %}checked{% endif %}>
+              <label for = 'dine-in2'><h5>{% trans 'Pickup' %}</h5></label>
+            </div>
+
+            <!-- <div class="dropdown">
+              <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Delivery
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">
+                  <h6>If you choose to pickup, you will be emailed the available date and time</h6>
+                </a>
+
+              </div>
+            </div> -->
+          </li>
+          {% endif %}
+        </ul>
+
+        <button type="submit" class="btn btn-primary btn-block mt-4">{% trans "Submit" %}</button>
+
+      </form>
+
+    </div>
+    <div class="card-footer text-muted">
+      {% if restaurant.offer_pickup %}
+        <h6>{% trans "The pickup location is:" %} {{restaurant.pickup_address}}. {% trans "You will get emailed the exact details." %}</h6>
+      {% else %}
+        <h6></h6>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function deliveryAddress() {
+      if (document.getElementById("delivery_addy_section").style.display=="block") {
+        document.getElementById("delivery_addy_section").style.display = 'none';
+      }
+
+      else {
+          document.getElementById("delivery_addy_section").style.display="block";
+      }
+  }
+</script>
+{% endblock %}
