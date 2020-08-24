@@ -1,15 +1,24 @@
 {% extends 'customers/base.html'%}
 {% load i18n %}
+{% load static %}
 
 
 {% block content %}
 <style>
   .bg-custom-1 {
-    background-color: rgb(108, 183, 60);
+    background-color: #4caf50;
   }
 </style>
 
+<nav class="navbar navbar-dark bg-dark">
+  <a class="navbar-brand" href="https://www.instagram.com/shift.menu/" target="_blank">
+  <h3>clustr.</h3>
+  </a>
+</nav>
 
+
+  <!-- End Message -->
+<div class="container-fluid">
   <!-- Feedback success Message -->
   {% if messages %}
     {% for message in messages %}
@@ -22,24 +31,27 @@
       {% endif %}
     {% endfor %}
   {% endif %}
-
-  <!-- End Message -->
-<div class="container-fluid">
   <div class="card text-center text-white p-3 bg-custom-1 mt-5 mb-3">
     <div class="card-body">
       <svg class="bi bi-check-circle-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
       </svg>
       {% if cart.cash_payment %}
-        <h5 class="card-title pt-3">{% trans "Order Number:" %} <b>{{ cart.id }}</b></h5>
-        <h7 class="pt-3">{% trans "Please pay when you pick up your order." %}
+        <h4 class="card-title pt-3">{% trans "Order Number:" %} <b>{{ cart.id }}</b></h4>
+        <h5 class="pt-3">{% trans "Please pay when you pick up your order." %} </h5>
       {% else %}
         <h5 class="card-title pt-3">{% trans "Payment Confirmed" %}</h5>
         <p>{% trans "Order Number:" %} <b>{{ cart.id }}</b></p>
       {% endif %}
 
       {% if cart.email %}
-      <p class="pt-3">{% trans "Email Receipt:" %} {{ cart.email }}</p>
+      <p class="pt-2">{% trans "Check your email for more info:" %} {{ cart.email }}</p>
+      {% endif %}
+
+      {% if cart.shipping_address %}
+        <p>{% trans "Shipping Address:" %} {{cart.shipping_address}}</p>
+      {% else %}
+        <p>{% trans "Pickup at:" %} {{ cart.restaurant.pickup_address }}</p>
       {% endif %}
     </div>
   </div>
@@ -55,21 +67,33 @@
             </svg>
           </div>
           <div class="col-10">
-            <h5 class="cart-title pb-1">{% trans "Order Details" %}</h5>
+            <h4 class="cart-title pb-1">{% trans "Order Details" %}</h4>
           </div>
         </div>
           {% for item in items %}
-          <div class="row mt-3">
-            <div class="col-2">
-              {{ item.quantity }}
-            </div>
-            <div class="col-6">
-              <h5>{{ item.item.name }}</h5>
-            </div>
-            <div class="col-4">
-              <h6>${{ item.price }}</h6>
+          <div class="media mt-4 mb-3">
+            {% if item.item.photo_path %}
+              <img src="{% static item.item.photo_path %}" height=60 width=60 class="rounded mr-3" alt="...">
+            {% else %}
+              <img src="https://cluster-media.s3-us-west-2.amazonaws.com/no-photo.png" height=60 width=60 class="rounded mr-3" alt="...">
+            {% endif %}
+            <div class="media-body">
+              <div class="row">
+                <div class="col-7">
+                  <h5>{{ item.item.name }}</h5>
+                </div>
+                <div class="col-5">
+                  <h6>${{ item.price }}</h6>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col ml-2">
+                  <h6>x {{ item.quantity }}</h6>
+                </div>
+              </div>
             </div>
           </div>
+
 
           <!-- addon items -->
           {% if item.addon_items %}
@@ -101,40 +125,11 @@
 
           <div class="row pt-3">
             <div class="col-6">
-              <h6>{% trans "Subtotal" %}</h6>
+              <h4>{% trans "Total" %}</h4>
             </div>
             <div class="col-6 d-flex flex-row-reverse">
-              ${{ cart.total }}
+              <h4>${{ cart.total }}</h4>
             </div>
-          </div>
-
-          <div class="row pt-1">
-            <div class="col-6">
-              <h6>{% trans "Tip" %}</h6>
-            </div>
-            {% if cart.tip %}
-            <div class="col-6 d-flex flex-row-reverse">
-              ${{ cart.tip }}
-            </div>
-            {% else %}
-            <div class="col-6 d-flex flex-row-reverse">
-              $0.00
-            </div>
-            {% endif %}
-          </div>
-          <div class="row pt-1">
-            <div class="col-6">
-              <h5>{% trans "Total" %}</h5>
-            </div>
-            {% if cart.total_with_tip %}
-            <div class="col-6 d-flex flex-row-reverse">
-              ${{ cart.total_with_tip }}
-            </div>
-            {% else %}
-            <div class="col-6 d-flex flex-row-reverse">
-              ${{ cart.total }}
-            </div>
-            {% endif %}
           </div>
       </div>
     </div>
@@ -142,25 +137,20 @@
 
 
   <!-- Feedback Form -->
-  <div class="card shadow p-3 bg-white rounded mb-4">
+  <div class="card shadow bg-white rounded mb-4">
+    <div class="card-header">
+      <h5 class="cart-title pb-1">{% trans "Help us improve by telling us what sucked." %}</h5>
+    </div>
     <div class="card-body">
-      <div class="row">
-          <h5 class="cart-title pb-1">{% trans "Feedback" %}</h5>
-      </div>
+
       <form method = 'post' action = '/customers/feedback/{{ cart.id }}'>
         {% csrf_token %}
-
-        <div class = 'row justify-content-center'>
-          {% trans "Feedback about this app?" as feedback_placeholder %}
+        <div class="form-group mx-sm-3 mb-2">
+          <label for="feedback">{% trans "What sucked about your experience?" %}</label>
           <input class="form-control" type="text" id="feedback" name="feedback" placeholder="{{feedback_placeholder}}">
-        </div>
-
+        <div/>
         <!-- Buttons -->
-        <div class="row justify-content-center mt-3 mb-3">
-            <div class="btn-group">
-                <button type="submit" class="btn btn-secondary">{% trans "Submit" %}</button>
-            </div>
-        </div>
+        <button type="submit" class="btn btn-secondary btn-block mt-3">{% trans "Submit" %}</button>
 
       </form>
     </div>
@@ -169,7 +159,7 @@
 
   <footer class="page-footer pt-4">
       <div class="row justify-content-center mb-3">
-          <a href="/customers/{{ cart.restaurant.id}}" class="btn btn-dark btn-lg active w-75 shadow" role="button" aria-pressed="true">{% trans "Back to Menus" %}</a>
+          <a href="/customers/{{ cart.restaurant.id}}" class="btn btn-dark btn-lg btn-block active w-75 shadow" role="button" aria-pressed="true">{% trans "Back to Catalogues" %}</a>
       </div>
   </footer>
 </div>

@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from restaurant_admin.models import Restaurant, Menu, MenuItem
 from .models import Cart, MenuItemCounter, Customer
 from restaurant_admin.models import Restaurant, SelectOption, AddOnGroup, AddOnItem
-from .forms import CustomOrderForm, CustomTipForm, EmailForm, FeedbackForm, PhoneForm
+from .forms import CustomOrderForm, EmailForm, FeedbackForm, PhoneForm, NameForm
 import stripe
 import os
 from decimal import Decimal
@@ -40,7 +40,6 @@ def create_cart(request, restaurant_id):
         cart = Cart()
         cart.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
         cart.total = 0
-        cart.total_with_tip = 0
         cart.save()
         #redirect to view menu page
         response = HttpResponseRedirect('/customers/menus/{c_id}/{r_id}'.format(c_id = cart.id, r_id = restaurant_id))
@@ -55,7 +54,6 @@ def cart_to_item(request, restaurant_id, menu_id, item_id):
         cart = Cart()
         cart.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
         cart.total = 0
-        cart.total_with_tip = 0
         cart.save()
         #redirect to view menu page
         response = HttpResponseRedirect('/customers/view_item/{c_id}/{r_id}/{m_id}/{i_id}'.format(c_id = cart.id, r_id = restaurant_id, m_id = menu_id, i_id = item_id))
@@ -187,7 +185,6 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
         if addons:
             addon_objects = get_addon_objects(addons)
 
-
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_item = MenuItem.objects.filter(id = item_id).first()
 
@@ -214,28 +211,10 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
                 for addon in addon_objects:
                     addon_price += addon.price
 
-            #handle tip
-            if curr_cart.tip != 0:
-                if curr_cart.custom_tip:
-                    order.price = order.quantity*order.item.price
-                    order.save()
-                    curr_cart.total += order.price + addon_price
-                    curr_cart.total_with_tip += order.price + addon_price
-                    curr_cart.save()
-                else:
-                    tip_percent = round(curr_cart.tip / curr_cart.total, 2) #calculate tip percentage
-                    order.price = order.quantity*order.item.price
-                    order.save()
-                    curr_cart.total += order.price + addon_price
-                    curr_cart.tip = round(curr_cart.total * tip_percent, 2)
-                    curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
-                    curr_cart.save()
-            #no tip
-            else:
-                order.price = order.quantity*order.item.price
-                order.save()
-                curr_cart.total += order.price + addon_price
-                curr_cart.save()
+            order.price = order.quantity*order.item.price
+            order.save()
+            curr_cart.total += order.price + addon_price
+            curr_cart.save()
             return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
         #else same item already exists in cart
@@ -251,41 +230,15 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
                 for addon in addon_objects:
                     addon_price += addon.price
 
-            #handle tip
-            if curr_cart.tip != 0:
-                if curr_cart.custom_tip:
-                    old_total = curr_cart.total - item_counter.price
-                    #change itemcounter
-                    item_counter.quantity += int(request.POST['quantity'])
-                    item_counter.price = item_counter.quantity*item_counter.item.price
-                    item_counter.save()
-                    #update cart total price
-                    curr_cart.total = old_total + item_counter.price + addon_price
-                    curr_cart.total_with_tip = item_counter.price + curr_cart.tip + addon_price
-                    curr_cart.save()
-                else:
-                    tip_percent = round(curr_cart.tip / curr_cart.total, 2) #calculate tip percentage
-                    #get the old total price of the cart - total price of item
-                    old_total = curr_cart.total - item_counter.price
-                    #change itemcounter
-                    item_counter.quantity += int(request.POST['quantity'])
-                    item_counter.price = item_counter.quantity*item_counter.item.price
-                    item_counter.save()
-                    #update cart total price
-                    curr_cart.total = old_total + item_counter.price + addon_price
-                    curr_cart.tip = round(curr_cart.total * tip_percent, 2)
-                    curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
-                    curr_cart.save()
-            else:
-                #get the old total price of the cart - total price of item
-                old_total = curr_cart.total - item_counter.price
-                #change itemcounter
-                item_counter.quantity += int(request.POST['quantity'])
-                item_counter.price = item_counter.quantity*item_counter.item.price
-                item_counter.save()
-                #update cart total price
-                curr_cart.total = old_total + item_counter.price + addon_price
-                curr_cart.save()
+            #get the old total price of the cart - total price of item
+            old_total = curr_cart.total - item_counter.price
+            #change itemcounter
+            item_counter.quantity += int(request.POST['quantity'])
+            item_counter.price = item_counter.quantity*item_counter.item.price
+            item_counter.save()
+            #update cart total price
+            curr_cart.total = old_total + item_counter.price + addon_price
+            curr_cart.save()
         #redirect to menu
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
     #if method isn't a post, just redirect to menu
@@ -297,13 +250,10 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
         # return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 ''' When plus icon is pressed on view_cart, ajax sends cart_id and MenuItem_id to this view. Then,
-    MenuItemCounter.quantity is increased by 1. Depending on whether the cart has tip, it calculates
-    new totals and sends JSON response back to client'''
+    MenuItemCounter.quantity is increased by 1. Sends JSON response back to client'''
 def ajax_increase_quantity(request):
     cart_id = request.GET.get('cart_id', None)
     menu_item_name = request.GET.get('menu_item', None)
-    # print('cart_id:', cart_id)
-    # print('menu_item:', menu_item_name)
     item_counters = MenuItemCounter.objects.filter(cart = cart_id).all()
     curr_cart = Cart.objects.filter(id = cart_id).first()
 
@@ -315,89 +265,48 @@ def ajax_increase_quantity(request):
             item_counter.save()
             quantity = item_counter.quantity
             price = item_counter.price
-            #take into account tip
-            if curr_cart.tip != 0:
-                if curr_cart.custom_tip:
-                    curr_cart.total = old_total + item_counter.price
-                    curr_cart.total_with_tip += item_counter.item.price
-                    curr_cart.save()
-                    cart_total = curr_cart.total
-                    cart_tip = curr_cart.tip
-                    cart_total_with_tip = curr_cart.total_with_tip
-                else:
-                    tip_percent = round(curr_cart.tip / curr_cart.total, 2)
-                    curr_cart.total = old_total + item_counter.price
-                    curr_cart.tip = round(curr_cart.total * tip_percent, 2)
-                    curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
-                    curr_cart.save()
-                    cart_total = curr_cart.total
-                    cart_tip = curr_cart.tip
-                    cart_total_with_tip = curr_cart.total_with_tip
-            #no tip included so far
-            else:
-                curr_cart.total = old_total + item_counter.price
-                curr_cart.save()
-                cart_total = curr_cart.total
-                cart_tip = 0
-                cart_total_with_tip = 0
+
+            curr_cart.total = old_total + item_counter.price
+            curr_cart.save()
+            cart_total = curr_cart.total
 
     data = {
         'quantity': quantity,
         'price': price,
         'cart_total': cart_total,
-        'cart_tip': cart_tip,
-        'cart_total_with_tip': cart_total_with_tip
     }
     return JsonResponse(data)
 
 def ajax_decrease_quantity(request):
     cart_id = request.GET.get('cart_id', None)
     menu_item_name = request.GET.get('menu_item', None)
-    # print('cart_id:', cart_id)
-    # print('menu_item:', menu_item_name)
     item_counters = MenuItemCounter.objects.filter(cart = cart_id).all()
     curr_cart = Cart.objects.filter(id = cart_id).first()
 
     for item_counter in item_counters:
         if item_counter.item.name == menu_item_name:
             old_total = curr_cart.total - item_counter.price
-            item_counter.quantity -= 1
-            item_counter.price = round(item_counter.quantity * item_counter.item.price, 2)
-            item_counter.save()
-            quantity = item_counter.quantity
-            price = item_counter.price
-            #take tip into account
-            if curr_cart.tip != 0:
-                if curr_cart.custom_tip:
-                    curr_cart.total = old_total + item_counter.price
-                    curr_cart.total_with_tip -= item_counter.item.price
-                    curr_cart.save()
-                    cart_total = curr_cart.total
-                    cart_tip = curr_cart.tip
-                    cart_total_with_tip = curr_cart.total_with_tip
-                else:
-                    tip_percent = round(curr_cart.tip / curr_cart.total, 2)
-                    curr_cart.total = old_total + item_counter.price
-                    curr_cart.tip = round(curr_cart.total * tip_percent, 2)
-                    curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
-                    curr_cart.save()
-                    cart_total = curr_cart.total
-                    cart_tip = curr_cart.tip
-                    cart_total_with_tip = curr_cart.total_with_tip
-            #no tip included so far
+            if item_counter.quantity - 1 == 0:
+                item_counter.quantity = 0
+                item_counter.price = 0
+                item_counter.save()
+                quantity = 0
+                price = 0
             else:
-                curr_cart.total = old_total + item_counter.price
-                curr_cart.save()
-                cart_total = curr_cart.total
-                cart_tip = 0
-                cart_total_with_tip = 0
+                item_counter.quantity -= 1
+                item_counter.price = round(item_counter.quantity * item_counter.item.price, 2)
+                item_counter.save()
+                quantity = item_counter.quantity
+                price = item_counter.price
 
+            curr_cart.total = old_total + item_counter.price
+            curr_cart.save()
+            cart_total = curr_cart.total
+            print('cart_total:', cart_total)
     data = {
         'quantity': quantity,
         'price': price,
         'cart_total': cart_total,
-        'cart_tip': cart_tip,
-        'cart_total_with_tip': cart_total_with_tip
     }
     return JsonResponse(data)
 
@@ -421,24 +330,14 @@ def remove_item(request, cart_id, restaurant_id, menu_id, item_id):
         items = MenuItemCounter.objects.filter(cart = curr_cart).all()
         item_remove = MenuItemCounter.objects.filter(cart = curr_cart).filter(id = item_id).first()
         remove_price = item_remove.price
-
-        if curr_cart.tip != 0:
-            if curr_cart.custom_tip:
-                curr_cart.total -= remove_price
-                curr_cart.total_with_tip -= remove_price
-                item_remove.delete()
-                curr_cart.save()
-            else:
-                tip_percent = round(curr_cart.tip / curr_cart.total, 2) #calculate tip percentage
-                curr_cart.total -= remove_price
-                curr_cart.tip = round(curr_cart.total * tip_percent, 2)
-                curr_cart.total_with_tip = curr_cart.total + curr_cart.tip
-                item_remove.delete()
-                curr_cart.save()
+        if curr_cart.total - remove_price == 0:
+            curr_cart.total = 0
+            curr_cart.save()
+            item_remove.delete()
         else:
             curr_cart.total -= remove_price
-            item_remove.delete()
             curr_cart.save()
+            item_remove.delete()
 
         return HttpResponse(status=200)
         #return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
@@ -462,31 +361,6 @@ def view_cart(request, cart_id, restaurant_id, menu_id):
         #if method is post, just redirect back to page
         return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
-"""Calculates tip depending on what button is pressed. If custom tip, it is passed with POST method in form"""
-def calculate_tip(request, cart_id, restaurant_id, menu_id, tip):
-    if request.method == 'POST':
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        form = CustomTipForm(request.POST)
-
-        if form.is_valid():
-            curr_cart.custom_tip = True
-            custom_tip = form.cleaned_data['tip']
-            # print("custom_tip", custom_tip)
-            curr_cart.tip = custom_tip
-            curr_cart.total_with_tip = curr_cart.total + custom_tip
-            curr_cart.save()
-        return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
-    else:
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-        curr_menu = Menu.objects.filter(id = menu_id).first()
-        items = MenuItemCounter.objects.filter(cart = curr_cart).all()
-        tip_amount = round(curr_cart.total * Decimal((tip / 100)), 2)
-        curr_cart.custom_tip = False
-        curr_cart.tip = tip_amount
-        curr_cart.total_with_tip = curr_cart.total + tip_amount
-        curr_cart.save()
-        return render(request, 'customers/view_cart.html', {'cart': curr_cart, 'items': items, 'restaurant': curr_rest, 'menu': curr_menu})
 
 '''If a restaurant is offering the option of Dine In, this view receives a POST request from
     a form in view_cart. Handles User's choice of Dine In vs To Go'''
@@ -545,7 +419,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
         if "previous_card_submit" in request.POST:
             try:
                 stripe.PaymentIntent.create(
-                amount=int(cart.total_with_tip*100),
+                amount=int(cart.total*100),
                 currency='mxn',
                 customer=existing_customer.stripe_id,
                 payment_method=payment_method_id,
@@ -573,9 +447,6 @@ def payment(request, cart_id, restaurant_id, menu_id):
     else:
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-        if cart.total_with_tip == 0:
-            cart.total_with_tip = cart.total
-            cart.save()
         #stripe API stuff here
         #added to save card details if customer authenticated and paying for the first time
         if curr_rest.handle_payment:
@@ -591,7 +462,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
 
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
-                  amount=int((cart.total_with_tip*100)),
+                  amount=int((cart.total*100)),
                   currency='mxn',
                   setup_future_usage='off_session',
                   customer = new_customer.stripe_id
@@ -600,7 +471,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
             elif card_stored:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
-                  amount=int((cart.total_with_tip*100)),
+                  amount=int((cart.total*100)),
                   currency='mxn',
                   setup_future_usage='off_session',
                   customer = existing_customer.stripe_id
@@ -609,7 +480,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
             else:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
-                  amount=int((cart.total_with_tip*100)),
+                  amount=int((cart.total*100)),
                   currency='mxn'
                   # stripe_account=curr_rest.stripe_account_id,
                 )
@@ -619,33 +490,56 @@ def payment(request, cart_id, restaurant_id, menu_id):
             return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart,
                                                               'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable,
                                                               'card_stored':card_stored, 'last4':last4})
+#helper function to know pick_up_or_delivery response
+def is_pickup(resp):
+    if resp == 'pickup':
+        return True
+    return False
 
-''' This is an intermediary step between payment and order confirmation. Email and Phone form'''
-def card_email_receipt(request, cart_id, restaurant_id, menu_id):
-    form = EmailForm()
-    phone_form = PhoneForm()
+def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
     if request.method == 'GET':
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-        #If Customer was going to pay cash but changed their mind, mark cash code false
-        if curr_cart.cash_payment != None:
-             curr_cart.cash_payment = False
-             curr_cart.save()
-        #create new order tracker if one DNE
+
+        return render(request, 'customers/pick_up_or_delivery.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu})
+    else:
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+
+        if 'delivery_address' in request.POST:
+            curr_cart.shipping_address = request.POST['delivery_address']
+        else:
+            curr_cart.shipping_address = None
+
+        curr_cart.save()
+        print('DELIVERY:', curr_cart.shipping_address)
+        return redirect('/customers/customer_details/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+
+'''after cart, get the customer's details '''
+def customer_details(request, cart_id, restaurant_id, menu_id):
+    form = EmailForm()
+    phone_form = PhoneForm()
+    name_form = NameForm()
+    if request.method == 'GET':
+        curr_cart = Cart.objects.filter(id = cart_id).first()
+        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+        curr_menu = Menu.objects.filter(id = menu_id).first()
+
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
             tracker.save()
-        return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
+        return render(request, 'customers/customer_details.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone': phone_form, 'name': name_form})
+
     else:
         curr_cart = Cart.objects.filter(id = cart_id).first()
-        # curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-        # curr_menu = Menu.objects.filter(id = menu_id).first()
-
         form = EmailForm(request.POST)
         if form.is_valid():
             curr_user_email = form.cleaned_data['email_input']
+            f_name = request.POST['first_name']
+            l_name = request.POST['last_name']
             curr_cart.email = curr_user_email
+            curr_cart.first_name = f_name
+            curr_cart.last_name = l_name
             curr_cart.save()
             if curr_user_email != None:
                 current_date = datetime.date.today()
@@ -671,11 +565,72 @@ def card_email_receipt(request, cart_id, restaurant_id, menu_id):
             number = request.POST['phone_number']
             tracker.phone_number = number
             tracker.save()
-            return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
-        # else:
-        #     return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
+            return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+        return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
-        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
+
+
+#Replaced this method with customer details
+# ''' This is an intermediary step between payment and order confirmation. Email and Phone form'''
+# def card_email_receipt(request, cart_id, restaurant_id, menu_id):
+#     form = EmailForm()
+#     phone_form = PhoneForm()
+#     if request.method == 'GET':
+#         curr_cart = Cart.objects.filter(id = cart_id).first()
+#         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+#         curr_menu = Menu.objects.filter(id = menu_id).first()
+#         #If Customer was going to pay cash but changed their mind, mark cash code false
+#         if curr_cart.cash_payment != None:
+#              curr_cart.cash_payment = False
+#              curr_cart.save()
+#         #create new order tracker if one DNE
+#         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+#             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
+#             tracker.save()
+#         return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
+#     else:
+#         curr_cart = Cart.objects.filter(id = cart_id).first()
+#
+#         form = EmailForm(request.POST)
+#         if form.is_valid():
+#             curr_user_email = form.cleaned_data['email_input']
+#             curr_cart.email = curr_user_email
+#             curr_cart.save()
+#             if curr_user_email != None:
+#                 current_date = datetime.date.today()
+#                 logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(curr_cart.restaurant.id))
+#                 item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
+#
+#                 subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, curr_user_email
+#                 msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
+#                 html_template = get_template("emails/receipt/receipt.html").render({
+#                                                             'date':current_date,
+#                                                             'receipt_number':curr_cart.id,
+#                                                             'path':curr_cart.restaurant.photo_path,
+#                                                             'order_id':curr_cart.id,
+#                                                             'item_counters': item_counters,
+#                                                             'cart': curr_cart
+#                                                 })
+#                 msg.attach_alternative(html_template, "text/html")
+#                 msg.send()
+#
+#         phone_num = PhoneForm(request.POST)
+#         if request.POST['phone_number'] != ""  and phone_num.is_valid():
+#             tracker = OrderTracker.objects.filter(cart = curr_cart).first()
+#             number = request.POST['phone_number']
+#             tracker.phone_number = number
+#             tracker.save()
+#             return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
+#         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
+
+def ajax_cash_payment(request):
+    cart_id = request.GET.get('cart_id', None)
+    curr_cart = Cart.objects.filter(id = cart_id).first()
+    curr_cart.cash_payment = True
+    curr_cart.save()
+    data = {}
+
+    return JsonResponse(data)
 
 
 def cash_email_receipt(request, cart_id, restaurant_id, menu_id):

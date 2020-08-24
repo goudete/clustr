@@ -9,13 +9,12 @@
   .thumbnail{
     display: block;
     padding: 4px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    margin-top: 30px;
   }
 
   #thumb{
     float: right;
-    max-height: 300px;
-
   }
 
   #item_img{
@@ -56,9 +55,14 @@
   .container-radio input:checked ~ .checkmark {
     background-color: #05122A;
   }
+
   /*
   Experiment Ends
   */
+  .img-background {
+    background-color: #b3e5fc;
+    height: 100%;
+  }
 </style>
 
 <nav class="navbar sticky-top navbar-dark bg-dark">
@@ -85,10 +89,12 @@
 
 <div class="container-fluid">
   <!-- Item image -->
-  <div class="row justify-content-center">
+  <div class="row justify-content-center img-background">
     <div class="thumbnail thumb">
       {% if item.photo_path %}
       <img src="{% static item.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      {% else %}
+      <img src="https://cluster-media.s3-us-west-2.amazonaws.com/no-photo.png" class="card-img-top" alt="...">
       {% endif %}
     </div>
   </div>
@@ -96,7 +102,7 @@
 
   <!-- Item Name and info -->
   <div class="row ml-1 pt-4">
-    <h5>{{ item.name }}</h5>
+    <h4>{{ item.name }}</h4>
   </div>
   <div class="row ml-1">
     <h6>{{ item.description }}</h6>
@@ -108,145 +114,131 @@
   <!-- End  -->
 
   <hr>
-  <!-- Adding to cart disabled if the restaurant is not handling payments -->
-{% if restaurant.handle_payment and restaurant.stripe_account_id %}
-  <div class="row justify-content-center mt-4 mb-3">
-    <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" id="target">
-    {% csrf_token %}
 
-    <div class="radios">
-    <!-- Addon Group -->
-    {% if addon_dict %}
-    <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
-      {% for key, value in addon_dict.items %}
-      <div class="row mb-3">
-        <!-- <div class="col-1">
+  <!-- Cardifying view item -->
+  <div class="card shadow bg-white rounded mt-2">
+    <div class="card-body">
+      <!-- Adding to cart disabled if the restaurant is not handling payments -->
+      {% if restaurant.handle_payment and restaurant.stripe_account_id %}
+          <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" id="target">
+          {% csrf_token %}
 
-        </div> -->
-        <div class="col-11">
-          <b>{{ key.name }}</b>
+          <div class="radios">
+          <!-- Addon Group -->
+          {% if addon_dict %}
+          <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
+            {% for key, value in addon_dict.items %}
+            <div class="row mb-3">
+              <!-- <div class="col-1">
+
+              </div> -->
+              <div class="col-11">
+                <b>{{ key.name }}</b>
+              </div>
+            </div>
+              {% for v in value %}
+              <div class="row">
+                <div class="col-8">
+                  <div class="form-check">
+                    <label class="container-radio" for="radio_addon">
+                      <input class="" type="radio" name="radio_addon_{{ key.name }}" checked="checked" value="{{ v.id }}" required>
+                      <span class="checkmark"></span>
+                      {{ v.name }}
+                    </label>
+                  </div>
+                </div>
+                <div class="col-4">
+                  + ${{ v.price }}
+                </div>
+              </div>
+              <hr>
+              {% endfor %}
+            <!-- no addon -->
+            <div class="row mb-3">
+              <div class="col-8">
+                <div class="form-check">
+                  <label class="container-radio" for="radio_addon">
+                    <input class="" type="radio" name="radio_addon_{{ key.name }}" value="-1">
+                    <span class="checkmark"></span>
+                    {% trans 'None' %}
+                  </label>
+                </div>
+              </div>
+              <div class="col-4">
+                + $0.00
+              </div>
+            </div>
+            {% endfor %}
+          {% endif %}
+        <!-- End Addon Group -->
         </div>
-      </div>
-        {% for v in value %}
-        <div class="row">
-          <div class="col-8">
-            <div class="form-check">
-              <label class="container-radio" for="radio_addon">
-                <input type="radio" name="radio_addon_{{ key.name }}" checked="checked" value="{{ v.id }}" required>
-                <span class="checkmark"></span>
-                {{ v.name }}
-              </label>
+
+        <!-- Custom Order Form -->
+          <input type="hidden" id="group_names_arr" value="{{ group_names }}">
+          <input type="hidden" id="item_id" value="{{ item.id }}" cart_id="{{ cart.id}}">
+
+          <div class="form-group">
+            <label for="custom_instructions">{% trans "Additional Information" %}</label>
+            <textarea class="form-control" name="custom_instructions" id="custom_instructions" placeholder=" {% trans 'Custom Instructions...' %} " rows="3"></textarea>
+          </div>
+
+          <!-- Quantity -->
+          <div class="form-group">
+            <label for="quantity">{% trans "Quantity" %}</label>
+            <select class="form-control" name="quantity" id="quantity">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+              <option>9</option>
+              <option>10</option>
+            </select>
+          </div>
+          <!-- Quantity ends -->
+
+
+          <button type="submit" class="btn btn-dark btn-lg btn-block active shadow">{% trans "Add to Cart" %}</button>
+
+        </form>
+      <!-- Form Ends -->
+
+      <!-- Restaurant is not handling payments -->
+      {% else %}
+        {% if addon_dict %}
+        <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
+          {% for key, value in addon_dict.items %}
+          <div class="row mb-3">
+            <div class="col-1">
+
+            </div>
+            <div class="col-11">
+              <b>{{ key.name }}</b>
             </div>
           </div>
-          <div class="col-4">
-            + ${{ v.price }}
-          </div>
-        </div>
-        <hr>
-        {% endfor %}
-      <!-- no addon -->
-      <div class="row mb-3">
-        <div class="col-8">
-          <div class="form-check">
-            <label class="container-radio" for="radio_addon">
-              <input type="radio" name="radio_addon_{{ key.name }}" value="-1">
-              <span class="checkmark"></span>
-              {% trans 'None' %}
-            </label>
-          </div>
-        </div>
-        <div class="col-4">
-          + $0.00
-        </div>
-      </div>
-      {% endfor %}
-    {% endif %}
-  <!-- End Addon Group -->
-  </div>
-
-  <!-- Custom Order Form -->
-    <input type="hidden" id="group_names_arr" value="{{ group_names }}">
-    <input type="hidden" id="item_id" value="{{ item.id }}" cart_id="{{ cart.id}}">
-
-    <div class="form-group">
-      <label for="custom_instructions">{% trans "Additional Information" %}</label>
-      <textarea class="form-control" name="custom_instructions" id="custom_instructions" placeholder=" {% trans 'Custom Instructions...' %} " rows="3"></textarea>
-    </div>
-
-    <!-- Quantity -->
-    <div class="form-group">
-      <label for="quantity">{% trans "Quantity" %}</label>
-      <select class="form-control" name="quantity" id="quantity">
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
-        <option>6</option>
-        <option>7</option>
-        <option>8</option>
-        <option>9</option>
-        <option>10</option>
-      </select>
-    </div>
-    <!-- Quantity ends -->
-
-    <div class="row justify-content-center mb-4 mt-4">
-      <button type="submit" class="btn btn-dark btn-lg active w-100 shadow">{% trans "Add to Cart" %}</button>
-    </div>
-
-  </form>
-</div>
-<!-- Form Ends -->
-
-<!-- Restaurant is not handling payments -->
-{% else %}
-  {% if addon_dict %}
-  <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
-    {% for key, value in addon_dict.items %}
-    <div class="row mb-3">
-      <div class="col-1">
-
-      </div>
-      <div class="col-11">
-        <b>{{ key.name }}</b>
-      </div>
-    </div>
-      {% for v in value %}
-      <div class="row ml-3">
-        <div class="col-8">
-          <div class="form-check">
-            <label class="form-check-label" for="radio_addon">
-              {{ v.name }}
-            </label>
-          </div>
-        </div>
-        <div class="col-4">
-          + ${{ v.price }}
-        </div>
-        <hr>
-      </div>
-      {% endfor %}
-    {% endfor %}
-  {% endif %}
-{% endif %}
-
-<!-- Displayed only if the restaurant is handling payments -->
-<!-- {% if restaurant.handle_payment and restaurant.stripe_account_id %} -->
-  <!-- View Cart Button -->
-  <!-- <div class="fixed-bottom">
-    <div class="row justify-content-center mb-3">
-      {% if cart.total_with_tip %}
-      <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total_with_tip }}</a>
-      {% elif cart.total %}
-      <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart $" %}{{ cart.total }}</a>
-      {% else %}
-      <a href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}" class="btn btn-dark btn-circle btn-xl" role="button">{% trans "View Cart" %}</a>
+            {% for v in value %}
+            <div class="row ml-3">
+              <div class="col-8">
+                <div class="form-check">
+                  <label class="form-check-label" for="radio_addon">
+                    {{ v.name }}
+                  </label>
+                </div>
+              </div>
+              <div class="col-4">
+                + ${{ v.price }}
+              </div>
+              <hr>
+            </div>
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
       {% endif %}
     </div>
-  </div> -->
-  <!-- Cart Button ends -->
-<!-- {% endif %} -->
+  </div>
 
 <footer class="page-footer pt-4">
     <div class="row justify-content-center mb-3">
