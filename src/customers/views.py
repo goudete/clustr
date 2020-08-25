@@ -508,7 +508,7 @@ def get_mics(c):
 #helper method to get all addon items associated w menu item counter
 def get_addon_items(mic):
     # return AddOnItem.objects.filter(MenuItemCounter = mic)
-    return MenuItemCounter.objects.filter(id = mic.id).addon_items.all()
+    return MenuItemCounter.objects.get(id = mic.id).addon_items.all()
 
 
 #helper method that checks if a cart is ordering too much of any item (ie not enough in stock)
