@@ -138,8 +138,11 @@ input:checked + .slider:before {
       				    <thead>
       				        <tr>
                             <th>{% trans 'Name' %}</th>
-                            <th>{% trans 'Total' %}</th>
                             <th>{% trans 'Email' %}</th>
+                            <th>{% trans 'Total' %}</th>
+                            <th>{% trans 'Payment' %}</th>
+                            <th>{% trans 'Fulfillment' %}</th>
+                            <th>{% trans 'Time' %}</th>
                             <!-- <th>Actions</th> -->
       				        </tr>
       				    </thead>
@@ -149,9 +152,12 @@ input:checked + .slider:before {
                   <tr colspan="5" data-toggle="collapse" data-target="#demo{{order.id}}" onclick="event.preventDefault();" >
                   <!-- <tr colspan="5"> -->
                       <input type = 'number' class = 'tracker_id_number' value = '{{order.id}}' hidden = 'true' readonly>
-                      <td data-toggle="collapse">Blank For Now</td>
-                      <td data-toggle="collapse">{{order.cart.total}}</td>
+                      <td data-toggle="collapse">{{ order.cart.first_name}} {{ order.cart.last_name}}</td>
                       <td data-toggle="collapse">{% if order.cart.email %}{{order.cart.email}}{% else %}{% trans 'no email' %}{% endif %}</td>
+                      <td data-toggle="collapse">{{order.cart.total}}</td>
+                      <td data-toggle="collapse">{% if order.cart.cash_payment %}{% trans 'Paying with Cash' %}{% else %} {% trans 'Card Payment' %} {% endif %}</td>
+                      <td data-toggle="collapse">{% if order.cart.shipping_address %}{{order.cart.shipping_address}}{% else %}{% trans 'Picking Up' %}{% endif %}</td>
+                      <td data-toggle="collapse">{{order.cart.paid_at}}</td>
                   </tr>
                   <tr class="p">
                       <td colspan="5" class="hiddenRow">
@@ -160,7 +166,7 @@ input:checked + .slider:before {
               	            <div class="card-body">
                               {% for item in list %}
                               <div class="row justify-content-center">
-                                <p>-<b>{{item.quantity}}</b> {{item.item.name}}</p>
+                                <h5><b>{{item.quantity}}</b> {{item.item.name}}</h5>
                               </div>
                                 {% if item.custom_instructions %}
                                 <div class = 'row justify-content-center'>
