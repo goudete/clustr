@@ -19,7 +19,6 @@ class Cart(models.Model):
     email = models.EmailField(max_length=200)
     receipt_html = models.TextField(null = True)
     is_cancelled = models.BooleanField(default = False)
-    # dine_in = models.BooleanField(null = True)
     cash_payment = models.BooleanField(null = True)
     first_name = models.CharField(null = True, max_length = 255)
     last_name = models.CharField(null = True, max_length = 255)
@@ -37,6 +36,7 @@ class MenuItemCounter(models.Model):
     custom_instructions = models.CharField(null = True, blank= True, max_length = 255, default=None)
     price = models.DecimalField(decimal_places = 2, max_digits = 12,validators=[MinValueValidator(0.0)], default=0)
     addon_items = models.ManyToManyField(AddOnItem, blank=True)
+
 
 class Feedback(models.Model):
     feedback = models.CharField(null = True, max_length = 255)
