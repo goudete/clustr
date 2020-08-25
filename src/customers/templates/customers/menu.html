@@ -85,7 +85,7 @@ div.scrollmenu a:hover {
 
   <!-- Greeting About Modal -->
 
-  <div class="modal fade bg-light" tabindex="-1" role="dialog" id="myModal">
+  <!-- <div class="modal fade bg-light" tabindex="-1" role="dialog" id="myModal">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -104,7 +104,7 @@ div.scrollmenu a:hover {
         </div>
         {% if restaurant.handle_payment and restaurant.stripe_account_id %}
           <p>
-            {% trans "Browse our menu, order and pay right from your phone! You'll get notified by text when your order is ready." %}
+            {% trans "Browse our menu, order and pay right from your phone!" %}
           </p>
         {% else %}
 
@@ -112,7 +112,7 @@ div.scrollmenu a:hover {
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
   <!-- Restaurant Name and info -->
   <div class="row ml-1 mb-2 justify-content-center bg-light">
@@ -216,10 +216,10 @@ div.scrollmenu a:hover {
     var category_name = $("").attr("name");
     $('#display_category_' + category_name).show()
 
-    if (sessionStorage.getItem('#myModal') !== 'true') {
-      $('#myModal').modal('show');
-      sessionStorage.setItem('#myModal', 'true');
-    }
+    // if (sessionStorage.getItem('#myModal') !== 'true') {
+    //   $('#myModal').modal('show');
+    //   sessionStorage.setItem('#myModal', 'true');
+    // }
 
     //scroll to div experiment
     //know which button was clicked
