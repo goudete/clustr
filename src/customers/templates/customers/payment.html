@@ -185,8 +185,7 @@
  // console.log('connected-id: ' + connected_account)
 
  if (publishable) {
-   var stripe = Stripe(publishable)
-   , {
+   var stripe = Stripe(publishable, {
      stripeAccount: connected_account
     });
 
