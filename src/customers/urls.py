@@ -19,7 +19,7 @@ urlpatterns = [
     path('pick_up_or_delivery/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.pick_up_or_delivery),
     path('customer_details/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.customer_details),
     # path('card_email_receipt/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.card_email_receipt),
-    path('cash_email_receipt/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.cash_email_receipt),
+    # path('cash_email_receipt/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.cash_email_receipt),
     path('ajax/cash_payment', views.ajax_cash_payment, name = 'cash_payment'),
     path('feedback/<int:cart_id>', views.feedback),
     path('ajax/ajax_increase_quantity', views.ajax_increase_quantity, name='increase_quantity'),

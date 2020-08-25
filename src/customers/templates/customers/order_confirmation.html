@@ -71,7 +71,7 @@
           </div>
         </div>
           {% for item in items %}
-          <div class="media mt-4 mb-3">
+          <div class="media mt-4 mb-1">
             {% if item.item.photo_path %}
               <img src="{% static item.item.photo_path %}" height=60 width=60 class="rounded mr-3" alt="...">
             {% else %}
@@ -99,11 +99,11 @@
           {% if item.addon_items %}
           {% for addon in item.addon_items.all %}
           <div class="row mb-1">
-            <div class="col-8">
-              + {{ addon.name }}
+            <div class="col-3">
+
             </div>
-            <div class="col-4">
-              ${{ addon.price }}
+            <div class="col-9">
+              + {{ addon.name }}
             </div>
           </div>
           {% endfor %}

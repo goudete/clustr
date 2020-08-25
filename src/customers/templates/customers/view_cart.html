@@ -93,11 +93,11 @@
                   {% for addon in item.addon_items.all %}
                   <div class="row mb-1">
                     <div class="col-8">
-                      + {{ addon.name }}
+                      - {{ addon.name }}
                     </div>
-                    <div class="col-4">
+                    <!-- <div class="col-4">
                       ${{ addon.price }}
-                    </div>
+                    </div> -->
                   </div>
                   {% endfor %}
                   {% endif %}
@@ -153,7 +153,7 @@
 
           </div>
         </div>
-        <!-- Tip Section Ends -->
+
         {% endif %}
       </div>
     </div>

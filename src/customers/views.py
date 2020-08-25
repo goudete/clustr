@@ -203,17 +203,17 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
             order.restaurant = Restaurant.objects.filter(id = restaurant_id).first()
             order.save()
             # if addonitems, save addonitems to the modelitemcounter model and get addon items price
-            addon_price = 0
+            # addon_price = 0
             if addons:
                 # add addon_objects to model
                 order.addon_items.add(*addon_objects)
                 #get addon items price
-                for addon in addon_objects:
-                    addon_price += addon.price
+                # for addon in addon_objects:
+                #     addon_price += addon.price
 
             order.price = order.quantity*order.item.price
             order.save()
-            curr_cart.total += order.price + addon_price
+            curr_cart.total += order.price
             curr_cart.save()
             return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
@@ -222,13 +222,13 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
             item_counter = item_counters.first()
 
             # if addonitems, save addonitems to the modelitemcounter model
-            addon_price = 0
+            # addon_price = 0
             if addons:
                 # add addon_objects to model
                 item_counter.addon_items.add(*addon_objects)
                 #get addon items price
-                for addon in addon_objects:
-                    addon_price += addon.price
+                # for addon in addon_objects:
+                #     addon_price += addon.price
 
             #get the old total price of the cart - total price of item
             old_total = curr_cart.total - item_counter.price
@@ -237,7 +237,7 @@ def add_item(request, cart_id, restaurant_id, menu_id, item_id):
             item_counter.price = item_counter.quantity*item_counter.item.price
             item_counter.save()
             #update cart total price
-            curr_cart.total = old_total + item_counter.price + addon_price
+            curr_cart.total = old_total + item_counter.price
             curr_cart.save()
         #redirect to menu
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
@@ -443,8 +443,14 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   payment_methods['data'][1]['id'],
                 )
 
+        # Decrease addon quantity here
+        decr_quantity(cart)
+
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:
+        if not all_in_stock(cart):
+            return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
         #stripe API stuff here
@@ -465,8 +471,8 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   amount=int((cart.total*100)),
                   currency='mxn',
                   setup_future_usage='off_session',
-                  customer = new_customer.stripe_id
-                  # stripe_account=curr_rest.stripe_account_id,
+                  customer = new_customer.stripe_id,
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             elif card_stored:
                 intent = stripe.PaymentIntent.create(
@@ -474,15 +480,15 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   amount=int((cart.total*100)),
                   currency='mxn',
                   setup_future_usage='off_session',
-                  customer = existing_customer.stripe_id
-                  # stripe_account=curr_rest.stripe_account_id,
+                  customer = existing_customer.stripe_id,
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             else:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
                   amount=int((cart.total*100)),
-                  currency='mxn'
-                  # stripe_account=curr_rest.stripe_account_id,
+                  currency='mxn',
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             cart.stripe_order_id = intent.id
             cart.save()
@@ -490,6 +496,38 @@ def payment(request, cart_id, restaurant_id, menu_id):
             return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart,
                                                               'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable,
                                                               'card_stored':card_stored, 'last4':last4})
+
+
+
+
+
+#helper method to get all menuitem counter associated w a cart
+def get_mics(c):
+    return MenuItemCounter.objects.filter(cart = c)
+
+#helper method to get all addon items associated w menu item counter
+def get_addon_items(mic):
+    return AddOnItem.objects.filter(MenuItemCounter = mic)
+
+#helper method that checks if a cart is ordering too much of any item (ie not enough in stock)
+def all_in_stock(crt):
+    mics = get_mics(crt)
+    for m in mics:
+        addons = get_addon_items(m)
+        for a in addons:
+            if m.quantity > a.quantity:
+                return false
+    return true
+
+#helper method that decreases the quantity of addon items
+def decr_quantity(crt):
+    mics = get_mics(crt)
+    for m in mics:
+        addons = get_addon_items(m)
+        for a in addons:
+            a.quantity -= m.quantity
+            a.save()
+
 #helper function to know pick_up_or_delivery response
 def is_pickup(resp):
     if resp == 'pickup':
@@ -569,60 +607,6 @@ def customer_details(request, cart_id, restaurant_id, menu_id):
         return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 
-
-#Replaced this method with customer details
-# ''' This is an intermediary step between payment and order confirmation. Email and Phone form'''
-# def card_email_receipt(request, cart_id, restaurant_id, menu_id):
-#     form = EmailForm()
-#     phone_form = PhoneForm()
-#     if request.method == 'GET':
-#         curr_cart = Cart.objects.filter(id = cart_id).first()
-#         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-#         curr_menu = Menu.objects.filter(id = menu_id).first()
-#         #If Customer was going to pay cash but changed their mind, mark cash code false
-#         if curr_cart.cash_payment != None:
-#              curr_cart.cash_payment = False
-#              curr_cart.save()
-#         #create new order tracker if one DNE
-#         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
-#             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
-#             tracker.save()
-#         return render(request, 'customers/card_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
-#     else:
-#         curr_cart = Cart.objects.filter(id = cart_id).first()
-#
-#         form = EmailForm(request.POST)
-#         if form.is_valid():
-#             curr_user_email = form.cleaned_data['email_input']
-#             curr_cart.email = curr_user_email
-#             curr_cart.save()
-#             if curr_user_email != None:
-#                 current_date = datetime.date.today()
-#                 logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(curr_cart.restaurant.id))
-#                 item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
-#
-#                 subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, curr_user_email
-#                 msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
-#                 html_template = get_template("emails/receipt/receipt.html").render({
-#                                                             'date':current_date,
-#                                                             'receipt_number':curr_cart.id,
-#                                                             'path':curr_cart.restaurant.photo_path,
-#                                                             'order_id':curr_cart.id,
-#                                                             'item_counters': item_counters,
-#                                                             'cart': curr_cart
-#                                                 })
-#                 msg.attach_alternative(html_template, "text/html")
-#                 msg.send()
-#
-#         phone_num = PhoneForm(request.POST)
-#         if request.POST['phone_number'] != ""  and phone_num.is_valid():
-#             tracker = OrderTracker.objects.filter(cart = curr_cart).first()
-#             number = request.POST['phone_number']
-#             tracker.phone_number = number
-#             tracker.save()
-#             return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
-#         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
-
 def ajax_cash_payment(request):
     cart_id = request.GET.get('cart_id', None)
     curr_cart = Cart.objects.filter(id = cart_id).first()
@@ -632,42 +616,6 @@ def ajax_cash_payment(request):
 
     return JsonResponse(data)
 
-
-def cash_email_receipt(request, cart_id, restaurant_id, menu_id):
-    '''Notify cashier that customer is paying cash'''
-    form = EmailForm()
-    phone_form = PhoneForm()
-    curr_cart = Cart.objects.filter(id = cart_id).first()
-    curr_cart.is_paid = True
-    curr_cart.save()
-    curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-    curr_menu = Menu.objects.filter(id = menu_id).first()
-    if request.method == 'GET':
-        #Mark cash payment
-        curr_cart.cash_payment = True
-        curr_cart.save()
-        #create new order tracker if one DNE
-        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
-            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
-            tracker.save()
-        return render(request, 'customers/cash_email_receipt.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone':phone_form})
-    else:
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        form = EmailForm(request.POST)
-        if form.is_valid():
-            curr_user_email = form.cleaned_data['email_input']
-            curr_cart.email = curr_user_email
-            curr_cart.save()
-
-        phone_num = PhoneForm(request.POST)
-        if request.POST['phone_number'] != "" and phone_num.is_valid():
-            tracker = OrderTracker.objects.filter(cart = curr_cart).first()
-            number = request.POST['phone_number']
-            tracker.phone_number = number
-            tracker.save()
-            return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
-
-        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
 
 def ajax_confirm_cash_payment(request):
     cart_id = request.GET.get('cart_id', None)
@@ -680,7 +628,7 @@ def ajax_confirm_cash_payment(request):
 
     return JsonResponse(data)
 
-'''This method sends order to kitchen, changes cart.is_paid to true and renders the confirmation page'''
+'''This method changes cart.is_paid to true and renders the confirmation page'''
 def order_confirmation(request, cart_id):
     #if this method is a get, then theyre seeing the confirmation page
     '''Send order to kitchen to print'''
