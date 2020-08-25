@@ -446,7 +446,8 @@ input:checked + .slider:before {
                                        </div>
                                              {% endfor %}
                                    </div>
-                                   <div class="form-group row ml-1">
+                                   <!-- removed this for now, confusing for user -->
+                                   <!-- <div class="form-group row ml-1">
                                      <form class="form-inline"action= "/restaurant_admin/set_addon_groups/{{item.id}}" method="post">
                                        {% csrf_token %}
                                        <div class="form-group mb-2">
@@ -461,7 +462,7 @@ input:checked + .slider:before {
                                        </div>
                                        <button type="submit" class="btn btn-primary mb-2">{% trans "Set" %}</button>
                                      </form>
-                                   </div>
+                                   </div> -->
               	            </div>
 	                        </div>
                       </div>
