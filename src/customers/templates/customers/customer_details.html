@@ -154,7 +154,7 @@
         </div>
       {% else %}
         <div class="row justify-content-center mt-3 mb-4">
-          <a style="text-decoration: none; color: grey;" href="{% provider_login_url 'google' %}?next=/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+          <a style="text-decoration: none; color: grey;" href="{% provider_login_url 'google' %}?next=customers/payment/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
             <div class="google-btn">
               <div class="google-icon-wrapper">
                 <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
