@@ -444,10 +444,13 @@ def payment(request, cart_id, restaurant_id, menu_id):
                 )
 
         # Decrease addon quantity here
-
+        decr_quantity(cart)
 
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:
+        if not all_in_stock(cart):
+            return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
         #stripe API stuff here
@@ -468,8 +471,8 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   amount=int((cart.total*100)),
                   currency='mxn',
                   setup_future_usage='off_session',
-                  customer = new_customer.stripe_id
-                  # stripe_account=curr_rest.stripe_account_id,
+                  customer = new_customer.stripe_id,
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             elif card_stored:
                 intent = stripe.PaymentIntent.create(
@@ -477,15 +480,15 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   amount=int((cart.total*100)),
                   currency='mxn',
                   setup_future_usage='off_session',
-                  customer = existing_customer.stripe_id
-                  # stripe_account=curr_rest.stripe_account_id,
+                  customer = existing_customer.stripe_id,
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             else:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
                   amount=int((cart.total*100)),
-                  currency='mxn'
-                  # stripe_account=curr_rest.stripe_account_id,
+                  currency='mxn',
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             cart.stripe_order_id = intent.id
             cart.save()
@@ -493,6 +496,38 @@ def payment(request, cart_id, restaurant_id, menu_id):
             return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart,
                                                               'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable,
                                                               'card_stored':card_stored, 'last4':last4})
+
+
+
+
+
+#helper method to get all menuitem counter associated w a cart
+def get_mics(c):
+    return MenuItemCounter.objects.filter(cart = c)
+
+#helper method to get all addon items associated w menu item counter
+def get_addon_items(mic):
+    return AddOnItem.objects.filter(MenuItemCounter = mic)
+
+#helper method that checks if a cart is ordering too much of any item (ie not enough in stock)
+def all_in_stock(crt):
+    mics = get_mics(crt)
+    for m in mics:
+        addons = get_addon_items(m)
+        for a in addons:
+            if m.quantity > a.quantity:
+                return false
+    return true
+
+#helper method that decreases the quantity of addon items
+def decr_quantity(crt):
+    mics = get_mics(crt)
+    for m in mics:
+        addons = get_addon_items(m)
+        for a in addons:
+            a.quantity -= m.quantity
+            a.save()
+
 #helper function to know pick_up_or_delivery response
 def is_pickup(resp):
     if resp == 'pickup':
