@@ -518,8 +518,8 @@ def all_in_stock(crt):
         addons = get_addon_items(m)
         for a in addons:
             if m.quantity > a.quantity:
-                return false
-    return true
+                return False
+    return True
 
 #helper method that decreases the quantity of addon items
 def decr_quantity(crt):
