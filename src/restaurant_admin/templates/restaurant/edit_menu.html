@@ -209,7 +209,7 @@ input:checked + .slider:before {
 
             <div class="form-group">
               <label for = 'category_add'>{% trans 'Category*' %}</label>
-              <input class="form-control" id = 'category_add' name = 'category' list = 'options' placeholder = "{{item.category}}" required>
+              <input class="form-control" id = 'category_add' name = 'category' list = 'options' value = "{{item.category}}" required>
               <small class="form-text text-muted">{% trans 'Add a category to organize your catalogue.' %}</small>
               <datalist id = 'options'>
                 {% for option in selct_options %}
@@ -249,15 +249,54 @@ input:checked + .slider:before {
               </div>
             </div>
 
-            <!-- Buttons -->
-            <div class="row justify-content-center mt-3 mb-2">
-              <div class = 'col'>
-                <div class="btn-group">
-                    <button style="width: 765px;" type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
-                </div>
-              </div>
-            </div>
+            <!-- Button -->
+            <button type="submit" id="add_item_submit" class="btn btn-primary btn-block">{% trans "Create" %}</button>
+
           </form>
+
+
+          <!-- addon item stuff -->
+          <!-- <div class="form-group row ml-1">
+             <h5 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h5> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+          </div>
+
+          <div class="row">
+            <div class="col ml-2">
+              <h6>{% trans "Add options to you product, such as sizes." %}</h6>
+            </div>
+          </div>
+
+          <div class="form-group row ml-1">
+             {% if list|length == 0 %}
+             {% endif %}
+             {% for inner_dict in list %}
+             <div class="col-sm">
+               {% for group, item_set in inner_dict.items %}
+               <div class="row justify-content-center">
+                 <h5>{{group.name}}</h5><span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-times fa-2x addon_group_delete" name="{{group.id}}" style="color: red; margin-bottom: 10px;"></i></span>
+               </div>
+                 <ul class="list-group" name = "{{group.id}}">
+                 {% for addon_item in item_set %}
+                   <li class="list-group-item">{{addon_item.name}} <span class="badge"> ({{addon_item.quantity}})</span> <span style = "margin-left: 10px;" name = "edit-addon-form{{addon_item.id}}"><i class="fas fa-pencil-alt addon_edit"></i></span><span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span></li>
+                   <li class="list-group-item" id = "edit-addon-form{{addon_item.id}}" style = 'display:none;'>
+                     <label for = 'name_item_{{addon_item.quantity}}'>{% trans 'Name' %}</label>
+                     <input class="form-control form-control-sm ml-1 w-75" type="text" id = 'name_item_{{addon_item.id}}' value="{{addon_item.name}}">
+                     <span style="margin-left: 10px;" class="float-right">
+                       <i class="fas fa-check save_edit" style="color: green;"></i>
+                     </span>
+                     <br>
+                     <label for = 'qty_{{addon_item.quantity}}'>{% trans 'Quantity' %}</label>
+                     <input class="form-control form-control-sm ml-1 w-75" type="number" id = 'qty_{{addon_item.id}}' value="{{addon_item.quantity}}" min = "0">
+                     <input type = 'number' value = '{{addon_item.id}}' hidden = 'true' readonly>
+                   </li>
+                   {% endfor %}
+                   {% endfor %}
+                   <li class="list-group-item add_addon" ><a><i class="fas fa-plus" style="color: green;"></i></a></li>
+                 </ul>
+             </div>
+                   {% endfor %}
+           </div> -->
+           <!-- addon items ends -->
         </div>
       </div>
     </div>
@@ -307,155 +346,146 @@ input:checked + .slider:before {
               <div class="modal fade bd-example-modal-lg" id="edit_modal{{item.id}}" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                   <div class = 'modal-content'>
-                    <div class="modal-body">
-                      <!--hidden form to edit new item -->
-                      <!-- <div class = 'row justify-content-center'> -->
-                        <!-- <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 40rem;" id = 'new_item_form'> -->
 
-                            <div class ='row justify-content-center'>
-                              <h3 class="card-title">{% trans "Edit Product" %}</h3>
+                  <div class="modal-header">
+                    <h4 class="modal-title">{% trans "Edit Product" %}<h4>
+                  </div>
+                  <div class="modal-body">
+
+                    <form action = '/restaurant_admin/edit_item/{{item.id}}/edit_menu/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
+                      {% csrf_token %}
+
+                        <!-- name -->
+                        <div class="form-group">
+                          <label for='name'>{% trans 'Name' %}</label>
+                          <input type = 'text' class="form-control" id = 'name' name = 'name' value = "{{item.name}}">
+                        </div>
+
+                        <div class = "row justify-content-center mt-2 mb-2">
+                          <div id = "name_errors_edit{{item.id}}" class="errors">
+                          </div>
+                        </div>
+
+                        <!-- description -->
+                        <div class="form-group">
+                          <label for = 'description'>{% trans 'Description' %}</label>
+                          <textarea class="form-control" id = 'description' name = 'description' value = "{{item.description}}"></textarea>
+                        </div>
+
+                        <!-- category -->
+                        <div class="form-group">
+                          <label for='category_edit'>{% trans 'Category' %}</label>
+                          <input class="form-control" id = 'category_edit' name = 'category' list = 'options' value = "{{item.category}}">
+                          <datalist id = 'options'>
+                            {% for option in selct_options %}
+                              <option value = "{{option.name}}">
+                            {% endfor %}
+                          </datalist>
+                        </div>
+
+                        <div class = "row justify-content-center mt-2 mb-2">
+                          <div id = "category_errors_edit{{item.id}}" class="errors">
+                          </div>
+                        </div>
+
+                        <!-- price -->
+                        <div class="form-group">
+                          <label for='price'>{% trans 'Price' %}</label>
+                          <input class="form-control" type = 'number' step = '0.01' id = 'price' name = 'price' value = '{{item.price}}'>
+                        </div>
+
+
+                        <div class = "row justify-content-center mt-2 mb-2">
+                          <div id = "price_errors_edit{{item.id}}" class="errors">
+                          </div>
+                        </div>
+
+                        <!-- photo -->
+                        <div class="form-group">
+                          <label for = 'photo'>{% trans 'Product Photo' %}</label>
+                          <div class="input-group" id = 'photo2'>
+                            <div class="custom-file">
+                              <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
+                              <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile{{item.id}}" aria-describedby="inputGroupFileAddon05">
                             </div>
-                            <!-- <div class = 'card-body'> -->
-                              <div class="row justify-content-center">
-                                <form action = '/restaurant_admin/edit_item/{{item.id}}/edit_menu/1' id="edit_item_form{{item.id}}" method="post" enctype = 'multipart/form-data'>
-                                  {% csrf_token %}
-                                  <div class = 'row'>
-                                    <div class="col-6">
-                                      <label for='name'>{% trans 'Name' %}</label>
-                                    </div>
-                                    <div class="col-6">
-                                      <label for='description'>{% trans 'Photo' %}</label>
-                                    </div>
-                                  </div>
-                                  <div class = 'row'>
-                                    <div class="col-6">
-                                      <input type = 'text' id = 'name' name = 'name' placeholder = "{{item.name}}">
-                                    </div>
-                                    <div class="col-6">
-                                      <div class="input-group" id = 'photo2'>
-                                        <div class="custom-file">
-                                          <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile{{item.id}}" aria-describedby="inputGroupFileAddon05">
-                                          <label class="custom-file-label" for="inputGroupFile05">{%trans 'Choose file' %}</label>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class = 'row'>
-                                    <div class="col-6">
-                                      <div id = "name_errors_edit{{item.id}}" class="errors">
-                                      </div>
-                                    </div>
-                                    <div class="col-6">
-                                      <div id = "photo_errors_edit{{item.id}}" class="errors">
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class = 'row'>
-                                    <div class="col-6">
-                                      <label for='category_edit'>{% trans 'Category' %}</label>
-                                    </div>
+                          </div>
+                        </div>
 
-                                    <div class="col-6">
-                                      <label for='price'>{% trans 'Price' %}</label>
-                                    </div>
-                                  </div>
-                                  <div class = 'row'>
-                                    <div class="col-6">
-                                      <input id = 'category_edit' name = 'category' list = 'options' placeholder = "{{item.category}}">
-                                      <datalist id = 'options'>
-                                        {% for option in selct_options %}
-                                          <option value = "{{option.name}}">
-                                        {% endfor %}
-                                      </datalist>
-                                    </div>
+                        <div class = "row justify-content-center mt-2 mb-2">
+                          <div id = "photo_errors_edit{{item.id}}" class="errors">
+                          </div>
+                        </div>
 
-                                    <div class="col-6">
-                                      <input type = 'number' step = '0.01' id = 'price' name = 'price' placeholder = '{{item.price}}'>
-                                    </div>
-                                  </div>
-                                  <br>
-                                  <div class = 'row'>
-                                    <div class="col-6">
-                                      <div id = "category_errors_edit{{item.id}}" class="errors">
-                                      </div>
-                                    </div>
-                                    <div class="col-6">
-                                      <div id = "price_errors_edit{{item.id}}" class="errors">
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <br>
-                                  <div class="row justify-content-center">
-                                    <label style="margin-right: 20px;" for = 'description'>{% trans 'Description' %}</label>
-                                  </div>
-                                  <div class = 'row justify-content-center'>
-                                    <textarea rows = '6' cols = '60' id = 'description' name = 'description' placeholder = "{{item.description}}"></textarea>
-                                  </div>
-                                  <br>
-                                  <div class="form-group row">
-                                    <label class="col-lg-3 col-form-label form-control-label">{% trans "In Stock" %}?</label>
-                                    <div class="col-lg-9">
-                                      <label class="switch">
-                                        {% if item.is_in_stock %}
-                                        <input name = "is_in_stock" type="checkbox" checked>
-                                        {% endif %}
-                                        {% if item.is_in_stock == False %}
-                                        <input name = "is_in_stock" type="checkbox">
-                                        {% endif %}
-                                        <span class="slider round"></span>
-                                     </label>
-                                    </div>
-                                </div>
-                                  <br>
-                                  <div class = 'row justify-content-center'>
-                                    <div style="text-align: centerl=;" class = 'row justify-content-center'>
-                                      <div class="btn-group mt-2">
-                                          <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}" class="btn btn-primary edit_item_submit">{% trans "Update" %}</button>
-                                      </div>
-                                      <div class = 'col mt-4'>
-                                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/{{menu.id}}/edit_menu/{{item.id}}'>{% trans 'Remove This Product' %}</a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </form>
-                              </div>
-                            <!-- </div> -->
-                        <!-- </div> -->
-                    <!-- </div> -->
+
+                        <!-- in stock -->
+                        <div class="form-group row">
+                          <label class="col-lg-3 col-form-label form-control-label">{% trans "In Stock" %}?</label>
+                          <div class="col-lg-9">
+                            <label class="switch">
+                              {% if item.is_in_stock %}
+                              <input name = "is_in_stock" type="checkbox" checked>
+                              {% endif %}
+                              {% if item.is_in_stock == False %}
+                              <input name = "is_in_stock" type="checkbox">
+                              {% endif %}
+                              <span class="slider round"></span>
+                           </label>
+                          </div>
+                        </div>
+                      <br>
+
+
+                      <button type="submit" name="{{item.id}}" id="edit_item_submit{{item.id}}" class="btn btn-primary btn-block edit_item_submit">{% trans "Update" %}</button>
+
+                      <div class = "row justify-content-center mt-3">
+                        <a style = 'color:red;' href = '/restaurant_admin/remove_item/{{menu.id}}/edit_menu/{{item.id}}'>{% trans 'Remove This Product' %}</a>
+                      </div>
+
+                    </form>
+
+                    <hr>
+
                     <!-- addon item stuff -->
                     <div class="form-group row ml-1">
-                       <h6 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h6> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
-                     </div>
-                     <div class="form-group row ml-1">
-                         {% if list|length == 0 %}
-                         <h6>{% trans 'No Add ons on this item yet' %}</h6>
-                         {% endif %}
-                         {% for inner_dict in list %}
-                         <div class="col-sm">
-                           {% for group, item_set in inner_dict.items %}
-                           <div class="row justify-content-center">
-                             <h6>{{group.name}}</h6><span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-times fa-2x addon_group_delete" name="{{group.id}}" style="color: red; margin-bottom: 10px;"></i></span>
-                           </div>
-                             <ul class="list-group" name = "{{group.id}}">
-                             {% for addon_item in item_set %}
-                               <li class="list-group-item">{{addon_item.name}} <span class="badge"> ({{addon_item.quantity}})</span> <span style = "margin-left: 10px;" name = "edit-addon-form{{addon_item.id}}"><i class="fas fa-pencil-alt addon_edit"></i></span><span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span></li>
-                               <li class="list-group-item" id = "edit-addon-form{{addon_item.id}}" style = 'display:none;'>
-                                 <label for = 'name_item_{{addon_item.quantity}}'>{% trans 'Name' %}</label>
-                                 <input class="form-control form-control-sm ml-1 w-75" type="text" id = 'name_item_{{addon_item.id}}' value="{{addon_item.name}}">
-                                 <span style="margin-left: 10px;" class="float-right">
-                                   <i class="fas fa-check save_edit" style="color: green;"></i>
-                                 </span>
-                                 <br>
-                                 <label for = 'qty_{{addon_item.quantity}}'>{% trans 'Quantity' %}</label>
-                                 <input class="form-control form-control-sm ml-1 w-75" type="number" id = 'qty_{{addon_item.id}}' value="{{addon_item.quantity}}" min = "0">
-                                 <input type = 'number' value = '{{addon_item.id}}' hidden = 'true' readonly>
-                               </li>
-                               {% endfor %}
-                               {% endfor %}
-                               <li class="list-group-item add_addon" ><a><i class="fas fa-plus" style="color: green;"></i></a></li>
-                             </ul>
+                       <h5 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h5> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+                    </div>
+
+                    <div class="row">
+                      <div class="col ml-2">
+                        <h6>{% trans "Add options to you product, such as sizes." %}</h6>
+                      </div>
+                    </div>
+
+                    <div class="form-group row ml-1">
+                       {% if list|length == 0 %}
+                       <!-- <h6>{% trans 'No Add ons on this item yet' %}</h6> -->
+                       {% endif %}
+                       {% for inner_dict in list %}
+                       <div class="col-sm">
+                         {% for group, item_set in inner_dict.items %}
+                         <div class="row justify-content-center">
+                           <h5>{{group.name}}</h5><span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-times fa-2x addon_group_delete" name="{{group.id}}" style="color: red; margin-bottom: 10px;"></i></span>
                          </div>
-                               {% endfor %}
+                           <ul class="list-group" name = "{{group.id}}">
+                           {% for addon_item in item_set %}
+                             <li class="list-group-item">{{addon_item.name}} <span class="badge"> ({{addon_item.quantity}})</span> <span style = "margin-left: 10px;" name = "edit-addon-form{{addon_item.id}}"><i class="fas fa-pencil-alt addon_edit"></i></span><span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name="{{addon_item.id}}" style="color: red;"></i></span></li>
+                             <li class="list-group-item" id = "edit-addon-form{{addon_item.id}}" style = 'display:none;'>
+                               <label for = 'name_item_{{addon_item.quantity}}'>{% trans 'Name' %}</label>
+                               <input class="form-control form-control-sm ml-1 w-75" type="text" id = 'name_item_{{addon_item.id}}' value="{{addon_item.name}}">
+                               <span style="margin-left: 10px;" class="float-right">
+                                 <i class="fas fa-check save_edit" style="color: green;"></i>
+                               </span>
+                               <br>
+                               <label for = 'qty_{{addon_item.quantity}}'>{% trans 'Quantity' %}</label>
+                               <input class="form-control form-control-sm ml-1 w-75" type="number" id = 'qty_{{addon_item.id}}' value="{{addon_item.quantity}}" min = "0">
+                               <input type = 'number' value = '{{addon_item.id}}' hidden = 'true' readonly>
+                             </li>
+                             {% endfor %}
+                             {% endfor %}
+                             <li class="list-group-item add_addon" ><a><i class="fas fa-plus" style="color: green;"></i></a></li>
+                           </ul>
+                       </div>
+                             {% endfor %}
                      </div>
                      <!-- Removed this for now, confusing for user -->
                      <!-- <div class="form-group row ml-1">
@@ -476,10 +506,10 @@ input:checked + .slider:before {
                        </form>
                      </div> -->
                      <!-- end addon item stuff -->
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
             </div>
             {% if item.photo_path %}
             <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
@@ -488,7 +518,7 @@ input:checked + .slider:before {
 
         </div>
 
-        <!-- <hr> -->
+        <hr>
         {% endfor %}
       {% endif %}
     </ul>
@@ -807,7 +837,7 @@ $('#add_item').on('shown.bs.modal', function () {
               var group_name = $(this).parent().parent().prev().children('input').val();
               var row = $(this).parent().parent().parent().next();
               console.log(row);
-              var item_id = row.prev().children("h6")[0].getAttribute('name');
+              var item_id = row.prev().children("h5")[0].getAttribute('name');
               console.log(item_id);
               $.ajax({
                 url: `/restaurant_admin/ajax/ajax_create_addon_group/${group_name}/${item_id}`,
