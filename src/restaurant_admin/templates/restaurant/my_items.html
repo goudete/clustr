@@ -222,11 +222,9 @@ input:checked + .slider:before {
                   </div>
 
                   <!-- Buttons -->
-                  <div class="row justify-content-center mt-3 mb-2">
-                    <div class="btn-group">
-                        <button style="width: 765px;" type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
-                    </div>
-                  </div>
+
+                  <button style="width: 765px;" type="submit" id="add_item_submit" class="btn btn-primary btn-block">{% trans "Create" %}</button>
+
 
                 </form>
               </div>
@@ -411,13 +409,20 @@ input:checked + .slider:before {
                                       </div>
                                       </form>
                                   </div>
-                                  <br>
+
+                                  <hr>
+
                                   <div class="form-group row ml-1">
-                                     <h6 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h6> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+                                     <h5 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h5> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+                                   </div>
+                                   <div class="row">
+                                     <div class="col ml-2">
+                                       <h6>{% trans "Add options to you product, such as sizes." %}</h6>
+                                     </div>
                                    </div>
                                    <div class="form-group row ml-1">
                                        {% if list|length == 0 %}
-                                       <h6>{% trans 'No Add ons on this item yet' %}</h6>
+                                       <!-- <h6>{% trans 'No Add ons on this item yet' %}</h6> -->
                                        {% endif %}
                                        {% for inner_dict in list %}
                                        <div class="col-sm">
@@ -621,7 +626,7 @@ input:checked + .slider:before {
               var group_name = $(this).parent().parent().prev().children('input').val();
               var row = $(this).parent().parent().parent().next();
               console.log(row);
-              var item_id = row.prev().children("h6")[0].getAttribute('name');
+              var item_id = row.prev().children("h5")[0].getAttribute('name');
               console.log(item_id);
               $.ajax({
                 url: `/restaurant_admin/ajax/ajax_create_addon_group/${group_name}/${item_id}`,
