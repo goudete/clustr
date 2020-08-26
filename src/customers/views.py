@@ -443,9 +443,6 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   payment_methods['data'][1]['id'],
                 )
 
-        # Decrease addon quantity here
-        decr_quantity(cart)
-
         return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
     else:
         if not all_in_stock(cart):
@@ -636,6 +633,8 @@ def order_confirmation(request, cart_id):
     '''Send order to kitchen to print'''
     if request.method == 'GET':
         cart = Cart.objects.filter(id = cart_id).first()
+        # Decrease addon quantity here
+        decr_quantity(cart)
         curr_rest = cart.restaurant
         cart.is_paid = True
         # assignToCashier(cart,curr_rest)
