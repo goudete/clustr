@@ -249,9 +249,43 @@ input:checked + .slider:before {
               </div>
             </div>
 
+
             <!-- Button -->
             <button type="submit" id="add_item_submit" class="btn btn-primary btn-block">{% trans "Create" %}</button>
 
+
+            <div class = "row justify-content-center">
+              <!-- KIKE!!!!!!! this thing needs to be here, I use the number to create the unique Ids and names of inputs DO NOT DELETE IT-->
+              <input type = "number" value = "0" id = "numGroups" hidden = "true" readonly>
+              <!-- KIKE!!!!!!! this thing creates a new addon group, when its clicked a jquery function adds a new HTML structure like the one below DO NOT CHANGE THE ANME OF ANYTHING HERE -->
+              <h6>{% trans 'Addons' %}</h6> <span name="group_button_nuevo" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x" name="plus_sign_nuevo_group" style="color: green; cursor:pointer;"></i></span>
+            </div>
+
+            <!-- KIKE!!! each addon group is currently wrapped in a row -->
+            <!-- <div class = "row justify-content-center mt-1"> -->
+              <!-- this input is for the name of the group  and the green plus sign creates a new row of inputs with jquery, DO NOT CHANGE THE NAME of the green plus sign-->
+              <!-- <label for = "addon_group_sherm69">{% trans 'Addon Group Name' %}</label>
+              <input type = "text" id = "addon_group_sherm69" name = "adddon_group"><span style="margin-left: 10px;" class="float-right"><i class="fas fa-plus fa-2x new_group_plus_sign" name="new_group_item_plus" style="color: green; cursor:pointer;"></i></span> -->
+              <!-- KIKE!! each addon item within the group is wrapped in an inner row -->
+              <!-- <div class = "row justify-content-center"> -->
+                <!-- this is the item name -->
+                <!-- <label for = "addon_group_item_sherm69">{% trans 'addon item name' %}</label>
+                <input type = "text" id = "addon_group_item_sherm69" name = "addon_item_name_sherm69"> -->
+                <!-- this is the item quantity -->
+                <!-- <label for = "addon_group_item_quant_sherm69">{% trans 'addon item quantity' %}</label>
+                <input type = "number" id = "addon_group_item_quant_sherm69" name = "addon_group_item_quant_sherm69">
+              </div>
+            </div> -->
+            <!-- KIKE!!! as long as the names of all the inputs and the ids don't change, you can re-style this however you want -->
+
+            <!-- Buttons -->
+            <div class="row justify-content-center mt-3 mb-2">
+              <div class = 'col'>
+                <div class="btn-group">
+                    <button style="width: 765px;" type="submit" id="add_item_submit" class="btn btn-primary">{% trans "Create" %}</button>
+                </div>
+              </div>
+            </div>
           </form>
 
 
@@ -647,6 +681,63 @@ $('#add_item').on('shown.bs.modal', function () {
     });
  })
 </script>
+
+<!-- ROWAN WORKING HERE RN ajax create new addon group -->
+<script type="text/javascript">
+  $(document).on('click', "[name = 'plus_sign_nuevo_group']", function() {
+    var div = $(this).parent().parent()[0];
+    var num = $("#numGroups").val();
+    var row = document.createElement("div");
+    row.classList.add("row");
+    row.classList.add("justify-content-center");
+    row.classList.add("mt-1");
+    row.innerHTML = `
+      <!-- this input is for the name of the group  and the green plus sign creates a new row of inputs with jquery, DO NOT CHANGE THE NAME of the green plus sign-->
+      <label>{% trans 'Addon Group Name' %}</label>
+      <input type = "number" value = "0" hidden = "true" readonly>
+      <input type = "text"><span style="margin-left: 10px;" class="float-right"><i class="fas fa-plus fa-2x new_item_plus_sign" style="color: green; cursor:pointer;"></i></span>`
+      var inpt = $(row).children()[2];
+      $(inpt).attr("name", "addon_group_".concat(num));
+      $("#numGroups").val(parseInt(num)+1);
+      $(row).insertAfter(div);
+    //insert new addon group
+
+ })
+</script>
+
+<!-- ROWAN WORKING HERE RN ajax create new addon item -->
+<script type="text/javascript">
+  $(document).on('click', ".new_item_plus_sign", function() {
+    var span = $(this).parent()[0];
+    var div = $(span).parent()[0];
+    var numinpt = $(div).children()[1];
+    var number = $(numinpt).val();
+    var inpt = $(div).children()[2];
+    console.log(inpt);
+    var name = $(inpt).attr("name");
+
+    var newRow = document.createElement("div");
+    newRow.classList.add("row");
+    newRow.classList.add("justify-content-center");
+    newRow.innerHTML = `<!-- this is the item name -->
+    <label>{% trans 'addon item name' %}</label>
+    <input type = "text">
+    <!-- this is the item quantity -->
+    <label>{% trans 'addon item quantity' %}</label>
+    <input type = "number">`
+
+    var inpt1 = $(newRow).children()[1];
+    $(inpt1).attr("name", "addon_item_name_".concat(number).concat(name));
+    var inpt2 = $(newRow).children()[3];
+    $(inpt2).attr("name", "addon_item_quant_".concat(number).concat(name));
+
+    $(numinpt).val(parseInt(number) + 1);
+    $(newRow).insertAfter(span);
+
+
+ })
+</script>
+
 <!-- ajax edit item js -->
 <script type="text/javascript">
   $(document).on('click', '.edit_item_submit', function(e) {
