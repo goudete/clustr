@@ -790,6 +790,8 @@ def ajax_add_item(request):
 
     item.save()
 
+    create_addons(request, item)
+
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     for cat in categories:
@@ -803,6 +805,35 @@ def ajax_add_item(request):
     # return JsonResponse({'success':True})
     #redirect back to edit menu page
     return redirect('/restaurant_admin/my_items')
+
+
+def create_addons(req, item):
+    get_addon_groups(req, item.restaurant, item)
+
+
+def get_addon_groups(req, rest, itm):
+    dict = {}
+    for key in req.POST:
+        if "addon_group" in key and "addon_item" not in key:
+            dict[key] = []
+        elif "addon_group" in key and "addon_item" in key:
+            for k in dict.keys():
+                if k in key:
+                    dict[k].append(key)
+    for k in dict.keys():
+        grp = AddOnGroup.objects.create(name = req.POST[k], restaurant = rest)
+        grp.save()
+        grp.menu_items.add(itm)
+        grp.save()
+        i = 0
+        while i < len(dict[k]):
+            add_itm = AddOnItem.objects.create(name = req.POST[dict[k][i]], group = grp, quantity = req.POST[dict[k][i+1]])
+            add_itm.save()
+            i += 2
+
+
+
+
 
 def receipt_page(request):
     if request.method == 'GET':
