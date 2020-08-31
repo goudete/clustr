@@ -5,6 +5,14 @@ from cashier.models import CashierProfile
 from restaurant_admin.models import Restaurant, AddOnItem, AddOnGroup
 from django.contrib.auth.models import User
 
+class ShippingInfo(models.Model):
+    full_name = models.CharField(null = True, max_length = 255)
+    email = models.EmailField(max_length=200)
+    tel = models.CharField(null = True, max_length = 255)
+    address = models.CharField(null = True, max_length = 255)
+    city_name = models.CharField(null = True, max_length = 255)
+    city_id = models.CharField(null = True, max_length = 255)
+    postcode = models.CharField(null = True, max_length = 255)
 
 """this model is synonymous with an order"""
 class Cart(models.Model):
@@ -23,6 +31,7 @@ class Cart(models.Model):
     first_name = models.CharField(null = True, max_length = 255)
     last_name = models.CharField(null = True, max_length = 255)
     shipping_address = models.CharField(null = True, max_length = 255)
+    shipping_info = models.ForeignKey(ShippingInfo, null = True, on_delete = models.PROTECT)
 
 
 """ this model acts as a way to keep track of how many of a MenuItem are in a cart
@@ -45,3 +54,5 @@ class Feedback(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
     stripe_id =  models.CharField(null = True, max_length = 255)
+    shipping_info = models.ForeignKey(ShippingInfo, null = True, on_delete = models.PROTECT)
+    shipping_info_stored = models.BooleanField(default = False)

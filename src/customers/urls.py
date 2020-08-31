@@ -28,5 +28,5 @@ urlpatterns = [
     path('ajax/ajax_receipt', ajax_receipt, name = 'ajax_receipt'),
     path('ajax/receipt_page', receipt_page, name = 'receipt_page'),
     path('ajax/dine_in_option', views.dine_in_option, name = 'dine_in_option'),
-    path('logout/<int:restaurant_id>', views.logout_view),
+    path('logout/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.logout_view),
 ]

@@ -2,6 +2,108 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% block content %}
+{% load socialaccount %}
+
+
+<!-- google css -->
+<style>
+
+.google-btn {
+  margin-right: 15px;
+  /* margin-top: 15px; */
+  width: 80%;
+  min-width: 145px;
+  max-width: 145px;
+  height: 42px;
+  background-color: #fcfcfc;
+  border-radius: 2px;
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, .2);
+  cursor: pointer;
+  cursor: hand;
+  align-self: center;
+  user-select: none;
+  transition: all 400ms ease 0s;
+  display: flex;
+}
+.google-btn .google-icon-wrapper {
+  position: absolute;
+  margin-top: 1px;
+  margin-left: 1px;
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  user-select: none
+}
+.google-btn .google-icon-svg {
+  position: absolute;
+  margin-top: 11px;
+  margin-left: 11px;
+  width: 18px;
+  height: 18px;
+  user-select: none
+}
+.google-btn .btn-text {
+  float: right;
+  margin: 11px 14px 40px 40px;
+  color: #757575;
+  font-size: 14px;
+  letter-spacing: .2px;
+  font-family: Roboto;
+  user-select: none;
+  text-align: center;
+}
+.google-btn:hover {
+  box-shadow: 0 3px 8px rgba(117, 117, 117, .5);
+  user-select: none
+}
+.google-btn:active {
+  box-shadow: 0 1px 1px #757575;
+  background: #F8F8F8;
+  color: #fff;
+  user-select: none
+}
+
+.normal-btn {
+  margin: 25px;
+  width: auto;
+  display: inline-block;
+  min-width: auto;
+  max-width: 184px;
+  height: 42px;
+  background-color: #fcfcfc;
+  border-radius: 2px;
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, .2);
+  cursor: pointer;
+  cursor: hand;
+  align-self: center;-webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: all 400ms ease 0s
+}
+.normal-btn .btn-text {
+  float: left;
+  margin: 11px 14px 11px 14px;
+  color: #757575;
+  font-size: 14px;
+  letter-spacing: .2px;
+  font-family: Roboto;
+  user-select: none
+}
+.normal-btn:hover {
+  box-shadow: 0 3px 8px rgba(117, 117, 117, .5);
+  user-select: none
+}
+.normal-btn:active {
+  box-shadow: 0 1px 1px #757575;
+  background: #F8F8F8;
+  color: #fff;
+  user-select: none
+}
+</style>
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:400" />
 
 <nav class="navbar navbar-dark bg-dark">
   <a class="navbar-brand" href="/customers/view_cart/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
@@ -31,35 +133,93 @@
     </div>
 
     <div class="card-body">
-      <form method = 'post' action = '/customers/pick_up_or_delivery/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}'>
+      <div class="row mt-2">
+        <div class="col">
+          <h5>{% trans "Skip this with Google Sign In" %}</h5>
+        </div>
+      </div>
+      {% if user.is_authenticated %}
+        <div class="row justify-content-center mt-3 mb-4">
+          <a style="text-decoration: none; color: grey;" href="/customers/logout/{{cart.id}}/{{ restaurant.id }}/{{menu.id}}">
+            <div class="google-btn">
+              <div class="google-icon-wrapper">
+                <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+              </div>
+              <p class="btn-text"><b>{% trans "Logout" %}</b></p>
+            </div>
+          </a>
+        </div>
+      {% else %}
+        <div class="row justify-content-center mt-3 mb-4">
+          <a style="text-decoration: none; color: grey;" href="{% provider_login_url 'google' %}?next=/customers/pick_up_or_delivery/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}">
+            <div class="google-btn">
+              <div class="google-icon-wrapper">
+                <img class="google-icon-svg" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+              </div>
+              <p class="btn-text"><b>{% trans "Login" %}</b></p>
+            </div>
+          </a>
+        </div>
+      {% endif %}
+
+      <hr>
+      <form method = 'post' action = '/customers/pick_up_or_delivery/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}' id="form">
         {% csrf_token %}
 
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-
-            <div class="form-check">
-              <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' id = 'delivery' value = 'delivery' onclick="deliveryAddress()">
-              <label for = 'dine-in1'><h5>{% trans 'Delivery' %}</h5></label>
-            </div>
-
-            <div class="form-check mb-3" style = "display: none;" id="delivery_addy_section">
-              <label for="delivery_address">{% trans 'Shipping Address' %}</label>
-              <input type="text" class="form-control" name="delivery_address" id="delivery_address">
-            </div>
-            <!-- <div class="dropdown">
-              <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Delivery
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">
-
-                  <h4>Google Places API</h4>
-
-                </a>
-
+              <div class="form-check">
+                <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' value = 'delivery' onclick="deliveryAddress()">
+                <label for = 'dine-in1'><h5>{% trans 'Delivery' %}</h5></label>
               </div>
-            </div> -->
+              <div id="delivery_addy_section" style="display: none;">
 
+              <div class="form-check mb-3 delivery">
+                <label for="full_name">{% trans 'Full Name' %}</label>
+                {{form.full_name}}
+              </div>
+
+              <div class="form-check mb-3 delivery" >
+                <label for="email">{% trans 'Email' %}</label>
+                {{form.email}}
+              </div>
+
+              <div class="form-check mb-3 delivery" >
+                <label for="tel">{% trans 'Tel' %}</label>
+                {{form.tel}}
+              </div>
+
+              <div class="form-check mb-3 delivery">
+                <label for="address">{% trans 'Address' %}</label>
+                {{form.address}}
+              </div>
+
+              <div class="form-check mb-3 delivery" >
+                <div class="row">
+                  <div class="col-sm">
+                    <label for="autocomplete">{% trans 'City' %}</label>
+                    <input class="form-control"
+                           id="autocomplete"
+                           name = "city"
+                           onFocus="geolocate()"
+                           type="text"
+                           autocomplete="new-loc"
+                           readonly
+                           required/>
+                    {{form.city_id}}
+                    {{form.city_name}}
+                    <div id = "city_error" class="alert alert-danger mt-1" style="display: none;">
+                      {% trans "Please select a city from the autofill options." %}
+                    </div>
+
+                  </div>
+                  <div class="col-sm">
+                    <label for="postcode">{% trans 'Postcode' %}</label>
+                    {{form.postcode}}
+                  </div>
+                </div>
+              </div>
+            </div>
           </li>
           {% if restaurant.offer_pickup %}
           <li class="list-group-item">
@@ -67,18 +227,6 @@
               <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' id = 'pickup' value = 'pickup' {% if me.dine_in %}checked{% endif %}>
               <label for = 'dine-in2'><h5>{% trans 'Pickup' %}</h5></label>
             </div>
-
-            <!-- <div class="dropdown">
-              <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Delivery
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">
-                  <h6>If you choose to pickup, you will be emailed the available date and time</h6>
-                </a>
-
-              </div>
-            </div> -->
           </li>
           {% endif %}
         </ul>
@@ -108,5 +256,93 @@
           document.getElementById("delivery_addy_section").style.display="block";
       }
   }
+
 </script>
+<script>
+
+var placeSearch, autocomplete, autocomplete2;
+
+var componentForm = {
+  street_number: 'short_name',
+  route: 'long_name',
+  locality: 'long_name',
+  administrative_area_level_1: 'short_name',
+  country: 'long_name',
+  postal_code: 'short_name'
+};
+
+
+function initAutocomplete() {
+  autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('autocomplete'), {types: ['(cities)']});
+
+  autocomplete.setFields(['address_components','place_id']);
+
+  google.maps.event.addListener(autocomplete, 'place_changed', function() {
+      fillInAddress();
+    });
+
+}
+function fillInAddress() {
+  console.log("here2");
+  // Get the place details from the autocomplete object.
+  var place = autocomplete.getPlace();
+  var place_id = place.place_id;
+
+  $('#placeID')[0].value = place_id;
+  $('#placeName')[0].value = $('#autocomplete')[0].value;
+}
+
+function geolocate() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var geolocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      var circle = new google.maps.Circle(
+          {center: geolocation, radius: position.coords.accuracy});
+      autocomplete.setBounds(circle.getBounds());
+    });
+  }
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKmjFt91GOvHaqyxpoiiqFQURjFST7U2I&libraries=places&callback=initAutocomplete"async defer>
+</script>
+<script type="text/javascript">
+  $(document).on("click", "#autocomplete", function(){
+      if ($(this).prop('readonly') == true) {
+        $(this).prop('readonly', false);
+      }
+    });
+
+    function validateCity(e) {
+      console.log("here in validate");
+      var user_input = $('#autocomplete')[0].value
+      var last_saved_name = $('#placeName')[0].value
+      console.log(user_input);
+      console.log(last_saved_name);
+      if (user_input === last_saved_name) {
+        return true
+      } else {
+        return false
+      }
+    };
+    $(document).ready(function() {
+      $('#form').submit(function(e) {
+        console.log("here in validate");
+        var user_input = $('#autocomplete')[0].value
+        var last_saved_name = $('#placeName')[0].value
+        console.log(user_input);
+        console.log(last_saved_name);
+        if (user_input === last_saved_name && user_input.length > 0) {
+          return true
+        } else {
+          $('#city_error').show()
+          e.preventDefault();
+        }
+      });
+    });
+</script>
+
 {% endblock %}

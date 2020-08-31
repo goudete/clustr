@@ -66,6 +66,8 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 </style>
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> <!-- search icon -->
+
 
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
@@ -265,6 +267,85 @@ input:checked + .slider:before {
       </div>
     </div>
   </div>
+  <div class = 'row justify-content-center mt-4'>
+    <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
+      <div class="card-body">
+        <h5>{% trans "Shipping Zones" %}</h5>
+        <small>{% trans "Set different shipping rates for customers located in different cities. If the customer is not located in any of the shipping zones specified by you, they will get charged the 'Everywhere Else' rate." %}</small>
+        <hr>
+        <br>
+          {% for zone in shipping_zones %}
+          <div class="row">
+            <div class="col-sm">
+              <input class="form-control"
+                     type="text"
+                     value="{{zone.city}}"
+                     readonly/>
+            </div>
+            <div class="col-sm">
+              <input class="form-control zone_cost"
+                     type="number"
+                     value="{{zone.cost}}"
+                     name="{{zone.id}}"
+                     readonly/>
+            </div>
+            <div style="text-align: center;">
+              <span style="margin-left: 10px;">
+                <i class="fas fa-times fa-2x delete_zone" name="{{zone.id}}" style="color: red;"></i>
+              </span>
+            </div>
+          </div>
+          <br>
+          {% endfor %}
+          <div class="row">
+            <div class="col-sm">
+              <input class="form-control text-danger"
+                     type="text"
+                     value="Everywhere Else"
+                     style="background: "
+                     readonly/>
+            </div>
+            <div class="col-sm">
+                <input class="form-control zone_cost text-danger"
+                       type="number"
+                       value="{{restaurant.default_shipping_cost}}"
+                       name="default_cost"
+                       readonly/>
+            </div>
+          </div>
+          <hr>
+          <form id = 'questions_form' action = '/restaurant_admin/set_shipping_zone' method = 'post' enctype = 'multipart/form-data'>
+          <div class="row">
+              {% csrf_token %}
+              <div class="col-sm">
+                {% trans "Enter a new location" as newloc %}
+                <input class="form-control"
+                       id="autocomplete"
+                       name = "pu_addy"
+                       onFocus="geolocate()"
+                       type="text"
+                       autocomplete="false"
+                       placeholder="{{newloc}}"
+                       required/>
+                <input type="text" name="placeID" id="placeID" style="display: none;">
+              <div class = "invalid-feedback">
+                    {% trans "Please Choose a Pickup Address" %}
+              </div>
+              </div>
+                <div class="col-sm">
+                  {% trans "Enter shipping cost" as newcost %}
+                  <input class="form-control"
+                         type="number"
+                         name="cost"
+                         placeholder="{{newcost}}"
+                         required/>
+                </div>
+            </div>
+            <button name="shipping_zone_submit" class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
 </div>
 
 <script>
@@ -291,6 +372,98 @@ input:checked + .slider:before {
     }
   }
 
+</script>
+<script>
+  var placeSearch, autocomplete, autocomplete2;
+
+  var componentForm = {
+    street_number: 'short_name',
+    route: 'long_name',
+    locality: 'long_name',
+    administrative_area_level_1: 'short_name',
+    country: 'long_name',
+    postal_code: 'short_name'
+  };
+
+
+  function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('autocomplete'), {types: ['(cities)']});
+
+    autocomplete.setFields(['address_components','place_id']);
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+        fillInAddress();
+      });
+
+  }
+  function fillInAddress() {
+    console.log("here2");
+    // Get the place details from the autocomplete object.
+    var place = autocomplete.getPlace();
+    var place_id = place.place_id
+
+    $('#placeID')[0].value = place_id
+    console.log("place ID");
+    console.log(place.place_id);
+
+  }
+
+  function geolocate() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var geolocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        var circle = new google.maps.Circle(
+            {center: geolocation, radius: position.coords.accuracy});
+        autocomplete.setBounds(circle.getBounds());
+      });
+    }
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKmjFt91GOvHaqyxpoiiqFQURjFST7U2I&libraries=places&callback=initAutocomplete"async defer>
+</script>
+<script type="text/javascript">
+  $(document).on("click", ".delete_zone", function(){
+      var parent_row = $(this).parent().parent().parent();
+      var zone_id = $(this).attr('name');
+      console.log(zone_id);
+      $.ajax({
+        url: `/restaurant_admin/ajax/ajax_delete_zone/${zone_id}`,
+        data: {
+          'zone_id': zone_id,
+        },
+        dataType: 'json',
+        success: function (data) {
+          parent_row.remove()
+        }
+      });
+    });
+    $(document).on("click", ".zone_cost", function(){
+        if ($(this).prop('readonly') == true) {
+          $(this).prop('readonly', false);
+        }
+      });
+    $(document).on("blur", ".zone_cost", function(){
+        if ($(this).prop('readonly') == false) {
+          $(this).prop('readonly', true);
+        }
+        var name = $(this).attr('name')
+        $.ajax({
+          type : 'POST',
+          url: `/restaurant_admin/ajax/ajax_edit_zone`,
+          data: {
+            'name': name,
+            'new_cost': $(this).val(),
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+          },
+          dataType: 'json',
+          success: function (data) {
+          }
+        });
+      });
 </script>
 
 {% endblock %}

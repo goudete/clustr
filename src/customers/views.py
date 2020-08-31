@@ -2,9 +2,9 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from restaurant_admin.models import Restaurant, Menu, MenuItem
-from .models import Cart, MenuItemCounter, Customer
+from .models import Cart, MenuItemCounter, Customer, ShippingInfo
 from restaurant_admin.models import Restaurant, SelectOption, AddOnGroup, AddOnItem
-from .forms import CustomOrderForm, EmailForm, FeedbackForm, PhoneForm, NameForm
+from .forms import CustomOrderForm, EmailForm, FeedbackForm, PhoneForm, NameForm, ShippingInfoForm
 import stripe
 import os
 from decimal import Decimal
@@ -19,7 +19,7 @@ from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 from django.utils import translation
 from comms.email_handlers import send_order_email
-from .helpers import assignToCashier
+from .helpers import assignToCashier, calculate_shipping
 from django.contrib.auth import logout
 
 
@@ -469,7 +469,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   currency='mxn',
                   setup_future_usage='off_session',
                   customer = new_customer.stripe_id,
-                  stripe_account=curr_rest.stripe_account_id,
+                  # stripe_account=curr_rest.stripe_account_id,
                 )
             elif card_stored:
                 intent = stripe.PaymentIntent.create(
@@ -478,21 +478,25 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   currency='mxn',
                   setup_future_usage='off_session',
                   customer = existing_customer.stripe_id,
-                  stripe_account=curr_rest.stripe_account_id,
+                  # stripe_account=curr_rest.stripe_account_id,
                 )
             else:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
                   amount=int((cart.total*100)),
                   currency='mxn',
-                  stripe_account=curr_rest.stripe_account_id,
+                  # stripe_account=curr_rest.stripe_account_id,
                 )
             cart.stripe_order_id = intent.id
-            cart.save()
             publishable = settings.STRIPE_PUBLISHABLE_KEY
-            return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart,
+            item_counters = MenuItemCounter.objects.filter(cart = cart)
+            number_of_items = sum([counter.quantity for counter in item_counters])
+            shipping_cost = calculate_shipping(cart)
+            cart.total += shipping_cost
+            cart.save()
+            return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'number_of_items':number_of_items,
                                                               'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable,
-                                                              'card_stored':card_stored, 'last4':last4})
+                                                              'card_stored':card_stored, 'last4':last4, 'item_counters':item_counters, 'shipping_cost':shipping_cost})
 
 
 
@@ -535,22 +539,45 @@ def is_pickup(resp):
 
 def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
     if request.method == 'GET':
+        form = ShippingInfoForm()
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
+        #if we have their info, prepopulate all the fields
+        if request.user.is_authenticated:
+            if Customer.objects.filter(user = request.user).exists():
+                customer = Customer.objects.get(user = request.user)
+                if customer.shipping_info_stored:
+                    for key in form.fields:
+                        form.fields[key].widget.attrs.update({'value': getattr(customer.shipping_info,key)})
 
-        return render(request, 'customers/pick_up_or_delivery.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu})
+        return render(request, 'customers/pick_up_or_delivery.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu,'form':form})
     else:
+        print("POST data")
+        print(request.POST)
         curr_cart = Cart.objects.filter(id = cart_id).first()
 
-        if 'delivery_address' in request.POST:
-            curr_cart.shipping_address = request.POST['delivery_address']
-        else:
-            curr_cart.shipping_address = None
+        dic = request.POST
+        # shipping_info = ShippingInfo.objects.create(full_name = dic['full_name'], email = dic['email'], city_name = dic['placeName'],
+        #                                             tel = dic['tel'], address = dic['address'], city_id = dic['placeID'], postcode = dic['postcode'])
+        form = ShippingInfoForm(request.POST)
+        if form.is_valid():
+            shipping_info = form.save()
+            curr_cart.shipping_info = shipping_info
+            if request.user.is_authenticated:
+                if Customer.objects.filter(user = request.user).exists():
+                    customer = Customer.objects.get(user = request.user)
+                    customer.shipping_info = shipping_info
+                    customer.shipping_info_stored = True
+                    customer.save()
+                else:
+                    new_customer = Customer.objects.create(user=request.user, shipping_info=shipping_info,
+                                                           shipping_info_stored = True)
+                    new_customer.save()
 
-        curr_cart.save()
-        print('DELIVERY:', curr_cart.shipping_address)
-        return redirect('/customers/customer_details/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
+            curr_cart.save()
+            shipping_info.save()
+        return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 '''after cart, get the customer's details '''
 def customer_details(request, cart_id, restaurant_id, menu_id):
@@ -667,6 +694,7 @@ def feedback(request, cart_id):
         cart = Cart.objects.filter(id = cart_id).first()
         return render(request, 'customers/order_confirmation.html', {'cart': cart, 'form': form})
 
-def logout_view(request, restaurant_id):
+def logout_view(request,cart_id, restaurant_id, menu_id):
+    print(request.get_full_path())
     logout(request)
-    return redirect('/customers/{r_id}'.format(r_id=restaurant_id)) #return to login page
+    return redirect('/customers/pick_up_or_delivery/{c_id}/{r_id}/{m_id}'.format(r_id=restaurant_id,c_id=cart_id,m_id=menu_id)) #return to login page
