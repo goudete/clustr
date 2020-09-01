@@ -30,6 +30,7 @@ class Restaurant(models.Model):
     #whether emailing order info to order_stream_email is active or not.
     order_stream = models.BooleanField(default = True)
     qr_code_path = models.CharField(null = True, max_length = 255)
+    default_shipping_cost = models.DecimalField(_('Price'), default = 0, decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
 
 class Menu(models.Model):
     name = models.CharField(_('Name'), default = '', max_length = 200)
@@ -64,3 +65,9 @@ class AddOnItem(models.Model):
     name = models.CharField(_('Name'), default='', max_length=200)
     group = models.ForeignKey(AddOnGroup, null=True, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default = 0)
+
+class ShippingZone(models.Model):
+    restaurant = models.ForeignKey(Restaurant, null = True, on_delete = models.CASCADE)
+    city = models.CharField(_('City'), default='', max_length=200)
+    place_id = models.CharField(_('Place ID'), default='', max_length=200)
+    cost = models.DecimalField(_('Shipping Cost'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])

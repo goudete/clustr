@@ -8,7 +8,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm, EmailForm
 from django.conf import settings
 from django.contrib import messages
-from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem
+from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem, ShippingZone
 from urllib.parse import urljoin
 import boto3
 import magic
@@ -186,6 +186,7 @@ def translateResponse(resp):
 def answer_about(request):
     #query restaurant
     curr_rest = Restaurant.objects.filter(user = request.user).first()
+    shipping_zones = ShippingZone.objects.filter(restaurant=curr_rest)
     #check request method
     if request.method == 'POST':
         #check what's being submitted
@@ -239,7 +240,8 @@ def answer_about(request):
                     form.save()
                     return redirect('/restaurant_admin/my_menus')
                 else:
-                    return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form})
+                    return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form, 'shipping_zones':shipping_zones,
+                                 'restaurant':curr_rest})
 
                 #     curr_rest.order_stream = False
                 # curr_rest.save()
@@ -250,7 +252,8 @@ def answer_about(request):
         form = EmailForm()
         form.fields['order_stream_email'].widget.attrs['placeholder'] = curr_rest.order_stream_email if curr_rest.order_stream_email else _("None")
         order_stream = curr_rest.order_stream
-        return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form,'order_stream':order_stream})
+        return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form,'order_stream':order_stream, 'shipping_zones':shipping_zones,
+                                                              'restaurant':curr_rest})
 
 
 def my_menus(request):
@@ -1109,3 +1112,25 @@ def mark_order_done(request):
             tracker.is_complete = True
             tracker.save()
     return redirect('/restaurant_admin/my_orders')
+
+def set_shipping_zone(request):
+    print(request.POST)
+    ShippingZone.objects.create(city=request.POST['pu_addy'], cost = request.POST['cost'],
+                        restaurant = request.user.restaurant, place_id = request.POST['placeID'])
+    return redirect('/restaurant_admin/answer_about')
+
+def ajax_delete_zone(request, zone_id):
+    zone = ShippingZone.objects.get(id = zone_id)
+    zone.delete()
+    return JsonResponse({})
+
+def ajax_edit_zone(request):
+    curr_rest = request.user.restaurant
+    if request.POST['name'] == 'default_cost':
+        curr_rest.default_shipping_cost = float(request.POST['new_cost'])
+        curr_rest.save()
+    else:
+        zone = ShippingZone.objects.get(id = int(request.POST['name']))
+        zone.cost = float(request.POST['new_cost'])
+        zone.save()
+    return JsonResponse({})

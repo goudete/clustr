@@ -42,4 +42,7 @@ urlpatterns = [
     path('set_addon_groups/<int:item_id>', views.set_addon_groups, name = 'set_addon_group'),
     path('set_addon_groups_menu/<int:item_id>', views.set_addon_groups_menu, name = 'set_addon_group_menu'),
     path('ajax/ajax_create_addon_group/<str:group_name>/<int:item_id>', views.ajax_create_addon_group, name ="ajax_create_addon_group"),
+    path('set_shipping_zone', views.set_shipping_zone, name="set_shipping_zone"),
+    path('ajax/ajax_delete_zone/<int:zone_id>', views.ajax_delete_zone, name ="ajax_delete_zone"),
+    path('ajax/ajax_edit_zone', views.ajax_edit_zone, name ="ajax_edit_zone"),
 ]

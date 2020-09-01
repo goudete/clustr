@@ -98,7 +98,6 @@ django_heroku.settings(locals())
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-#
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -196,7 +195,7 @@ EMAIL_HOST_USER = "clustrfood@gmail.com"
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 
-SITE_ID = 5
+SITE_ID = 7
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -209,3 +208,5 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
