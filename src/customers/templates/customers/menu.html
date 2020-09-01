@@ -5,27 +5,65 @@
 
 {% block content %}
 <style>
-.thumbnail{
-  display: block;
-  padding: 4px;
-  margin-bottom: 20px;
+
+@media (min-width: 200px) {
+  .product-card {
+     width: 10rem;
+  }
+
+  .thumbnail{
+    display: block;
+    padding: 4px;
+    margin-bottom: 20px;
+
+  }
+
+  #thumb{
+    float: right;
+    max-height: 300px;
+
+  }
+
+  #item_img{
+    max-height: 250px;
+  }
+
+  .card-img-top {
+      width: 100%;
+      height: 40vw;
+      object-fit: cover;
+  }
 }
 
-#thumb{
-  float: right;
-  max-height: 300px;
+@media (min-width: 900px) {
+  .product-card {
+     width: 25rem;
+  }
 
+  .thumbnail{
+    display: block;
+    padding: 4px;
+    margin-bottom: 20px;
+
+  }
+
+  #thumb{
+    float: right;
+    max-height: 300px;
+
+  }
+
+  #item_img{
+    max-height: 250px;
+  }
+
+  .card-img-top {
+      width: 100%;
+      height: 30vw;
+      object-fit: cover;
+  }
 }
 
-#item_img{
-  max-height: 250px;
-}
-
-.card-img-top {
-    width: 100%;
-    height: 40vw;
-    object-fit: cover;
-}
 
 div.scrollmenu {
   /* background-color: #333; */
@@ -73,46 +111,17 @@ div.scrollmenu a:hover {
 
 <!-- logo -->
 {% if restaurant.photo_path %}
-<div class="jumbotron bg-light">
-  <div class="thumbnail thumb">
-    <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
-  </div>
-</div>
-{% endif %}
-<!-- end logo -->
-
-<div class="container-fluid bg-light">
-
-  <!-- Greeting About Modal -->
-
-  <!-- <div class="modal fade bg-light" tabindex="-1" role="dialog" id="myModal">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{% trans "Welcome to " %} {{ restaurant.name }}!</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="row justify-content-center">
-          <div class="thumbnail thumb">
-            {% if restaurant.photo_path %}
-            <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
-            {% endif %}
-          </div>
-        </div>
-        {% if restaurant.handle_payment and restaurant.stripe_account_id %}
-          <p>
-            {% trans "Browse our menu, order and pay right from your phone!" %}
-          </p>
-        {% else %}
-
-        {% endif %}
+  <div class="jumbotron bg-light">
+    <div class="row justify-content-center">
+      <div class="thumbnail thumb">
+        <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
       </div>
     </div>
   </div>
-</div> -->
+{% endif %}
+<!-- end logo -->
+
+<div class="container bg-light">
 
   <!-- Restaurant Name and info -->
   <div class="row ml-1 mb-2 justify-content-center bg-light">
@@ -168,7 +177,7 @@ div.scrollmenu a:hover {
         <h4>{% trans "No Items on Menu!" %}</h4>
       </div>
     {% else %}
-      <!-- Product Cards Begin -->
+      <!-- Products Begin -->
       {% for key, value in category_items.items %}
         <div class="MenuItems" id="display_category_category_button_{{key.id}}" >
           <div class="row ml-1 mt-5">
@@ -180,7 +189,7 @@ div.scrollmenu a:hover {
             {% for v in value %}
               <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ v.id }}" style="text-decoration:none; color:#000000">
                 <!-- Product Card -->
-                  <div class="card shadow bg-white rounded text-center mt-2 m-1" style="width:10rem;">
+                  <div class="card shadow bg-white rounded text-center mt-2 m-1 product-card">
                     {% if v.photo_path %}
                       <img src="{% static v.photo_path %}" class="card-img-top" alt="...">
                     {% else %}
@@ -199,7 +208,7 @@ div.scrollmenu a:hover {
           </div>
         </div>
       {% endfor %}
-      <!-- Product Cards end -->
+      <!-- Products end -->
     {% endif %}
 
   <!-- Menu Items Ends -->
