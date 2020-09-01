@@ -206,7 +206,7 @@ input:checked + .slider:before {
 
                   <div class="row justify-content-center mt-3 mb-2">
                     <div class = 'col'>
-                      <label for = 'photo'>{% trans 'Item Photo' %}</label>
+                      <label for = 'photo'>{% trans 'Product Photo' %}</label>
                       <div class="input-group" id = 'photo'>
                         <div class="custom-file">
                           <input type="file" name = 'photo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
@@ -221,10 +221,30 @@ input:checked + .slider:before {
                     </div>
                   </div>
 
+                  <hr>
+
+                  <!-- Options begin -->
+                  <div class="row">
+                    <div class="col">
+                      <h6>{% trans 'Options' %}</h6>
+                    </div>
+                  </div>
+
+                  <div class = "row">
+                    <input type = "number" value = "0" id = "numGroups" hidden = "true" readonly>
+                    <div class="ml-3">
+                      <h6>{% trans "Add options to you product, such as sizes." %}</h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <span name="group_button_nuevo"><button type="button" class="btn btn-primary mt-2 mb-2 ml-3" name="plus_sign_nuevo_group">{% trans 'New Option Group' %}</button></span>
+                  </div>
+
+                  <!-- Options end -->
+
                   <!-- Buttons -->
 
-                  <button style="width: 765px;" type="submit" id="add_item_submit" class="btn btn-primary btn-block">{% trans "Create" %}</button>
-
+                  <button type="submit" id="add_item_submit" class="btn btn-primary btn-block">{% trans "Create" %}</button>
 
                 </form>
               </div>
@@ -826,6 +846,59 @@ $('#add_modal').on('shown.bs.modal', function () {
  //Activating Popovers
  $(function () {
    $('[data-toggle="popover"]').popover()
+ })
+</script>
+
+<!-- ROWAN WORKING HERE RN ajax create new addon group -->
+<script type="text/javascript">
+  $(document).on('click', "[name = 'plus_sign_nuevo_group']", function() {
+    var div = $(this).parent().parent()[0];
+    var num = $("#numGroups").val();
+    var row = document.createElement("div");
+    row.innerHTML = `
+      <!-- this input is for the name of the group  and the green plus sign creates a new row of inputs with jquery, DO NOT CHANGE THE NAME of the green plus sign-->
+      <label for="option-group-name">{% trans 'Options Group Name' %}</label>
+      <input type = "number" value = "0" hidden = "true" readonly>
+      <input type = "text" class="form-control" id="option-group-name"><span><button type="button" class="btn btn-primary new_item_plus_sign mt-2 mb-2">{% trans 'Add new value' %}</button></span>`
+      var inpt = $(row).children()[2];
+      $(inpt).attr("name", "addon_group_".concat(num));
+      $("#numGroups").val(parseInt(num)+1);
+      $(row).insertAfter(div);
+    //insert new addon group
+
+ })
+</script>
+
+<!-- ROWAN WORKING HERE RN ajax create new addon item -->
+<script type="text/javascript">
+  $(document).on('click', ".new_item_plus_sign", function() {
+    var span = $(this).parent()[0];
+    var div = $(span).parent()[0];
+    var numinpt = $(div).children()[1];
+    var number = $(numinpt).val();
+    var inpt = $(div).children()[2];
+    console.log(inpt);
+    var name = $(inpt).attr("name");
+
+    var newRow = document.createElement("div");
+    newRow.innerHTML = `
+          <label>{% trans 'Title' %}</label>
+          <input type = "text" class="form-control" required>
+
+          <label>{% trans 'Quantity' %}</label>
+          <input type = "number" class="form-control" required>
+          <hr>`
+
+
+    var inpt1 = $(newRow).children()[1];
+    $(inpt1).attr("name", "addon_item_name_".concat(number).concat(name));
+    var inpt2 = $(newRow).children()[3];
+    $(inpt2).attr("name", "addon_item_quant_".concat(number).concat(name));
+
+    $(numinpt).val(parseInt(number) + 1);
+    $(newRow).insertAfter(span);
+
+
  })
 </script>
 
