@@ -139,12 +139,12 @@
             </div>
               {% for v in value %}
                 {% if v.quantity > 0 %}
-                  
+
                   <div class="form-check">
+                    <input class="form-check-input" type="radio" id="radio_addon" name="radio_addon_{{ key.name }}" checked="checked" value="{{ v.id }}" required>
                     <label class="form-check-label" for="radio_addon">
                       {{ v.name }}
                     </label>
-                    <input class="form-check-input" type="radio" name="radio_addon_{{ key.name }}" checked="checked" value="{{ v.id }}" required>
                   </div>
 
                   <hr>
