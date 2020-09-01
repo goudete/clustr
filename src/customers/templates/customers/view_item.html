@@ -23,7 +23,7 @@
   /*
   Experiment Begins
   */
-  .container-radio {
+  /* .container-radio {
     display: block;
     position: relative;
     padding-left: 35px;
@@ -54,7 +54,7 @@
 
   .container-radio input:checked ~ .checkmark {
     background-color: #05122A;
-  }
+  } */
 
   /*
   Experiment Ends
@@ -115,11 +115,12 @@
 
   <hr>
 
+  <!-- Adding to cart disabled if the restaurant is not handling payments -->
+  {% if restaurant.handle_payment and restaurant.stripe_account_id %}
   <!-- Cardifying view item -->
   <div class="card shadow bg-white rounded mt-2">
     <div class="card-body">
-      <!-- Adding to cart disabled if the restaurant is not handling payments -->
-      {% if restaurant.handle_payment and restaurant.stripe_account_id %}
+
           <form method="post" action="/customers/add_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ item.id }}" id="target">
           {% csrf_token %}
 
@@ -141,11 +142,11 @@
                   <div class="row">
                     <div class="col-8">
                       <div class="form-check">
-                        <label class="container-radio" for="radio_addon">
-                          <input class="" type="radio" name="radio_addon_{{ key.name }}" checked="checked" value="{{ v.id }}" required>
-                          <span class="checkmark"></span>
+                        <label class="form-check-label" for="radio_addon">
+                          <!-- <span class="checkmark"></span> -->
                           {{ v.name }}
                         </label>
+                        <input class="form-check-input" type="radio" name="radio_addon_{{ key.name }}" checked="checked" value="{{ v.id }}" required>
                       </div>
                     </div>
                     <!-- <div class="col-4">
@@ -155,21 +156,6 @@
                   <hr>
                 {% endif %}
               {% endfor %}
-            <!-- no addon -->
-            <!-- <div class="row mb-3">
-              <div class="col-8">
-                <div class="form-check">
-                  <label class="container-radio" for="radio_addon">
-                    <input class="" type="radio" name="radio_addon_{{ key.name }}" value="-1">
-                    <span class="checkmark"></span>
-                    {% trans 'None' %}
-                  </label>
-                </div>
-              </div>
-              <div class="col-4">
-                + $0.00
-              </div>
-            </div> -->
             {% endfor %}
           {% endif %}
         <!-- End Addon Group -->
@@ -201,46 +187,11 @@
             </select>
           </div>
           <!-- Quantity ends -->
-
-
           <button type="submit" class="btn btn-dark btn-lg btn-block active shadow">{% trans "Add to Cart" %}</button>
-
         </form>
       <!-- Form Ends -->
 
-      <!-- Restaurant is not handling payments -->
-      {% else %}
-        {% if addon_dict %}
-        <input type="hidden" id="dict_length" value="{{ addon_dict|length }}">
-          {% for key, value in addon_dict.items %}
-          <div class="row mb-3">
-            <div class="col-1">
-
-            </div>
-            <div class="col-11">
-              <b>{{ key.name }}</b>
-            </div>
-          </div>
-            {% for v in value %}
-            <div class="row ml-3">
-              <div class="col-8">
-                <div class="form-check">
-                  <label class="form-check-label" for="radio_addon">
-                    {{ v.name }}
-                  </label>
-                </div>
-              </div>
-              <div class="col-4">
-                + ${{ v.price }}
-              </div>
-              <hr>
-            </div>
-            {% endfor %}
-          {% endfor %}
-        {% endif %}
       {% endif %}
-    </div>
-  </div>
 
 <footer class="page-footer pt-4">
     <div class="row justify-content-center mb-3">
@@ -250,7 +201,5 @@
 
 
 </div>
-
-
 
 {% endblock %}
