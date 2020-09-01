@@ -656,8 +656,7 @@ def ajax_confirm_cash_payment(request):
 
 '''This method changes cart.is_paid to true and renders the confirmation page'''
 def order_confirmation(request, cart_id):
-    #if this method is a get, then theyre seeing the confirmation page
-    '''Send order to kitchen to print'''
+    #if this method is a get, then they're seeing the confirmation page
     if request.method == 'GET':
         cart = Cart.objects.filter(id = cart_id).first()
         # Decrease addon quantity here
@@ -669,7 +668,7 @@ def order_confirmation(request, cart_id):
         cart.save()
         if curr_rest.order_stream:
             send_order_email(from_email = settings.EMAIL_HOST_USER, to = curr_rest.order_stream_email, order = cart)
-        print('time: ', cart.paid_at)
+        # print('time: ', cart.paid_at)
         items = MenuItemCounter.objects.filter(cart = cart_id)
 
         return render(request, 'customers/order_confirmation.html', {'cart': cart, 'items': items})
