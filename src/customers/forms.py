@@ -47,18 +47,6 @@ class ShippingInfoForm(forms.ModelForm):
         self.fields['city_id'].required = False
         self.fields['city_name'].required = False
 
-
-        # self.fields['name'].required = False
-        # self.fields['description'].required = False
-        # self.fields['category'].required = False
-        # self.fields['price'].required = False
-        #
-        # self.fields['name'].widget.attrs.update(id='add_item_name')
-        # self.fields['description'].widget.attrs.update(id='add_item_description',rows = '6', cols = '60')
-        # self.fields['category'].widget.attrs.update(id='add_item_course')
-        # self.fields['price'].widget.attrs.update(id='add_item_price')
-        # self.helper = FormHelper()
-        # self.helper.form_show_labels = False
     class Meta:
         model = ShippingInfo
         fields = ('full_name', 'email','tel','address','city_name','city_id','postcode')

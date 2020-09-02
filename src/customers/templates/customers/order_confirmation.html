@@ -48,7 +48,7 @@
       <p class="pt-2">{% trans "Check your email for more info:" %} {{ cart.email }}</p>
       {% endif %}
 
-      {% if cart.shipping_address %}
+      {% if cart.shipping_info.address %}
         <p>{% trans "Shipping Address:" %} {{cart.shipping_address}}</p>
       {% else %}
         <p>{% trans "Pickup at:" %} {{ cart.restaurant.pickup_address }}</p>
