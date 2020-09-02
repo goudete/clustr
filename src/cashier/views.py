@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .forms import SubmitOrderCode, CashierLoginForm
 from restaurant_admin.models import Menu, MenuItem, Restaurant
 from .models import CashierProfile
-from customers.models import Cart, MenuItemCounter
+from customers.models import Cart, MenuItemCounter, OrderTracker
 from .auth_backend import PasswordlessAuthBackend
 from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse, HttpResponseRedirect
@@ -12,7 +12,6 @@ from django.contrib.auth import update_session_auth_hash
 from itertools import chain
 from django.core.mail import send_mail, EmailMultiAlternatives
 from clustr import settings
-from kitchen.models import OrderTracker
 from django.utils.translation import gettext as _
 import datetime
 from django.template.loader import get_template, render_to_string

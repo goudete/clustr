@@ -129,7 +129,19 @@ input:checked + .slider:before {
 
         {% if orders|length == 0 %}
         <div class = 'row justify-content-center mt-5'>
-          <h3>{% trans 'No Orders!' %}</h3>
+          <h3>{% trans 'No Active Orders!' %}</h3>
+          <table class="table table-hover table-bordered" style="border-collapse:collapse;">
+            <thead>
+                <tr>
+                      <th>{% trans 'Name' %}</th>
+                      <th>{% trans 'Email' %}</th>
+                      <th>{% trans 'Total' %}</th>
+                      <th>{% trans 'Payment' %}</th>
+                      <th>{% trans 'Fulfillment' %}</th>
+                      <th>{% trans 'Time' %}</th>
+                </tr>
+            </thead>
+          </table>
         </div>
 
         {% else %}
@@ -143,7 +155,6 @@ input:checked + .slider:before {
                             <th>{% trans 'Payment' %}</th>
                             <th>{% trans 'Fulfillment' %}</th>
                             <th>{% trans 'Time' %}</th>
-                            <!-- <th>Actions</th> -->
       				        </tr>
       				    </thead>
       				    <tbody>
@@ -152,8 +163,8 @@ input:checked + .slider:before {
                   <tr colspan="5" data-toggle="collapse" data-target="#demo{{order.id}}" onclick="event.preventDefault();" >
                   <!-- <tr colspan="5"> -->
                       <input type = 'number' class = 'tracker_id_number' value = '{{order.id}}' hidden = 'true' readonly>
-                      <td data-toggle="collapse">{{ order.cart.first_name}} {{ order.cart.last_name}}</td>
-                      <td data-toggle="collapse">{% if order.cart.email %}{{order.cart.email}}{% else %}{% trans 'no email' %}{% endif %}</td>
+                      <td data-toggle="collapse">{{ order.cart.shipping_info.full_name}}</td>
+                      <td data-toggle="collapse">{% if order.cart.shipping_info.email %}{{order.cart.shipping_info.email}}{% else %}{% trans 'no email' %}{% endif %}</td>
                       <td data-toggle="collapse">{{order.cart.total}}</td>
                       <td data-toggle="collapse">{% if order.cart.cash_payment %}{% trans 'Paying with Cash' %}{% else %} {% trans 'Card Payment' %} {% endif %}</td>
                       <td data-toggle="collapse">{% if order.cart.shipping_address %}{{order.cart.shipping_address}}{% else %}{% trans 'Picking Up' %}{% endif %}</td>

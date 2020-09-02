@@ -4,6 +4,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from cashier.models import CashierProfile
 from restaurant_admin.models import Restaurant, AddOnItem, AddOnGroup
 from django.contrib.auth.models import User
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class ShippingInfo(models.Model):
     full_name = models.CharField(null = True, max_length = 255)
@@ -13,6 +15,8 @@ class ShippingInfo(models.Model):
     city_name = models.CharField(null = True, max_length = 255)
     city_id = models.CharField(null = True, max_length = 255)
     postcode = models.CharField(null = True, max_length = 255)
+    order_tracker = models.ForeignKey('OrderTracker', null = True, on_delete = models.CASCADE)
+
 
 """this model is synonymous with an order"""
 class Cart(models.Model):
@@ -32,6 +36,14 @@ class Cart(models.Model):
     last_name = models.CharField(null = True, max_length = 255)
     shipping_address = models.CharField(null = True, max_length = 255)
     shipping_info = models.ForeignKey(ShippingInfo, null = True, on_delete = models.PROTECT)
+
+"""this model has an associated cart and a boolean field of whether or not the order has been completed
+there is also an optional phone number associated w/ the order, if it exists then the person will be texted at that number once the
+boolean field is true """
+class OrderTracker(models.Model):
+    restaurant = models.ForeignKey(Restaurant, null = True, on_delete = models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete = models.CASCADE)
+    is_complete = models.BooleanField(default = False)
 
 
 """ this model acts as a way to keep track of how many of a MenuItem are in a cart

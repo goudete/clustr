@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Cart, MenuItemCounter, Customer, Feedback, ShippingInfo
+from .models import Cart, MenuItemCounter, Customer, Feedback, ShippingInfo, OrderTracker
+
 from django.contrib.sites.models import Site
 
 # Register your models here.
@@ -8,6 +9,8 @@ admin.site.register(MenuItemCounter)
 admin.site.register(Customer)
 admin.site.register(Feedback)
 admin.site.register(ShippingInfo)
+admin.site.register(OrderTracker)
+
 
 admin.site.unregister(Site)
 class SiteAdmin(admin.ModelAdmin):

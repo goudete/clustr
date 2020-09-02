@@ -2,7 +2,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from restaurant_admin.models import Restaurant, Menu, MenuItem
-from .models import Cart, MenuItemCounter, Customer, ShippingInfo
+from .models import Cart, MenuItemCounter, Customer, ShippingInfo, OrderTracker
 from restaurant_admin.models import Restaurant, SelectOption, AddOnGroup, AddOnItem
 from .forms import CustomOrderForm, EmailForm, FeedbackForm, PhoneForm, NameForm, ShippingInfoForm
 import stripe
@@ -10,7 +10,6 @@ import os
 from decimal import Decimal
 from django.contrib import messages
 from django.core import serializers
-from kitchen.models import OrderTracker
 import phonenumbers
 import datetime
 from django.utils.translation import gettext as _
@@ -469,7 +468,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   currency='mxn',
                   setup_future_usage='off_session',
                   customer = new_customer.stripe_id,
-                  # stripe_account=curr_rest.stripe_account_id,
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             elif card_stored:
                 intent = stripe.PaymentIntent.create(
@@ -478,14 +477,14 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   currency='mxn',
                   setup_future_usage='off_session',
                   customer = existing_customer.stripe_id,
-                  # stripe_account=curr_rest.stripe_account_id,
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             else:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
                   amount=int((cart.total*100)),
                   currency='mxn',
-                  # stripe_account=curr_rest.stripe_account_id,
+                  stripe_account=curr_rest.stripe_account_id,
                 )
             cart.stripe_order_id = intent.id
             publishable = settings.STRIPE_PUBLISHABLE_KEY
@@ -543,6 +542,12 @@ def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
+        pri = OrderTracker.objects.filter(cart = curr_cart).exists() == False
+        print('ORDERTRACKER:', pri)
+        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False)
+            tracker.save()
+
         #if we have their info, prepopulate all the fields
         if request.user.is_authenticated:
             if Customer.objects.filter(user = request.user).exists():
@@ -577,59 +582,6 @@ def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
 
             curr_cart.save()
             shipping_info.save()
-        return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
-
-'''after cart, get the customer's details '''
-def customer_details(request, cart_id, restaurant_id, menu_id):
-    form = EmailForm()
-    phone_form = PhoneForm()
-    name_form = NameForm()
-    if request.method == 'GET':
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-        curr_menu = Menu.objects.filter(id = menu_id).first()
-        
-        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
-            tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False, phone_number = None)
-            tracker.save()
-        return render(request, 'customers/customer_details.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form': form, 'phone': phone_form, 'name': name_form})
-
-    else:
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        form = EmailForm(request.POST)
-        if form.is_valid():
-            curr_user_email = form.cleaned_data['email_input']
-            f_name = request.POST['first_name']
-            l_name = request.POST['last_name']
-            curr_cart.email = curr_user_email
-            curr_cart.first_name = f_name
-            curr_cart.last_name = l_name
-            curr_cart.save()
-            if curr_user_email != None:
-                current_date = datetime.date.today()
-                logo_photo_path = '{user}/photos/logo/'.format(user = "R" + str(curr_cart.restaurant.id))
-                item_counters = MenuItemCounter.objects.filter(cart = curr_cart).all()
-
-                subject, from_email, to = _('Your Receipt'), settings.EMAIL_HOST_USER, curr_user_email
-                msg = EmailMultiAlternatives(subject, "Hi", from_email, [to])
-                html_template = get_template("emails/receipt/receipt.html").render({
-                                                            'date':current_date,
-                                                            'receipt_number':curr_cart.id,
-                                                            'path':curr_cart.restaurant.photo_path,
-                                                            'order_id':curr_cart.id,
-                                                            'item_counters': item_counters,
-                                                            'cart': curr_cart
-                                                })
-                msg.attach_alternative(html_template, "text/html")
-                msg.send()
-
-        phone_num = PhoneForm(request.POST)
-        if request.POST['phone_number'] != ""  and phone_num.is_valid():
-            tracker = OrderTracker.objects.filter(cart = curr_cart).first()
-            number = request.POST['phone_number']
-            tracker.phone_number = number
-            tracker.save()
-            return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
         return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 

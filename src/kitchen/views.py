@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import OrderTracker
 from restaurant_admin.models import Restaurant
-from customers.models import MenuItemCounter, Cart
+from customers.models import MenuItemCounter, Cart, OrderTracker
 from django.conf import settings
 from twilio.rest import Client
 from .auth_backend import PasswordlessAuthBackend

@@ -16,7 +16,7 @@ from .file_storage import FileStorage
 from django.core.files import File
 import os
 from cashier.models import CashierProfile
-from customers.models import Cart, MenuItemCounter
+from customers.models import Cart, MenuItemCounter, OrderTracker
 import stripe
 import pyqrcode
 import png
@@ -27,7 +27,6 @@ from django.utils import timezone
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template, render_to_string
 from .email_handlers import send_order_email
-from kitchen.models import OrderTracker
 
 #  your views here.
 
@@ -224,7 +223,7 @@ def answer_about(request):
             curr_rest.save()
 
             #redirect either way post vs get
-            return redirect('/restaurant_admin/answer_about')
+            return redirect('/restaurant_admin/my_menus')
         else:
             if 'order_stream' in request.POST:
                 curr_rest.order_stream = True
@@ -1089,18 +1088,22 @@ def my_orders(request):
         if not rest:
             return redirect('/restaurant_admin')
         order_trackers = get_active_orders(rest.id)
+        # print('order-trackers:', order_trackers)
         orders = orders_dict(rest.id)
-        return render(request,'restaurant/my_orders.html',{'orders': orders, 'rest_id': rest.id})
+        # print('orders:', orders)
+        return render(request,'restaurant/my_orders.html', {'orders': orders, 'rest_id': rest.id})
+
     return redirect('/restaurant_admin')
 
 """ helper function to find number of active orders """
 def get_active_orders(rest_id):
     #should only get size from payed orders
     restaurant = Restaurant.objects.filter(id = rest_id).first()
-    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
+    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False).all()
+
     paid_orders = []
     for tracker in trackers:
-        if tracker.cart.is_paid or tracker.cart.cash_payment:
+        if tracker.cart.is_paid:
             paid_orders.append(tracker.id)
     return paid_orders
 

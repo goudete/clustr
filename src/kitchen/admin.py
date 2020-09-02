@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import OrderTracker, Kitchen
+from .models import Kitchen
 # Register your models here.
-admin.site.register(OrderTracker)
 admin.site.register(Kitchen)
