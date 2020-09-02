@@ -543,7 +543,7 @@ def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
 
-        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
+        if not OrderTracker.objects.filter(cart = curr_cart).exists():
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False)
             tracker.save()
 
