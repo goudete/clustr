@@ -542,8 +542,8 @@ def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
         curr_cart = Cart.objects.filter(id = cart_id).first()
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-
-        if not OrderTracker.objects.filter(cart = curr_cart).exists():
+        print('PROBLEMATIC LINE:', OrderTracker.objects.filter(cart = curr_cart).exists())
+        if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False)
             tracker.save()
 
