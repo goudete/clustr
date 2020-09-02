@@ -49,7 +49,7 @@
       {% endif %}
 
       {% if cart.shipping_info.address %}
-        <p>{% trans "Shipping Address:" %} {{cart.shipping_address}}</p>
+        <p>{% trans "Shipping Address:" %} {{ cart.shipping_info.address }}</p>
       {% else %}
         <p>{% trans "Pickup at:" %} {{ cart.restaurant.pickup_address }}</p>
       {% endif %}
