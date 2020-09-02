@@ -1100,7 +1100,7 @@ def get_active_orders(rest_id):
     trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
     paid_orders = []
     for tracker in trackers:
-        if tracker.cart.is_paid:
+        if tracker.cart.is_paid or tracker.cart.cash_payment:
             paid_orders.append(tracker.id)
     return paid_orders
 
