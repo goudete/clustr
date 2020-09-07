@@ -147,7 +147,10 @@
         {% csrf_token %}
         <div class="form-group mx-sm-3 mb-2">
           <label for="feedback">{% trans "What sucked about your experience?" %}</label>
-          <input class="form-control" type="text" id="feedback" name="feedback" placeholder="...">
+          {% trans "this field is required" as req %}
+          <input class="form-control" type="text" id="feedback" name="feedback" placeholder="..." required
+          oninvalid="this.setCustomValidity('{{req}}')"
+          oninput="this.setCustomValidity('')">
         <div/>
         <!-- Buttons -->
         <button type="submit" class="btn btn-secondary btn-block mt-3">{% trans "Submit" %}</button>

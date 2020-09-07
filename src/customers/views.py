@@ -393,25 +393,32 @@ def payment(request, cart_id, restaurant_id, menu_id):
     cart = Cart.objects.filter(id = cart_id).first()
     if cart.is_paid == True:
         ''' If payed, just redirect to order confirmation'''
-        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/order_confirmation/{c_id}/cash'.format(c_id = cart_id))
 
     user = request.user
     authenticated = user.is_authenticated
     #if they have a stored customer stripe id, give option of paying with previous card.
     card_stored = False
+    existing_in_db = False
     last4 = '****' #arbitrary. if they have a stored card, we update this later
     if authenticated:
         if Customer.objects.filter(user=user).exists():
+            existing_in_db = True
             existing_customer = Customer.objects.get(user=user)
-            if Customer.objects.get(user=request.user).stripe_id != None:
+            if existing_customer.card_stored:
                 card_stored = True
-                #get their card info
                 payment_methods = stripe.PaymentMethod.list(
                                       customer=existing_customer.stripe_id,
                                       type="card",
                                     )
                 payment_method_id = payment_methods['data'][0]['id']
                 last4 = payment_methods['data'][0]['card']['last4'] #last four digits in credit card number
+            if existing_customer.stripe_id == None:
+                #Create a Customer (stripe API object):
+                new_customer_payment_info = stripe.Customer.create()
+                existing_customer.stripe_id = new_customer_payment_info.id
+                existing_customer.save()
+
 
     if request.method == 'POST':
         #check whether customer paid with saved card.
@@ -432,7 +439,7 @@ def payment(request, cart_id, restaurant_id, menu_id):
               payment_intent_id = err.payment_intent['id']
               payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
         else:
-            if card_stored:
+            if customer.card_stored:
                 payment_methods = stripe.PaymentMethod.list(
                                       customer=existing_customer.stripe_id,
                                       type="card",
@@ -441,61 +448,48 @@ def payment(request, cart_id, restaurant_id, menu_id):
                   existing_customer.id,
                   payment_methods['data'][1]['id'],
                 )
+            else:
+                customer.card_stored = True
+                customer.save()
 
-        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/order_confirmation/{c_id}/card'.format(c_id = cart_id))
     else:
         if not all_in_stock(cart):
             return redirect('/customers/view_cart/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-        #stripe API stuff here
-        #added to save card details if customer authenticated and paying for the first time
+        shipping_cost = calculate_shipping(cart)
+        if cart.shipping_cost != shipping_cost:
+            cart.total -= cart.shipping_cost
+            cart.total += shipping_cost
+            cart.shipping_cost = shipping_cost
+            cart.save()
         if curr_rest.handle_payment:
-            if authenticated and not(card_stored):
-                # Create a Customer (stripe API object):
-                new_customer = stripe.Customer.create()
-                #create customer object we will save to db
-                db_customer = Customer(
-                    user = user,
-                    stripe_id = new_customer.id
-                )
-                db_customer.save()
-
-                intent = stripe.PaymentIntent.create(
-                  payment_method_types=['card'],
-                  amount=int((cart.total*100)),
-                  currency='mxn',
-                  setup_future_usage='off_session',
-                  customer = new_customer.stripe_id,
-                  stripe_account=curr_rest.stripe_account_id,
-                )
-            elif card_stored:
+            if existing_in_db:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
                   amount=int((cart.total*100)),
                   currency='mxn',
                   setup_future_usage='off_session',
                   customer = existing_customer.stripe_id,
-                  stripe_account=curr_rest.stripe_account_id,
+                  stripe_account=(None if settings.DEV else curr_rest.stripe_account_id),
                 )
             else:
                 intent = stripe.PaymentIntent.create(
                   payment_method_types=['card'],
                   amount=int((cart.total*100)),
                   currency='mxn',
-                  stripe_account=curr_rest.stripe_account_id,
+                  stripe_account=(None if settings.DEV else curr_rest.stripe_account_id),
                 )
             cart.stripe_order_id = intent.id
             publishable = settings.STRIPE_PUBLISHABLE_KEY
             item_counters = MenuItemCounter.objects.filter(cart = cart)
             number_of_items = sum([counter.quantity for counter in item_counters])
-            shipping_cost = calculate_shipping(cart)
-            cart.total += shipping_cost
-            cart.save()
             return render(request, 'customers/payment.html', {'client_secret':intent.client_secret, 'cart': cart, 'number_of_items':number_of_items,
                                                               'restaurant': curr_rest, 'menu': curr_menu, 'publishable': publishable,
-                                                              'card_stored':card_stored, 'last4':last4, 'item_counters':item_counters, 'shipping_cost':shipping_cost})
+                                                              'card_stored':card_stored, 'last4':last4, 'item_counters':item_counters,
+                                                              'DEV':settings.DEV})
 
 
 
@@ -550,10 +544,12 @@ def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
         #if we have their info, prepopulate all the fields
         if request.user.is_authenticated:
             if Customer.objects.filter(user = request.user).exists():
-                customer = Customer.objects.get(user = request.user)
-                if customer.shipping_info_stored:
-                    for key in form.fields:
-                        form.fields[key].widget.attrs.update({'value': getattr(customer.shipping_info,key)})
+                customer = Customer.objects.get(user = request.user) #existing_customer
+            else:
+                customer = Customer(user = request.user) #new customer
+            if customer.shipping_info_stored:
+                for key in form.fields:
+                    form.fields[key].widget.attrs.update({'value': getattr(customer.shipping_info,key)})
 
         return render(request, 'customers/pick_up_or_delivery.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu,'form':form})
     else:
@@ -606,7 +602,13 @@ def ajax_confirm_cash_payment(request):
     return JsonResponse(data)
 
 '''This method changes cart.is_paid to true and renders the confirmation page'''
-def order_confirmation(request, cart_id):
+def order_confirmation(request, cart_id, payment_method):
+    if payment_method == 'card':
+        if request.user.is_authenticated:
+            if Customer.objects.filter(user = request.user).exists():
+                customer = Customer.objects.get(user = request.user)
+                customer.card_stored = True
+                customer.save()
     #if this method is a get, then they're seeing the confirmation page
     if request.method == 'GET':
         cart = Cart.objects.filter(id = cart_id).first()
@@ -639,7 +641,7 @@ def feedback(request, cart_id):
         feedback.cart = cart
         feedback.save()
         messages.info(request, "Thank you for your feedback!")
-        return redirect('/customers/order_confirmation/{c_id}'.format(c_id = cart_id))
+        return redirect('/customers/order_confirmation/{c_id}/cash'.format(c_id = cart_id))
     else:
         cart = Cart.objects.filter(id = cart_id).first()
         return render(request, 'customers/order_confirmation.html', {'cart': cart, 'form': form})

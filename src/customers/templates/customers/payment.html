@@ -93,7 +93,7 @@
               <div class="text-primary">
                 <h6 class="my-0">Shipping</h6>
               </div>
-              <span class="text-muted">${{shipping_cost}}</span>
+              <span class="text-muted">${{cart.shipping_cost}}</span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
               <span>Total (USD)</span>
@@ -223,9 +223,13 @@
  // console.log('connected-id: ' + connected_account)
 
  if (publishable) {
-   var stripe = Stripe(publishable, {
-     stripeAccount: connected_account
-    });
+   if ("{{DEV}}") {
+     var stripe = Stripe(publishable)
+   } else {
+     var stripe = Stripe(publishable, {
+       stripeAccount: connected_account
+      });
+   }
 
    var elements = stripe.elements();
 
@@ -295,8 +299,7 @@
             // ***send paymentIntent id to views here*** Probs with AJAX
             // console.log('payment success');
            // console.log(cart_id)
-           location.href="/customers/order_confirmation/" + cart_id;
-
+           location.href="/customers/order_confirmation/" + cart_id + "/card";
          }
        }
      });
@@ -316,7 +319,8 @@ $( "#submit_cash" ).click(function() {
     },
     dataType: 'json',
     success: function (data) {
-      location.href="/customers/order_confirmation/" + cart_id;
+      location.href="/customers/order_confirmation/" + cart_id + "/cash";
+      //0 is an indiactor value to indicate cash payment
     }
   });
   });
