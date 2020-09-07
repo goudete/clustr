@@ -99,17 +99,17 @@ django_heroku.settings(locals())
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#           'NAME': env('DB_NAME'),
-#           'USER': env('DB_USER'),
-#           'PASSWORD': env("DB_PASS"),
-#           'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
-#           'PORT': '',
-#     }
-#  }
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': env('DB_NAME'),
+          'USER': env('DB_USER'),
+          'PASSWORD': env("DB_PASS"),
+          'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
+          'PORT': '',
+    }
+ }
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -178,11 +178,11 @@ AWS_S3_FILE_OVERWRITE = True
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
 
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',

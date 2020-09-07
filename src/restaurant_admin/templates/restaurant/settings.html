@@ -1,0 +1,586 @@
+{% extends 'restaurant/base.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<!-- slider styling -->
+<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> <!-- search icon -->
+
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+<div class="container">
+
+  <!-- About Card -->
+  <div class = 'row justify-content-center mt-4'>
+    <div class="card shadow bg-white rounded mb-4" style="width: 60rem;">
+      <div class="card-header">
+        <h4>{% trans 'About ' %} {{ restaurant.name }}</h4>
+      </div>
+
+      <div class="card-body">
+
+        <div class = 'row justify-content-center'>
+          <div class = 'col'>
+            <form id = 'questions_form' action = '/restaurant_admin/about_settings' method = 'post' enctype = 'multipart/form-data'>
+              {% csrf_token %}
+
+              <div class="form-group">
+                <label for="tagline"><h5>{% trans 'Your Business Tagline' %}</h5></label>
+                <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' value = "{{me.info}}">
+                <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your business name to your customer." %}</small>
+              </div>
+
+              <hr>
+
+              <div class = 'row mt-3'>
+                <div class="col">
+                  <h5>{% trans 'Business Address' %}</h5>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label type="text" for = 'address'>{% trans 'Address' %}</label>
+                <input class="form-control" name = 'address' id = 'address' value="{{me.address}}">
+              </div>
+
+              <div class="form-group">
+                <label for="autocomplete">{% trans 'City' %}</label>
+                <input type="text" class="form-control" name="city" onFocus="geolocate()" id="autocomplete" autocomplete="new-loc" value="{{me.city}}" readonly>
+                <small>{% trans 'Current City: ' %}{{ me.city_name }}</small>
+              </div>
+
+              <div id = "city_error" class="alert alert-danger mt-1" style="display: none;">
+                {% trans "Please select a city from the autofill options." %}
+              </div>
+
+              <div class="form-group">
+                <label for="postcode">{% trans 'Postcode' %}</label>
+                <input class="form-control" type = 'text' name = 'postcode' id = 'postcode' value="{{me.postcode}}">
+              </div>
+
+              <!-- hidden form fields for city_id and city_name -->
+              <input type="hidden" name="placeID" id="placeID">
+              <input type="hidden" name="placeName" id="placeName">
+
+              <hr>
+
+              <div class = 'row mt-3'>
+                <div class="col">
+                  <b><label for = 'inputGroupFile04'>{% trans 'Logo' %}</label></b>
+                </div>
+              </div>
+
+                <div class="input-group">
+                  <div class="custom-file">
+                    <input type="file" name = 'logo' accept = 'image/*' class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                    <label class="custom-file-label" for="inputGroupFile04">{%trans 'Choose file' %}</label>
+                  </div>
+                </div>
+
+                <button name="preferences_submit" id = 'question_form_button' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- About card ends -->
+
+
+  <!-- Payment Card -->
+  {% if me.stripe_account_id %}
+    <!-- If stripe account id exists but they want to disable payments -->
+    <!-- form to be able to change handle payment -->
+    <div class="justify-content-center">
+      <div class = 'row justify-content-center mt-4'>
+        <div class="card shadow bg-white rounded mb-4" style="width: 60rem;">
+            <div class="card-header">
+              <h4>{% trans 'Payment Options' %}</h4>
+            </div>
+
+            <div class = 'card-body'>
+
+            <div class="title-cardSettings">
+              <div class="row">
+                <div class="col">
+                  <h5>{% trans "Card Settings" %}</h5>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <small>{% trans "Payments are handled by Stripe. Click " %}<a href="https://dashboard.stripe.com/">{% trans "here" %}</a>{% trans " to visit Stripe dashboard." %}</small>
+                </div>
+              </div>
+            </div>
+
+            <div class = 'row justify-content-center mt-2'>
+              <div class = 'col'>
+                <form action = '/restaurant_admin/toggle_payments' method = 'post'>
+                  {% csrf_token %}
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="off" name="answer" value="off" class="custom-control-input" {% if me.handle_payment %}{% else %} checked {% endif %}>
+                    <label class="custom-control-label" for="off">{% trans 'Off' %}</label>
+                  </div>
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="on" name="answer" value="on" class="custom-control-input" {% if me.handle_payment %} checked {% endif %}>
+                    <label class="custom-control-label" for="on">{% trans 'On' %}</label>
+                  </div>
+
+                  <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+
+                </form>
+
+                <hr>
+              </div>
+            </div>
+            <div class="title-cashSettings">
+              <div class="row">
+                <div class="col">
+                  <h5>{% trans "Cash Settings" %}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="formsBegin">
+              <div class="row mt-2">
+                <div class="col">
+                  <small>{% trans "Enable or disable cash payments." %}</small>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col">
+                  <form action = '/restaurant_admin/cash_settings/{{ restaurant.id}}' method = 'post'>
+                    {% csrf_token %}
+
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="cash-off" name="answer-cash" value="off" class="custom-control-input"{% if me.handle_cash_payment %}{% else %} checked {% endif %}>
+                      <label class="custom-control-label" for="cash-off">{% trans 'Off' %}</label>
+                    </div>
+
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="cash-on" name="answer-cash" value="on" class="custom-control-input" {% if me.handle_cash_payment %} checked {% endif %}>
+                      <label class="custom-control-label" for="cash-on">{% trans 'On' %}</label>
+                    </div>
+
+                    <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+
+                  </form>
+
+                  <small>{% trans "Cash payments will only be enabled if you are in the same city as your customer." %}</small>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <small>{% trans "These are the payment methods that you have set up in your store. If enabled they are available for your customers to choose from at checkout." %}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- If stripe_account_id is Null display this -->
+    <div class="justify-content-center">
+      <div class = 'row justify-content-center mt-4'>
+        <div class="card shadow bg-white rounded mb-4" style="width: 60rem;">
+          <div class="card-header">
+            <h4>{% trans 'Would You Like to Accept Payments?' %}</h4>
+          </div>
+
+          <div class = 'card-body'>
+
+            <div class = 'row justify-content-center mt-5'>
+              <div class = 'col'>
+                <form action = '/restaurant_admin/answer_question' method = 'post'>
+                  {% csrf_token %}
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="no" name="answer" value="no" class="custom-control-input">
+                    <label class="custom-control-label" for="no">{% trans 'No' %}</label>
+                  </div>
+
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="yes" name="answer" value="yes" class="custom-control-input">
+                    <label class="custom-control-label" for="yes">{% trans 'Yes' %}</label>
+                  </div>
+
+                  <button type = 'submit' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+
+                </form>
+
+                <hr>
+
+                <p class="card-text">{% trans "We charge a fixed fee and a percentage of the transaction each time you accept a credit or debit card payment (3.6% + 3 MXN). The price is the same for all cards. There’s no additional fee for international cards or failed charges. We pay out on a rolling daily basis to the account you indicate." %}</p>
+                <a href="https://stripe.com/es-mx/pricing" class="card-link">{% trans "More Information" %}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  <!-- Payment card ends -->
+
+  <!-- Shipping and Pickup card begins -->
+  <div class = 'row justify-content-center mt-4'>
+    <div class="card shadow bg-white rounded mb-4" style="width: 60rem;">
+      <div class="card-header">
+        <h5>{% trans "Shipping and Pickup" %}</h5>
+      </div>
+
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <h5>{% trans "Shipping Zones" %}</h5>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <small>{% trans "Set different shipping rates for customers located in different cities. If the customer is not located in any of the shipping zones specified by you, they will get charged the 'Everywhere Else' rate." %}</small>
+          </div>
+        </div>
+        <br>
+          {% for zone in shipping_zones %}
+          <div class="row">
+            <div class="col-sm">
+              <input class="form-control"
+                     type="text"
+                     value="{{zone.city}}"
+                     readonly/>
+            </div>
+            <div class="col-sm">
+              <input class="form-control zone_cost"
+                     type="number"
+                     value="{{zone.cost}}"
+                     name="{{zone.id}}"
+                     readonly/>
+            </div>
+            <div style="text-align: center;">
+              <span style="margin-left: 10px;">
+                <i class="fas fa-times fa-2x delete_zone" name="{{zone.id}}" style="color: red;"></i>
+              </span>
+            </div>
+          </div>
+          <br>
+          {% endfor %}
+          <div class="row">
+            <div class="col-sm">
+              <input class="form-control text-danger"
+                     type="text"
+                     value="{% trans 'Everywhere Else' %}"
+                     style="background: "
+                     readonly/>
+            </div>
+            <div class="col-sm">
+                <input class="form-control zone_cost text-danger"
+                       type="number"
+                       value="{{restaurant.default_shipping_cost}}"
+                       name="default_cost"
+                       readonly/>
+            </div>
+          </div>
+          <hr>
+          <form id = 'questions_form' action = '/restaurant_admin/set_shipping_zone' method = 'post' enctype = 'multipart/form-data'>
+          <div class="row">
+              {% csrf_token %}
+              <div class="col-sm">
+                {% trans "Enter a new location" as newloc %}
+                <input class="form-control"
+                       id="autocomplete"
+                       name = "pu_addy"
+                       onFocus="geolocate()"
+                       type="text"
+                       autocomplete="false"
+                       placeholder="{{newloc}}"
+                       required/>
+                <input type="text" name="placeID" id="placeID" style="display: none;">
+              <div class = "invalid-feedback">
+                    {% trans "Please Choose a Pickup Address" %}
+              </div>
+              </div>
+                <div class="col-sm">
+                  {% trans "Enter shipping cost" as newcost %}
+                  <input class="form-control"
+                         type="number"
+                         name="cost"
+                         placeholder="{{newcost}}"
+                         required/>
+                </div>
+            </div>
+            <button name="shipping_zone_submit" class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+          </form>
+
+          <!-- <hr>
+
+          <div class="row">
+            <div class="col">
+              <h5>{% trans "Pickup Settings?" %}</h5>
+            </div>
+          </div> -->
+
+          <!-- <div class="row">
+            <div class="col">
+              <small>{% trans "Add a curbside, drive-through, or in-store pickup." %}</small>
+            </div>
+
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <!-- Shipping card ends -->
+
+  <!-- Notification card begins -->
+  <div class = 'row justify-content-center mt-4'>
+    <div class="card shadow bg-white rounded mb-4" style="width: 60rem;">
+      <div class="card-header">
+        <h4>{% trans 'Notifications' %}</h4>
+      </div>
+
+      <div class="card-body">
+
+        <div class = 'row justify-content-center'>
+          <div class = 'col'>
+            <form id = 'questions_form' action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
+              {% csrf_token %}
+
+              <div class="form-group">
+                <b><label for="tagline">{% trans 'Email' %}</label></b>
+                <!-- <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}"> -->
+                {{form.order_stream_email}}
+                <small id="taglineHelp" class="form-text text-muted">{% trans "All confirmed orders will be emailed here. You can toggle this feature on/off using the slider below." %}</small>
+              </div>
+              <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label">{% trans "Activate" %}?</label>
+                <div class="col-lg-9">
+                  <label class="switch">
+                    {% if order_stream %}
+                    <input name = "order_stream" type="checkbox" checked>
+                    {% endif %}
+                    {% if order_stream == False %}
+                    <input name = "order_stream" type="checkbox">
+                    {% endif %}
+                    <span class="slider round"></span>
+                 </label>
+                </div>
+            </div>
+                <button name="email_submit" id = 'question_form_button' class="btn btn-primary btn-block mt-4">{% trans 'Submit' %}</button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Notification card ends -->
+
+</div>
+
+<script>
+  //to check and uncheck pickup radio button & display address form
+  // function pickUpAddress() {
+  //     if (document.getElementById("pickup_addy_section").style.display=="block") {
+  //       document.getElementById("pickup_addy_section").style.display = 'none';
+  //       $( "#pickup" ).prop( "checked", false );
+  //     }
+  //
+  //     else {
+  //         document.getElementById("pickup_addy_section").style.display="block";
+  //     }
+  // }
+
+  //to check and uncheck shipping radio button
+  // function uncheckShippingRadio() {
+  //   if (document.getElementById("shipping_section").display_int=='0') {
+  //     document.getElementById("shipping_section").display_int = '1';
+  //     $( "#shipping" ).prop( "checked", false );
+  //   }
+  //   else {
+  //     document.getElementById("shipping_section").display_int = '0'
+  //   }
+  // }
+
+</script>
+<script>
+  var placeSearch, autocomplete, autocomplete2;
+
+  var componentForm = {
+    street_number: 'short_name',
+    route: 'long_name',
+    locality: 'long_name',
+    administrative_area_level_1: 'short_name',
+    country: 'long_name',
+    postal_code: 'short_name'
+  };
+
+
+  function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('autocomplete'), {types: ['(cities)']});
+
+    autocomplete.setFields(['address_components','place_id']);
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+        fillInAddress();
+      });
+
+  }
+  function fillInAddress() {
+    console.log("inside fillInAddress");
+    // Get the place details from the autocomplete object.
+    var place = autocomplete.getPlace();
+    var place_id = place.place_id;
+
+    $('#placeID')[0].value = place_id;
+    console.log("place ID");
+    console.log(place.place_id);
+
+  }
+
+  function geolocate() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var geolocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        var circle = new google.maps.Circle(
+            {center: geolocation, radius: position.coords.accuracy});
+        autocomplete.setBounds(circle.getBounds());
+      });
+    }
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKmjFt91GOvHaqyxpoiiqFQURjFST7U2I&libraries=places&callback=initAutocomplete"async defer>
+</script>
+<script type="text/javascript">
+  $(document).on("click", ".delete_zone", function(){
+      var parent_row = $(this).parent().parent().parent();
+      var zone_id = $(this).attr('name');
+      console.log(zone_id);
+      $.ajax({
+        url: `/restaurant_admin/ajax/ajax_delete_zone/${zone_id}`,
+        data: {
+          'zone_id': zone_id,
+        },
+        dataType: 'json',
+        success: function (data) {
+          parent_row.remove()
+        }
+      });
+    });
+    $(document).on("click", ".zone_cost", function(){
+        if ($(this).prop('readonly') == true) {
+          $(this).prop('readonly', false);
+        }
+      });
+    $(document).on("blur", ".zone_cost", function(){
+        if ($(this).prop('readonly') == false) {
+          $(this).prop('readonly', true);
+        }
+        var name = $(this).attr('name')
+        $.ajax({
+          type : 'POST',
+          url: `/restaurant_admin/ajax/ajax_edit_zone`,
+          data: {
+            'name': name,
+            'new_cost': $(this).val(),
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+          },
+          dataType: 'json',
+          success: function (data) {
+          }
+        });
+      });
+</script>
+<script type="text/javascript">
+  $(document).on("click", "#autocomplete", function(){
+      if ($(this).prop('readonly') == true) {
+        $(this).prop('readonly', false);
+      }
+    });
+
+  $(document).ready(function() {
+    $('#form').submit(function(e) {
+      console.log("here in validate");
+      var user_input = $('#autocomplete')[0].value
+      var last_saved_name = $('#placeName')[0].value
+      console.log(user_input);
+      console.log(last_saved_name);
+      if (user_input === last_saved_name && user_input.length > 0) {
+        return true
+      } else {
+        $('#city_error').show()
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+
+
+{% endblock %}

@@ -14,7 +14,7 @@ urlpatterns = [
     path('connect', views.stripe_connect),
     path('answer_question', views.payment_question, name = 'answer_question'),
     path('toggle_payments', views.toggle_payments),
-    path('answer_about', views.answer_about),
+    path('about_settings', views.about_settings, name = 'about_settings'),
     path('add_menu', views.add_menu, name = 'add_menu'),
     path('view_menu/<int:menu_id>', views.view_menu),
     path('edit_menu/<int:menu_id>', views.edit_menu),
@@ -45,4 +45,5 @@ urlpatterns = [
     path('set_shipping_zone', views.set_shipping_zone, name="set_shipping_zone"),
     path('ajax/ajax_delete_zone/<int:zone_id>', views.ajax_delete_zone, name ="ajax_delete_zone"),
     path('ajax/ajax_edit_zone', views.ajax_edit_zone, name ="ajax_edit_zone"),
+    path('cash_settings/<int:restaurant_id>', views.cash_settings, name="cash_settings"),
 ]

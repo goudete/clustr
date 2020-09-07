@@ -151,6 +151,7 @@ input:checked + .slider:before {
       				        <tr>
                             <th>{% trans 'Name' %}</th>
                             <th>{% trans 'Email' %}</th>
+                            <th>{% trans 'Phone' %}</th>
                             <th>{% trans 'Total' %}</th>
                             <th>{% trans 'Payment' %}</th>
                             <th>{% trans 'Fulfillment' %}</th>
@@ -163,12 +164,13 @@ input:checked + .slider:before {
                   <tr colspan="5" data-toggle="collapse" data-target="#demo{{order.id}}" onclick="event.preventDefault();" >
                   <!-- <tr colspan="5"> -->
                       <input type = 'number' class = 'tracker_id_number' value = '{{order.id}}' hidden = 'true' readonly>
-                      <td data-toggle="collapse">{{ order.cart.shipping_info.full_name}}</td>
+                      <td data-toggle="collapse">{{ order.cart.shipping_info.full_name }}</td>
                       <td data-toggle="collapse">{% if order.cart.shipping_info.email %}{{order.cart.shipping_info.email}}{% else %}{% trans 'no email' %}{% endif %}</td>
-                      <td data-toggle="collapse">{{order.cart.total}}</td>
+                      <td data-toggle="collapse">{{ order.cart.shipping_info.tel }}</td>
+                      <td data-toggle="collapse">{{ order.cart.total }}</td>
                       <td data-toggle="collapse">{% if order.cart.cash_payment %}{% trans 'Paying with Cash' %}{% else %} {% trans 'Card Payment' %} {% endif %}</td>
                       <td data-toggle="collapse">{% if order.cart.shipping_address %}{{order.cart.shipping_address}}{% else %}{% trans 'Picking Up' %}{% endif %}</td>
-                      <td data-toggle="collapse">{{order.cart.paid_at}}</td>
+                      <td data-toggle="collapse">{{ order.cart.paid_at }}</td>
                   </tr>
                   <tr class="p">
                       <td colspan="5" class="hiddenRow">

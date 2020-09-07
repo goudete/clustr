@@ -32,7 +32,7 @@
         <!-- the alert card if they havent picked to handle payments or not -->
         {% if me.answered_pay_question == False %}
           <div class = 'row justify-content-center mt-4'>
-            <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
+            <div class="card shadow p-3 bg-white rounded mb-4" style="width: 60rem;">
               <div class = 'card-body'>
 
                 <div class="card-title">
@@ -72,7 +72,7 @@
         <!-- the alert card if they havent put their logo and about info -->
         {% if me.info_input == False %}
         <div class = 'row justify-content-center mb-4 mt-4'>
-          <div class="card shadow p-3 bg-white rounded mb-4" style="width: 30rem;">
+          <div class="card shadow p-3 bg-white rounded mb-4" style="width: 60rem;">
             <div class="card-body">
               <div class = 'row'>
                 <div class = 'col'>
@@ -82,7 +82,7 @@
 
               <div class = 'row justify-content-center mt-3'>
                 <div class = 'col'>
-                  <form id = 'questions_form' action = '/restaurant_admin/answer_about' method = 'post' enctype = 'multipart/form-data'>
+                  <form id = 'questions_form' action = '/restaurant_admin/about_settings' method = 'post' enctype = 'multipart/form-data'>
                     {% csrf_token %}
 
                     <div class="form-group">
@@ -141,13 +141,10 @@
         <!-- Add Menu Icon -->
         <div class="row mb-3">
           <div class="col-9">
-
-            <!-- <a class = 'btn btn-primary' href = "{{ url }}">{% trans 'View QR Code' %}</a> -->
-
           </div>
 
           <div class="col-3">
-            <button onclick = 'menuForm()' data-toggle="modal" data-target="#create_menu" type="button" class="btn btn-primary">{% trans "New Catalogue" %}</button>
+            <button onclick = 'menuForm()' data-toggle="modal" data-target="#create_menu" type="button" class="btn btn-primary">{% trans "New Catalog" %}</button>
           </div>
         </div>
 

@@ -34,8 +34,10 @@ class Cart(models.Model):
     cash_payment = models.BooleanField(null = True)
     first_name = models.CharField(null = True, max_length = 255)
     last_name = models.CharField(null = True, max_length = 255)
-    shipping_address = models.CharField(null = True, max_length = 255)
     shipping_info = models.ForeignKey(ShippingInfo, null = True, on_delete = models.PROTECT)
+    #ability for customer to pay with cash (depending on whether merchant/customer are in the same city)
+    handle_cash = models.BooleanField(null = True)
+
 
 """this model has an associated cart and a boolean field of whether or not the order has been completed
 there is also an optional phone number associated w/ the order, if it exists then the person will be texted at that number once the

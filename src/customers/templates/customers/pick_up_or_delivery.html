@@ -129,7 +129,7 @@
   <!-- Email Receipt Form -->
   <div class="card shadow bg-white rounded mt-2">
     <div class="card-header">
-    <h4>{% trans "How would you like to get your order?" %}</h4>
+    <h4>{% trans "Shipping Details" %}</h4>
     </div>
 
     <div class="card-body">
@@ -163,40 +163,43 @@
       {% endif %}
 
       <hr>
+
       <form method = 'post' action = '/customers/pick_up_or_delivery/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}' id="form">
         {% csrf_token %}
 
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
               <div class="form-check">
-                <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' value = 'delivery' onclick="deliveryAddress()">
+                <!-- <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' value = 'delivery' onclick="deliveryAddress()"> -->
+                <input class="form-check-input" type = 'radio' name = 'pickupvsdelivery' value = 'delivery' checked>
                 <label for = 'dine-in1'><h5>{% trans 'Delivery' %}</h5></label>
               </div>
-              <div id="delivery_addy_section" style="display: none;">
 
-              <div class="form-check mb-3 delivery">
+              <!-- <div id="delivery_addy_section" style="display: none;"> -->
+
+              <div class="form-group mb-3 delivery">
                 <label for="full_name">{% trans 'Full Name' %}</label>
                 {{form.full_name}}
               </div>
 
-              <div class="form-check mb-3 delivery" >
+              <div class="form-group mb-3 delivery" >
                 <label for="email">{% trans 'Email' %}</label>
                 {{form.email}}
               </div>
 
-              <div class="form-check mb-3 delivery" >
+              <div class="form-group mb-3 delivery" >
                 <label for="tel">{% trans 'Tel' %}</label>
                 {{form.tel}}
               </div>
 
-              <div class="form-check mb-3 delivery">
+              <div class="form-group mb-3 delivery">
                 <label for="address">{% trans 'Address' %}</label>
                 {{form.address}}
               </div>
 
-              <div class="form-check mb-3 delivery" >
-                <div class="row">
-                  <div class="col-sm">
+              <div class="form-group mb-3 delivery" >
+                <!-- <div class="row"> -->
+                  <!-- <div class="col"> -->
                     <label for="autocomplete">{% trans 'City' %}</label>
                     <input class="form-control"
                            id="autocomplete"
@@ -212,14 +215,12 @@
                       {% trans "Please select a city from the autofill options." %}
                     </div>
 
-                  </div>
-                  <div class="col-sm">
-                    <label for="postcode">{% trans 'Postcode' %}</label>
-                    {{form.postcode}}
-                  </div>
-                </div>
               </div>
-            </div>
+              <div class="form-group mb-3 delivery"">
+                <label for="postcode">{% trans 'Postcode' %}</label>
+                {{form.postcode}}
+              </div>
+            <!-- </div> -->
           </li>
           {% if restaurant.offer_pickup %}
           <li class="list-group-item">
@@ -236,13 +237,13 @@
       </form>
 
     </div>
-    <div class="card-footer text-muted">
+    <!-- <div class="card-footer text-muted">
       {% if restaurant.offer_pickup %}
         <h6>{% trans "The pickup location is:" %} {{restaurant.pickup_address}}. {% trans "You will get emailed the exact details." %}</h6>
       {% else %}
         <h6></h6>
       {% endif %}
-    </div>
+    </div> -->
   </div>
 </div>
 
@@ -316,33 +317,21 @@ function geolocate() {
       }
     });
 
-    function validateCity(e) {
+  $(document).ready(function() {
+    $('#form').submit(function(e) {
       console.log("here in validate");
       var user_input = $('#autocomplete')[0].value
       var last_saved_name = $('#placeName')[0].value
       console.log(user_input);
       console.log(last_saved_name);
-      if (user_input === last_saved_name) {
+      if (user_input === last_saved_name && user_input.length > 0) {
         return true
       } else {
-        return false
+        $('#city_error').show()
+        e.preventDefault();
       }
-    };
-    $(document).ready(function() {
-      $('#form').submit(function(e) {
-        console.log("here in validate");
-        var user_input = $('#autocomplete')[0].value
-        var last_saved_name = $('#placeName')[0].value
-        console.log(user_input);
-        console.log(last_saved_name);
-        if (user_input === last_saved_name && user_input.length > 0) {
-          return true
-        } else {
-          $('#city_error').show()
-          e.preventDefault();
-        }
-      });
     });
+  });
 </script>
 
 {% endblock %}

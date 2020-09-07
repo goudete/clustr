@@ -6,7 +6,6 @@ from django.utils import translation
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm, EmailForm
-from django.conf import settings
 from django.contrib import messages
 from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem, ShippingZone
 from urllib.parse import urljoin
@@ -124,7 +123,7 @@ def payment_question(request):
             # return redirect("https://connect.stripe.com/express/oauth/authorize?client_id=ca_HNkukA8zfrf8R4YkvrwLOayhitwqn2Q1&state={STATE_VALUE}&suggested_capabilities[]=transfers&stripe_user[email]={email}".format(STATE_VALUE = 'OneBeerAndThenBoom!123OunesOfC0ca1n3', email = me.user.email))
             return redirect("https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_HNkuWuyy8FeUyeTWTMANREQ4QJBi1fLO&redirect_uri=https://cluster-mvp.herokuapp.com/restaurant_admin/connect&state={STATE_VALUE}&scope=read_write&stripe_user[email]={email}".format(STATE_VALUE = 'OneBeerAndThenBoom!123OunesOfC0ca1n3', email = me.user.email))
 
-'''If the restaurant has already filled out Stripe but wants to disable payments.'''
+'''If the merchant has already filled out Stripe but wants to disable payments.'''
 def toggle_payments(request):
     me = Restaurant.objects.get(user = request.user)
     if request.method == 'POST':
@@ -132,11 +131,31 @@ def toggle_payments(request):
         if answer == 'off':
             me.handle_payment = False
             me.save()
-            return redirect('/restaurant_admin/answer_about')
+            return redirect('/restaurant_admin/about_settings')
         else:
             me.handle_payment = True
             me.save()
-            return redirect('/restaurant_admin/answer_about')
+            return redirect('/restaurant_admin/about_settings')
+
+''' toggle cash payments on/off. '''
+def cash_settings(request, restaurant_id):
+    #need a form that toggles following scenarios:
+        # Accept cash vs not
+        # allow only if in the same city (address fits pickup address)
+    me = Restaurant.objects.get(user = request.user)
+    if request.method == 'POST':
+        answer = request.POST['answer-cash']
+        if answer == 'off':
+            me.handle_cash_payment = False
+            me.save()
+            return redirect('/restaurant_admin/about_settings')
+        else:
+            print('Enable cash payments mothafucka')
+            me.handle_cash_payment = True
+            me.save()
+            return redirect('/restaurant_admin/about_settings')
+
+    return redirect('/restaurant_admin/about_settings')
 
 """this method recieves a GET request from stripe, and validates the response"""
 def stripe_connect(request):
@@ -159,9 +178,9 @@ def stripe_connect(request):
         curr_rest = Restaurant.objects.get(user = request.user)
         curr_rest.stripe_account_id = account_id
         curr_rest.save()
-        return redirect('https://cluster-mvp.herokuapp.com/restaurant_admin/my_menus')
+        return redirect('https://cluster-test-server.herokuapp.com/restaurant_admin/my_menus')
     else:
-        return redirect('https://cluster-mvp.herokuapp.com/restaurant_admin/my_menus')
+        return redirect('https://cluster-test-server.herokuapp.com/restaurant_admin/my_menus')
 
 
 """this method is for when a restaurant puts in their info about their restaurant
@@ -182,7 +201,7 @@ def translateResponse(resp):
     return False
 
 
-def answer_about(request):
+def about_settings(request):
     #query restaurant
     curr_rest = Restaurant.objects.filter(user = request.user).first()
     shipping_zones = ShippingZone.objects.filter(restaurant=curr_rest)
@@ -205,22 +224,25 @@ def answer_about(request):
             if request.POST['tagline'] != "":
                 curr_rest.info = request.POST['tagline']
 
-            #handles pickup
-            if 'pickup' not in request.POST:
-                curr_rest.offer_pickup = False
-            else:
-                curr_rest.offer_pickup = True
-                if request.POST['pickup_address'] != "":
-                    curr_rest.pickup_address = request.POST['pickup_address']
+            print('POST REQUEST:', request.POST)
 
-            #handles shipping
-            if 'shipping' not in request.POST:
-                curr_rest.offer_shipping = False
-            else:
-                curr_rest.offer_shipping = True
+            #Handles Business Address Form
+            if 'address' in request.POST:
+                 curr_rest.address = request.POST['address']
 
-            curr_rest.info_input = True
+            if 'city' in request.POST and request.POST['city'] != '':
+                curr_rest.city_name = request.POST['city']
+
+            if 'postcode' in request.POST:
+                curr_rest.postcode = request.POST['postcode']
+
+            if 'placeID' in request.POST:
+                curr_rest.city_id = request.POST['placeID']
+
             curr_rest.save()
+            print('CITY:',curr_rest.city_name)
+            print('CITY ID:', curr_rest.city_id)
+            #end of removal
 
             #redirect either way post vs get
             return redirect('/restaurant_admin/my_menus')
@@ -239,11 +261,8 @@ def answer_about(request):
                     form.save()
                     return redirect('/restaurant_admin/my_menus')
                 else:
-                    return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form, 'shipping_zones':shipping_zones,
+                    return render(request, 'restaurant/settings.html', {'me': curr_rest,'form':form, 'shipping_zones':shipping_zones,
                                  'restaurant':curr_rest})
-
-                #     curr_rest.order_stream = False
-                # curr_rest.save()
             return redirect('/restaurant_admin/my_menus')
 
     #otherwise render the about page
@@ -251,29 +270,16 @@ def answer_about(request):
         form = EmailForm()
         form.fields['order_stream_email'].widget.attrs['placeholder'] = curr_rest.order_stream_email if curr_rest.order_stream_email else _("None")
         order_stream = curr_rest.order_stream
-        return render(request, 'restaurant/about_info.html', {'me': curr_rest,'form':form,'order_stream':order_stream, 'shipping_zones':shipping_zones,
+        return render(request, 'restaurant/settings.html', {'me': curr_rest,'form':form,'order_stream':order_stream, 'shipping_zones':shipping_zones,
                                                               'restaurant':curr_rest})
 
 
 def my_menus(request):
     me = Restaurant.objects.get(user = request.user)
-    # test_cart = Cart.objects.all().first()
-    # send_order_email(from_email = settings.EMAIL_HOST_USER,to=me.order_stream_email,order =test_cart)
-    menus = Menu.objects.filter(restaurant =me) #query set of all menus belonging to this restaurant
+    menus = Menu.objects.filter(restaurant = me) #query set of all menus belonging to this restaurant
     form = MenuForm()
     aws_dir = me.qr_code_path
-    print(aws_dir)
-    s3 = boto3.resource('s3') #setup to get from AWS
-    bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
-    objs = bucket.objects.filter(Prefix=aws_dir) #get folder
-    print(objs)
-    url = "#"
-    for obj in objs: #iterate over file objects in folder
-         if os.path.split(obj.key)[1].split('.')[1] == 'png':
-            s3Client = boto3.client('s3')
-            url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
-    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me,'url':url})
-
+    return render(request, 'restaurant/my_menus.html', {'menus': menus, 'form': form, 'me': me})
 
 def add_menu(request):
     #if request method is a get, then the user is going to this page for the 1st time
@@ -1088,9 +1094,7 @@ def my_orders(request):
         if not rest:
             return redirect('/restaurant_admin')
         order_trackers = get_active_orders(rest.id)
-        # print('order-trackers:', order_trackers)
         orders = orders_dict(rest.id)
-        # print('orders:', orders)
         return render(request,'restaurant/my_orders.html', {'orders': orders, 'rest_id': rest.id})
 
     return redirect('/restaurant_admin')
@@ -1120,7 +1124,7 @@ def set_shipping_zone(request):
     print(request.POST)
     ShippingZone.objects.create(city=request.POST['pu_addy'], cost = request.POST['cost'],
                         restaurant = request.user.restaurant, place_id = request.POST['placeID'])
-    return redirect('/restaurant_admin/answer_about')
+    return redirect('/restaurant_admin/about_settings')
 
 def ajax_delete_zone(request, zone_id):
     zone = ShippingZone.objects.get(id = zone_id)

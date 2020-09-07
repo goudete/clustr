@@ -1,9 +1,24 @@
 {% extends 'customers/base.html'%}
 {% load socialaccount %}
 {% load i18n %}
+{% load static %}
+
 
 {% block content %}
 <style>
+
+.thumbnail{
+  display: block;
+  padding: 4px;
+  margin-bottom: 20px;
+
+}
+
+#thumb{
+  float: right;
+  max-height: 300px;
+
+}
 
 .google-btn {
   margin-right: 15px;
@@ -105,10 +120,36 @@
   <a class="navbar-brand mb-0 h1" href="#">{{ restaurant.name }}</a>
 </nav>
 
+<!-- logo -->
+{% if restaurant.photo_path %}
+  <div class="jumbotron bg-light">
+    <div class="row justify-content-center">
+      <div class="thumbnail thumb">
+        <img src="{% static restaurant.photo_path %}" class="img-fluid" id="item_img" alt="Responsive image">
+      </div>
+    </div>
+  </div>
+{% endif %}
+<!-- end logo -->
+
+<!-- Restaurant Name and info -->
+<div class="row ml-1 mb-2 justify-content-center bg-light">
+  <h2>{{ restaurant.name }}</h2>
+</div>
+<!-- End  -->
+
+<!-- description -->
+{% if restaurant.info %}
+  <div class="row ml-1 mb-4 justify-content-center bg-light">
+    <h5>{{ restaurant.info }}</h5>
+  </div>
+{% endif %}
+<!-- end description -->
+<hr>
 <div class = 'container-fluid'>
 
-  {% if user.is_authenticated %}
-    <div class="row justify-content-center mt-5 mb-2">
+  <!-- {% if user.is_authenticated %}
+    <div class="row justify-content-center mb-2">
       <div class="col ml-4 mr-4">
         <h5>{% trans "Welcome to" %} {{ restaurant.name }}, {{ user.username }}!</h5>
       </div>
@@ -119,7 +160,7 @@
       </div>
     </div>
   {% else %}
-    <div class="row justify-content-center mt-5 mb-2">
+    <div class="row justify-content-center mb-2">
       <div class="col ml-4 mr-4">
         <h5>{% trans "Welcome to" %} {{ restaurant.name }}!</h5>
       </div>
@@ -129,7 +170,7 @@
         {% trans "Select a catalog, view items and pay." %}
       </div>
     </div>
-  {% endif %}
+  {% endif %} -->
 
   <!-- Menu Cards Begin -->
   {% for menu in menus %}

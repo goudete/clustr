@@ -537,12 +537,13 @@ def is_pickup(resp):
     return False
 
 def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
+    curr_cart = Cart.objects.filter(id = cart_id).first()
+    curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
+    curr_menu = Menu.objects.filter(id = menu_id).first()
+
     if request.method == 'GET':
         form = ShippingInfoForm()
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-        curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
-        curr_menu = Menu.objects.filter(id = menu_id).first()
-        print('PROBLEMATIC LINE:', OrderTracker.objects.filter(cart = curr_cart).exists())
+
         if OrderTracker.objects.filter(cart = curr_cart).exists() == False:
             tracker = OrderTracker(restaurant = curr_cart.restaurant, cart = curr_cart, is_complete = False)
             tracker.save()
@@ -557,13 +558,7 @@ def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
 
         return render(request, 'customers/pick_up_or_delivery.html', {'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu,'form':form})
     else:
-        print("POST data")
-        print(request.POST)
-        curr_cart = Cart.objects.filter(id = cart_id).first()
-
         dic = request.POST
-        # shipping_info = ShippingInfo.objects.create(full_name = dic['full_name'], email = dic['email'], city_name = dic['placeName'],
-        #                                             tel = dic['tel'], address = dic['address'], city_id = dic['placeID'], postcode = dic['postcode'])
         form = ShippingInfoForm(request.POST)
         if form.is_valid():
             shipping_info = form.save()
@@ -581,6 +576,20 @@ def pick_up_or_delivery(request, cart_id, restaurant_id, menu_id):
 
             curr_cart.save()
             shipping_info.save()
+
+        #Handle cash payment
+        if curr_rest.handle_cash_payment:
+            print('cart city_id:', curr_cart.shipping_info.city_id)
+            print('rest city_id:', curr_rest.city_id)
+            #check if in same city
+            if curr_cart.shipping_info.city_id == curr_rest.city_id:
+                print('I am hither fungi')
+                curr_cart.handle_cash = True
+                curr_cart.save()
+        else:
+            curr_cart.handle_cash = False
+            curr_cart.save()
+
         return redirect('/customers/payment/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
 

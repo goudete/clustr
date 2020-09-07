@@ -181,6 +181,7 @@
   <!-- Credit Card Card ends -->
   {% endif %}
 
+  {% if cart.handle_cash %}
   <!-- Cash Card -->
   <div class="card shadow bg-white rounded mb-4">
     <h6 class="card-header">
@@ -207,6 +208,7 @@
     </div>
   </div>
   <!-- Cash Card Ends -->
+  {% endif %}
 
 
 <span id="publishable_key" key-value="{{ publishable }}"></span>

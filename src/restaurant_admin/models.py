@@ -16,14 +16,20 @@ class Restaurant(models.Model):
     answered_pay_question = models.BooleanField(default = False)
     #boolean field if they want us to handle their payments or not, can be null b/c before they answer its neither
     handle_payment = models.BooleanField(null = True)
+    #boolean field to toggle cash payments on/off
+    handle_cash_payment = models.BooleanField(null = True)
     #boolean field if they have input their logo/ about info
     info_input = models.BooleanField(default = False)
     #stripe account id
     stripe_account_id = models.CharField(null = True, default = '', max_length = 255)
     # dine_in = models.BooleanField(default = False)
     offer_pickup = models.BooleanField(default = False)
-    offer_shipping = models.BooleanField(default = False)
-    pickup_address = models.CharField(null = True, max_length=255)
+    offer_shipping = models.BooleanField(default = True)
+    #business address
+    address = models.CharField(null = True, max_length = 255)
+    city_name = models.CharField(null = True, max_length = 255)
+    city_id = models.CharField(null = True, max_length = 255)
+    postcode = models.CharField(null = True, max_length = 255)
     #language
     language = models.CharField(default = 'en-us', max_length = 10)
     order_stream_email = models.EmailField(null=True,max_length=254)
