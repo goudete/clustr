@@ -185,11 +185,12 @@ div.scrollmenu a:hover {
               <a href="/customers/view_item/{{ cart.id }}/{{ restaurant.id }}/{{ menu.id }}/{{ v.id }}" style="text-decoration:none; color:#000000">
                 <!-- Product Card -->
                   <div class="card shadow bg-white rounded text-center mt-2 m-1 product-card">
-                    {% if v.photo_path %}
-                      <img src="{% static v.photo_path %}" class="card-img-top" alt="...">
-                    {% else %}
-                    <img src="https://cluster-media.s3-us-west-2.amazonaws.com/no-photo.png" class="card-img-top" alt="...">
-                    {% endif %}
+                    {% for key, values in photo_path.items %}
+                      {% if v.id == key %}
+                        <img src="{% static values %}" class="card-img-top" alt="...">
+                      {% endif %}
+                    {% endfor %}
+
                     <div class="card-body">
                       <h5 class="card-title">{{ v.name }}</h5>
                       <div class="mt-3">

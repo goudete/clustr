@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from .forms import UserForm, RestaurantForm, MenuForm, MenuItemForm, CashierForm, KitchenForm, MenuItemFormItemPage, DatesForm, EditMenuItemForm, EmailForm
 from django.contrib import messages
-from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem, ShippingZone
+from .models import Restaurant, Menu, MenuItem, SelectOption, AddOnGroup, AddOnItem, ShippingZone, MenuItemPhotoUrls
 from urllib.parse import urljoin
 import boto3
 import magic
@@ -29,6 +29,15 @@ from .email_handlers import send_order_email
 
 #  your views here.
 
+'''temporary helper function to migrate photo urls to new model'''
+def temporary():
+    items = MenuItem.objects.all()
+    for item in items:
+        if item.photo_path:
+            newObject = MenuItemPhotoUrls(menu_item = item, photo_path = item.photo_path)
+            newObject.save()
+    print('temporary done')
+
 """this function just verifies that you are not trying to edit another restaurant's menu"""
 def validate_id_number(request, menu_id):
     menu = Menu.objects.get(id = menu_id)
@@ -39,6 +48,7 @@ def validate_id_number(request, menu_id):
 
 
 def login_view(request):
+    temporary()
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -377,13 +387,21 @@ def item_addon_dict(items):
         dict[item] = list
     return dict
 
+'''gets the first photo path associated with each menu item'''
+def get_photo_path_main(items):
+    photo_dict = {}
+    for item in items:
+        photo_paths = MenuItemPhotoUrls.objects.filter(menu_item = item).first()
+        if photo_paths:
+            photo_dict[item.id] = photo_paths.photo_path
+    return photo_dict
+
 def edit_menu(request, menu_id):
     language_code = request.user.restaurant.language
     if not validate_id_number(request, menu_id):
         return HttpResponse('you are not authorized to view this')
     curr_menu = Menu.objects.filter(id = menu_id).first()
     #check if they uploaded new photo
-
 
     photo = request.FILES.get('photo', False)
     if photo:
@@ -400,6 +418,8 @@ def edit_menu(request, menu_id):
     #if method is a get, then the user is looking at the menu
     if request.method == 'GET':
         items = MenuItem.objects.filter(menus = curr_menu)
+        photo_paths = get_photo_path_main(items)
+
         addon_dict = item_addon_dict(items)
         restaurant = Restaurant.objects.filter(user = request.user).first()
         item_form = MenuItemForm()
@@ -409,20 +429,18 @@ def edit_menu(request, menu_id):
         all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
         #generate pre-signed url to download the QR code
 
-        print(addon_dict)
-
-        s3 = boto3.resource('s3') #setup to get from AWS
-        aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
-        bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
-        objs = bucket.objects.filter(Prefix=aws_dir) #get folder
-        url = "#"
-        for obj in objs: #iterate over file objects in folder
-             if os.path.split(obj.key)[1].split('.')[1] == 'png':
-                s3Client = boto3.client('s3')
-                url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
+        # s3 = boto3.resource('s3') #setup to get from AWS
+        # aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
+        # bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+        # objs = bucket.objects.filter(Prefix=aws_dir) #get folder
+        # url = "#"
+        # for obj in objs: #iterate over file objects in folder
+        #      if os.path.split(obj.key)[1].split('.')[1] == 'png':
+        #         s3Client = boto3.client('s3')
+        #         url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'language_code':language_code, 'all_items': items})
+                                'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'language_code':language_code, 'all_items': items, 'photo_path': photo_paths})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -469,16 +487,17 @@ def add_item(request, menu_id):
             #check if they uploaded new photo
             photo = request.FILES.get('photo', False)
             if photo:
-                #save photo to AWS
                 doc = request.FILES['photo'] #get file
                 files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                             item_number = 'item'+str(item.id))
                 file_storage = FileStorage()
                 mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-                doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+                doc_path = os.path.join(files_dir, "photo." + mime) #set path for file to be stored in
                 file_storage.save(doc_path, doc)
-                item.photo_path = doc_path
-                item.save()
+                # item.photo_path = doc_path
+                # item.save()
+                photo_path = MenuItemPhotoUrls(menu_item = item, photo_path = doc_path)
+                photo_path.save()
 
         #redirect back to edit menu page
         return redirect('/restaurant_admin/edit_menu/{num}'.format(num = menu_id))
@@ -541,8 +560,12 @@ def edit_item(request, item_id, origin, menu_id):
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
             doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
             file_storage.save(doc_path, doc)
-            item.photo_path = doc_path
-            item.save()
+
+            # item.photo_path = doc_path
+            # item.save()
+
+            photo_path = MenuItemPhotoUrls(menu_item = item, photo_path = doc_path)
+            photo_path.save()
 
         #redirect depending on where the request came from
         if origin == 'edit_menu':
@@ -611,8 +634,12 @@ def ajax_edit_item(request):
         mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
         doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
-        item.photo_path = doc_path
-        item.save()
+
+        # item.photo_path = doc_path
+        # item.save()
+
+        photo_path = MenuItemPhotoUrls(menu_item = item, photo_path = doc_path)
+        photo_path.save()
 
     if new_category(request, item.category):
         if request.POST['origin'] == 'my_items':
@@ -667,14 +694,15 @@ def my_items(request):
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
     language_code = curr_rest.language
     all_items = MenuItem.objects.filter(restaurant=curr_rest).all()
+    photo_paths = get_photo_path_main(all_items)
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
     if url_parameter:
         for cat in categories:
-            category_items[cat]  = item_addon_dict(MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat).filter(name__icontains=url_parameter))
+            category_items[cat] = item_addon_dict(MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat).filter(name__icontains=url_parameter))
     else:
         for cat in categories:
-            category_items[cat]  = item_addon_dict(MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat))
+            category_items[cat] = item_addon_dict(MenuItem.objects.filter(restaurant=curr_rest).filter(category = cat))
     form = MenuItemForm()
     # edit_form = EditMenuItemForm()
 
@@ -695,7 +723,7 @@ def my_items(request):
 
     return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items,
                   'selct_options':selct_options, 'item_form': form, 'language_code':language_code,
-                  'all_items':all_items})
+                  'all_items':all_items, 'photo_path': photo_paths})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
@@ -715,10 +743,13 @@ def add_item_no_menu(request):
                                                                             item_number = 'item'+str(item.id))
                 file_storage = FileStorage()
                 mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-                doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+                doc_path = os.path.join(files_dir, "photo." + mime) #set path for file to be stored in
                 file_storage.save(doc_path, doc)
-                item.photo_path = doc_path
-                item.save()
+                # item.photo_path = doc_path
+                # item.save()
+
+                photo_path = MenuItemPhotoUrls(menu_item = item, photo_path = doc_path)
+                photo_path.save()
 
             #item.menu = None
             item.save()
@@ -770,9 +801,13 @@ def ajax_add_item(request):
         mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
         doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
-        item.photo_path = doc_path
-        item.save()
-        #item.save()
+
+        # item.photo_path = doc_path
+        # item.save()
+
+        photo_path = MenuItemPhotoUrls(menu_item = item, photo_path = doc_path)
+        photo_path.save()
+
 
     #check for new category
     if new_category(request, item.category):
