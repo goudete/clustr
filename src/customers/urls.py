@@ -15,7 +15,7 @@ urlpatterns = [
     path('view_cart/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.view_cart),
     path('change_instructions/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.change_instructions),
     path('payment/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.payment),
-    path('order_confirmation/<int:cart_id>', views.order_confirmation),
+    path('order_confirmation/<int:cart_id>/<str:payment_method>', views.order_confirmation),
     path('pick_up_or_delivery/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.pick_up_or_delivery),
     # path('customer_details/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.customer_details),
     # path('card_email_receipt/<int:cart_id>/<int:restaurant_id>/<int:menu_id>', views.card_email_receipt),
