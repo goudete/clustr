@@ -29,15 +29,6 @@ from .email_handlers import send_order_email
 
 #  your views here.
 
-'''temporary helper function to migrate photo urls to new model'''
-def temporary():
-    items = MenuItem.objects.all()
-    for item in items:
-        if item.photo_path:
-            newObject = MenuItemPhotoUrls(menu_item = item, photo_path = item.photo_path)
-            newObject.save()
-    print('temporary done')
-
 """this function just verifies that you are not trying to edit another restaurant's menu"""
 def validate_id_number(request, menu_id):
     menu = Menu.objects.get(id = menu_id)
