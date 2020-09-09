@@ -378,7 +378,6 @@ def item_addon_dict(items):
     return dict
 
 def edit_menu(request, menu_id):
-    language_code = request.user.restaurant.language
     if not validate_id_number(request, menu_id):
         return HttpResponse('you are not authorized to view this')
     curr_menu = Menu.objects.filter(id = menu_id).first()
@@ -422,7 +421,7 @@ def edit_menu(request, menu_id):
                 url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'language_code':language_code, 'all_items': items})
+                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'all_items': items})
     else:
         curr_menu.name = request.POST['name']
         curr_menu.save()
@@ -665,7 +664,6 @@ def view_item(request, menu_id, item_id):
 def my_items(request):
     curr_rest = Restaurant.objects.get(user = request.user)
     url_parameter = request.GET.get("q") #this parameter is either NONE or a string which we will use to search MenuItem objects
-    language_code = curr_rest.language
     all_items = MenuItem.objects.filter(restaurant=curr_rest).all()
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
@@ -683,8 +681,7 @@ def my_items(request):
     if request.is_ajax(): #this is for search
         html = render_to_string(
             template_name="restaurant/replaceable_content.html",
-            context={"menus": [],'item_form':form,'me':curr_rest,'category_items':category_items,
-                     'language_code':language_code},
+            context={"menus": [],'item_form':form,'me':curr_rest,'category_items':category_items},
             request=request
         )
 
@@ -694,8 +691,7 @@ def my_items(request):
     selct_options = SelectOption.objects.filter(restaurant = curr_rest)
 
     return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items,
-                  'selct_options':selct_options, 'item_form': form, 'language_code':language_code,
-                  'all_items':all_items})
+                  'selct_options':selct_options, 'item_form': form, 'all_items':all_items})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
@@ -1074,9 +1070,9 @@ def cart_query(restaurant_id):
     return list
 
 
-def orders_dict(restaurant_id):
+def orders_dict(restaurant_id, bool):
     restaurant = Restaurant.objects.filter(id = restaurant_id).first()
-    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = False)
+    trackers = OrderTracker.objects.filter(restaurant = restaurant).filter(is_complete = bool)
     items = cart_query(restaurant_id)
     tracker_item_dict = {}
     for i in range(len(trackers)):
@@ -1094,8 +1090,13 @@ def my_orders(request):
         if not rest:
             return redirect('/restaurant_admin')
         order_trackers = get_active_orders(rest.id)
-        orders = orders_dict(rest.id)
-        return render(request,'restaurant/my_orders.html', {'orders': orders, 'rest_id': rest.id})
+        orders_not_completed = orders_dict(rest.id, False)
+        orders_completed = orders_dict(rest.id, True)
+        return render(request,'restaurant/my_orders.html', {'orders_not_completed': orders_not_completed, 'rest_id': rest.id,
+                                                            'orders_completed':orders_completed})
+        # carts = Cart.objects.filter(restaurant=rest)
+        # print(carts)
+        # return render(request,'restaurant/new_order_display.html', { 'rest_id': rest.id,'carts':carts})
 
     return redirect('/restaurant_admin')
 
@@ -1111,12 +1112,12 @@ def get_active_orders(rest_id):
             paid_orders.append(tracker.id)
     return paid_orders
 
-def mark_order_done(request):
+def toggle_order_completion_status(request):
     if request.method == 'POST':
         id_no = request.POST['tracker_id']
         tracker = OrderTracker.objects.filter(id = id_no).first()
         if tracker:
-            tracker.is_complete = True
+            tracker.is_complete = not(tracker.is_complete)
             tracker.save()
     return redirect('/restaurant_admin/my_orders')
 

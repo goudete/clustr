@@ -1,0 +1,304 @@
+{% extends 'restaurant/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+{% load widget_tweaks %}
+<style media="screen">
+  @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+
+.navbar-icon-top .navbar-nav .nav-link > .fa {
+  position: relative;
+  width: 36px;
+  font-size: 24px;
+}
+
+.navbar-icon-top .navbar-nav .nav-link > .fa > .badge {
+  font-size: 0.75rem;
+  position: absolute;
+  right: 0;
+  font-family: sans-serif;
+}
+
+.navbar-icon-top .navbar-nav .nav-link > .fa {
+  top: 3px;
+  line-height: 12px;
+}
+
+.navbar-icon-top .navbar-nav .nav-link > .fa > .badge {
+  top: -10px;
+}
+
+@media (min-width: 576px) {
+  .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link {
+    text-align: center;
+    display: table-cell;
+    height: 70px;
+    vertical-align: middle;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link > .fa {
+    display: block;
+    width: 48px;
+    margin: 2px auto 4px auto;
+    top: 0;
+    line-height: 24px;
+  }
+
+  .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link > .fa > .badge {
+    top: -7px;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link {
+    text-align: center;
+    display: table-cell;
+    height: 70px;
+    vertical-align: middle;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link > .fa {
+    display: block;
+    width: 48px;
+    margin: 2px auto 4px auto;
+    top: 0;
+    line-height: 24px;
+  }
+
+  .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link > .fa > .badge {
+    top: -7px;
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link {
+    text-align: center;
+    display: table-cell;
+    height: 70px;
+    vertical-align: middle;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link > .fa {
+    display: block;
+    width: 48px;
+    margin: 2px auto 4px auto;
+    top: 0;
+    line-height: 24px;
+  }
+
+  .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link > .fa > .badge {
+    top: -7px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link {
+    text-align: center;
+    display: table-cell;
+    height: 70px;
+    vertical-align: middle;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link > .fa {
+    display: block;
+    width: 48px;
+    margin: 2px auto 4px auto;
+    top: 0;
+    line-height: 24px;
+  }
+
+  .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link > .fa > .badge {
+    top: -7px;
+  }
+}
+</style>
+<style media="screen">
+  td.details-control {
+    background: green no-repeat center center;
+    cursor: pointer;
+}
+tr.details td.details-control {
+    background: red no-repeat center center;
+}
+</style>
+{% load i18n %}
+<html>
+  <head>
+    <!-- source: https://bootsnipp.com/snippets/nNX3a -->
+    <title>{% trans "Orders" %}</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- table CSS  -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
+    <!-- table JS  -->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    <!-- icond -->
+  </head>
+  <body>
+
+    <nav class="navbar navbar-icon-top navbar-expand-lg navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fa fa-envelope-o">
+                <span class="badge badge-danger">11</span>
+              </i>
+              Link
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">
+              <i class="fa fa-envelope-o">
+                <span class="badge badge-warning">11</span>
+              </i>
+              Disabled
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fa fa-bell">
+                <span class="badge badge-success">11</span>
+              </i>
+              Test
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ">
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fa fa-bell">
+                <span class="badge badge-info">11</span>
+              </i>
+              Test
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fa fa-globe">
+                <span class="badge badge-success">11</span>
+              </i>
+              Test
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container mb-3 mt-3">
+        <table class="table table-striped table-bordered" style="width: 100% " id="order_table">
+          <thead>
+            <th></th>
+            <th>{% trans "Order" %} #</th>
+            <th>{% trans "Time Created" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Total" %}</th>
+            <th>Status</th>
+          </thead>
+          <tbody>
+            {% for cart in carts %}
+            <tr>
+              <td class="details-control"></td>
+              <td>{{cart.id}}</td>
+              <td>{{cart.created_at}}</td>
+              <td>{{cart.shipping_info.full_name}}</td>
+              <td>{{cart.total}}</td>
+              <td>
+                status
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <th></th>
+            <th>{% trans "Order" %} #</th>
+            <th>{% trans "Time Created" %}</th>
+            <th>{% trans "Guest email" %}</th>
+            <th>{% trans "Price" %}</th>
+            <th>Status</th>
+          </tfoot>
+        </table>
+      </div>
+  </body>
+</html>
+<script>
+    function format ( d ) {
+        return 'Full name: '+d.first_name+' '+d.last_name+'<br>'+
+            'Salary: '+d.salary+'<br>'+
+            'The child row can contain any data you wish, including links, images, inner tables etc.';
+    }
+
+    $(document).ready(function() {
+        var dt = $('#order_table').DataTable( {
+            // "processing": true,
+            // "serverSide": true,
+            // "ajax": "scripts/ids-objects.php",
+            "columns": [
+                {
+                    "class":          "details-control",
+                    "orderable":      false,
+                    "data":           null,
+                    "defaultContent": ""
+                },
+                { "data": "first_name" },
+                { "data": "last_name" },
+                { "data": "position" },
+                { "data": "office" },
+                { "data": "salary" }
+
+            ],
+            // "order": [[1, 'asc']]
+        } );
+
+        // Array to track the ids of the details displayed rows
+        var detailRows = [];
+
+        $('#order_table tbody').on( 'click', 'tr td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = dt.row( tr );
+            var idx = $.inArray( tr.attr('id'), detailRows );
+
+            if ( row.child.isShown() ) {
+                tr.removeClass( 'details' );
+                row.child.hide();
+
+                // Remove from the 'open' array
+                detailRows.splice( idx, 1 );
+            }
+            else {
+                tr.addClass( 'details' );
+                row.child( format( row.data() ) ).show();
+
+                // Add to the 'open' array
+                if ( idx === -1 ) {
+                    detailRows.push( tr.attr('id') );
+                }
+            }
+        } );
+
+        // On each draw, loop over the `detailRows` array and show any child rows
+        dt.on( 'draw', function () {
+            $.each( detailRows, function ( i, id ) {
+                $('#'+id+' td.details-control').trigger( 'click' );
+            } );
+        } );
+    } );
+</script>
+{% endblock %}

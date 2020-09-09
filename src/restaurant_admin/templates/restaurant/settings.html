@@ -108,7 +108,7 @@ input:checked + .slider:before {
 
               <div class="form-group">
                 <label for="autocomplete">{% trans 'City' %}</label>
-                <input type="text" class="form-control" name="city" onFocus="geolocate()" id="autocomplete" autocomplete="new-loc" value="{{me.city}}" readonly>
+                <input type="text" class="form-control" name="city" value="{{me.city_name}}">
                 <small>{% trans 'Current City: ' %}{{ me.city_name }}</small>
               </div>
 

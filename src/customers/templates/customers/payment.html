@@ -91,12 +91,12 @@
             {% endfor %}
             <li class="list-group-item d-flex justify-content-between bg-light">
               <div class="text-primary">
-                <h6 class="my-0">Shipping</h6>
+                <h6 class="my-0">{% trans "Shipping" %}</h6>
               </div>
               <span class="text-muted">${{cart.shipping_cost}}</span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-              <span>Total (USD)</span>
+              <span>Total </span>
               <strong>${{cart.total}}</strong>
             </li>
           </ul>

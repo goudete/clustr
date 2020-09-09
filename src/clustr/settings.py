@@ -200,7 +200,7 @@ EMAIL_HOST_USER = "clustrfood@gmail.com"
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 
-SITE_ID = 10
+SITE_ID = 11
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
