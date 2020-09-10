@@ -37,9 +37,7 @@ def validate_id_number(request, menu_id):
     else:
         return False
 
-
 def login_view(request):
-    temporary()
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']

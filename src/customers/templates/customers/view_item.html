@@ -18,13 +18,14 @@
   }
 
   #item_img{
-    max-height: 250px;
+    max-height: 300px;
+    margin: auto;
   }
 
-  .img-background {
+  /* .img-background {
     background-color: #b3e5fc;
     height: 100%;
-  }
+  } */
 </style>
 
 <nav class="navbar sticky-top navbar-dark bg-dark">
@@ -62,7 +63,7 @@
     <div class="carousel-inner">
       {% for path in photo_path %}
       <div class="carousel-item {% if forloop.counter == 1 %}active {% endif %}">
-        <img class="d-block w-100" src="{% static path %}" id="item_img" alt="First slide">
+        <img class="d-block" src="{% static path %}" id="item_img" alt="First slide">
       </div>
       {% endfor %}
     </div>
