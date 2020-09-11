@@ -10,7 +10,7 @@ urlpatterns = [
     path('register', views.register_view, name = 'register'),
     path('my_menus', views.my_menus),
     path('my_orders', views.my_orders),
-    path('mark_order_done', views.mark_order_done),
+    path('toggle_order_completion_status', views.toggle_order_completion_status),
     path('connect', views.stripe_connect),
     path('answer_question', views.payment_question, name = 'answer_question'),
     path('toggle_payments', views.toggle_payments),

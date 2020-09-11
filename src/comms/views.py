@@ -28,6 +28,6 @@ def contactFormView(request):
 
         messages.info(request, _("Thanks ")+ " " + str(customer_name)
         + "! " + _("We have received your message and will get back to you shortly at") + " " + email)
-        return HttpResponseRedirect('/restaurant_admin')
+        return HttpResponseRedirect('/restaurant_admin/my_menus')
     else:
         return render(request, 'contact_form.html')

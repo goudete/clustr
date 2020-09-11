@@ -500,8 +500,6 @@ input:checked + .slider:before {
         </div>
         {% endif %}
         </div>
-        <!-- hidden input to store language code -->
-        <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
 
 <script type="text/javascript">
   $(document).ready(function(){
@@ -735,17 +733,11 @@ $('#add_modal').on('shown.bs.modal', function () {
 })
 </script>
 <!-- ajax create item js -->
+{% trans "Creating Item..." as create_str %}
 <script type="text/javascript">
   $(document).on('click', '#add_item_submit', function(e) {
     $("#add_item_submit").attr("disabled", true);
-    var language_code = $('#language_code').val();
-    console.log(language_code);
-    if (language_code === 'es-mx') {
-      display_str = 'Creando Platillo...'
-    } else {
-      display_str = 'Creating Item...'
-    }
-    $("#add_item_submit")[0].innerText = (display_str);
+    $("#add_item_submit")[0].innerText = "{{create_str}}";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     e.preventDefault();
@@ -770,44 +762,20 @@ $('#add_modal').on('shown.bs.modal', function () {
               $("#add_item_submit").attr("disabled", false);
           }
           else{
-            // document.write(data);
-            // document.close();
             window.location.assign(window.location.pathname);
           }
-            // // if (data.success){
-            //   console.log("data.success");
-            //     // $('#add_modal').modal('hide');
-            //     // $('body').removeClass('modal-open');
-            //     // $('.modal-backdrop').remove();
-            //     // console.log("success");
-            //     // alert("Item Created");
-            //     // $('.modal-backdrop').remove();
-            //     $("#add_item_submit").attr("disabled", false);
-            //     //$("body").html(data);
-            //     // var newDoc = document.open("text/html", "replace");
-            //     // newDoc.write(data);
-            //     // newDoc.close();
-            //     document.write(data);
-            //     document.close();
-
-            // }
         },
     });
  })
 </script>
 <!-- ajax edit item js -->
+{% trans "Updating..." as update_str %}
 <script type="text/javascript">
   $(document).on('click', '.edit_item_submit', function(e) {
     e.preventDefault();
     var item_id = $(this).attr("name")
-    var language_code = $('#language_code').val();
-    if (language_code === 'es-mx') {
-      display_str = 'Actualizando ...'
-    } else {
-      display_str = 'Updating...'
-    }
     $("#edit_item_submit" + item_id).attr("disabled", true);
-    $("#edit_item_submit" + item_id)[0].innerText = display_str;
+    $("#edit_item_submit" + item_id)[0].innerText = "{{update_str}}";
    //you want to start with emptying error divs and blocking the default behavior:
    $('.errors').empty();
     var formData = new FormData($('#edit_item_form' + item_id)[0]);

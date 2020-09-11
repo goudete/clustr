@@ -125,9 +125,15 @@ input:checked + .slider:before {
   	color:#a2a2a2 !important;
   }
 </style>
-    <div class="container" id="daddy_div">
 
-        {% if orders|length == 0 %}
+    <div class="container" id="daddy_div">
+      <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
+        <div class="navbar-header">
+          <h4>{% trans "Pedidos Activos" %}</h4>
+        </div>
+      </nav>
+      <br>
+        {% if orders_not_completed|length == 0 %}
         <div class = 'row justify-content-center mt-5'>
           <h3>{% trans 'No Active Orders!' %}</h3>
           <table class="table table-hover table-bordered" style="border-collapse:collapse;">
@@ -159,7 +165,7 @@ input:checked + .slider:before {
       				        </tr>
       				    </thead>
       				    <tbody>
-              {% for order, list in orders.items %}
+              {% for order, list in orders_not_completed.items %}
 
                   <tr colspan="5" data-toggle="collapse" data-target="#demo{{order.id}}" onclick="event.preventDefault();" >
                   <!-- <tr colspan="5"> -->
@@ -173,41 +179,99 @@ input:checked + .slider:before {
                       <td data-toggle="collapse">{{ order.cart.paid_at }}</td>
                   </tr>
                   <tr class="p">
-                      <td colspan="5" class="hiddenRow">
+                      <td colspan="7" class="hiddenRow">
                         <div class="accordian-body collapse p-3" id="demo{{order.id}}">
-                          <div class="card shadow">
-              	            <div class="card-body">
-                              {% for item in list %}
-                              <div class="row justify-content-center">
-                                <h5><b>{{item.quantity}}</b> {{item.item.name}}</h5>
-                              </div>
-                                {% if item.custom_instructions %}
-                                <div class = 'row justify-content-center'>
-                                  <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
-                                </div>
-                                {% endif %}
+                          <div class="row">
+                            <div class="col-sm">
+                              <div class="card shadow">
+                  	            <div class="card-body">
+                                  {% for item in list %}
+                                  <div class="row justify-content-center">
+                                    <h5><b>{{item.quantity}}</b> {{item.item.name}}</h5>
+                                  </div>
+                                    {% if item.custom_instructions %}
+                                    <div class = 'row justify-content-center'>
+                                      <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
+                                    </div>
+                                    {% endif %}
 
-                                {% if item.addon_items %}
-                                  {% for i in item.addon_items.all %}
+                                    {% if item.addon_items %}
+                                      {% for i in item.addon_items.all %}
+                                      <div class = 'row justify-content-center'>
+                                        <div class="col ml-1">
+                                        <h7 style = 'color:red;'> -- {{i.name}}</h7>
+                                        </div>
+                                      </div>
+                                      {% endfor %}
+                                    {% endif %}
+                                  {% endfor %}
+                  	            </div>
+                                <div class = 'card-footer'>
                                   <div class = 'row justify-content-center'>
-                                    <div class="col ml-1">
-                                    <h7 style = 'color:red;'> -- {{i.name}}</h7>
+                                    <form action = 'toggle_order_completion_status' method = 'post'>
+                                      {% csrf_token %}
+                                      <input type = 'number' value = '{{order.id}}' name = 'tracker_id' hidden = 'true' readonly>
+                                      <button type = 'submit' class = 'btn btn-success'>{% trans 'Order Complete' %}</button>
+                                    </form>
+                                  </div>
+                                </div>
+    	                        </div>
+                            </div>
+                            <div class="col-sm">
+                              <div class="card shadow">
+                  	            <div class="card-body">
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Full Name" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.full_name}}
                                     </div>
                                   </div>
-                                  {% endfor %}
-                                {% endif %}
-                              {% endfor %}
-              	            </div>
-                            <div class = 'card-footer'>
-                              <div class = 'row justify-content-center'>
-                                <form action = 'mark_order_done' method = 'post'>
-                                  {% csrf_token %}
-                                  <input type = 'number' value = '{{order.id}}' name = 'tracker_id' hidden = 'true' readonly>
-                                  <button type = 'submit' class = 'btn btn-success'>{% trans 'Order Complete' %}</button>
-                                </form>
-                              </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Email" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.email}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Phone Number" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.tel}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Address" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.address}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Cuidad" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.city_name}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Post Code" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.postcode}}
+                                    </div>
+                                  </div>
+                  	            </div>
+    	                        </div>
                             </div>
-	                        </div>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -215,10 +279,162 @@ input:checked + .slider:before {
             </tbody>
         </table>
         </div>
-                </div>
+        {% endif %}
+    </div>
+    <nav class="navbar navbar-default navbar-fixed-tip border-bottom">
+      <div class="navbar-header">
+        <h4>{% trans "Pedidos Completados" %}</h4>
+      </div>
+    </nav>
+    <br>
+    <div class="container" id="completed_orders_div">
+
+        {% if orders_completed|length == 0 %}
+        <div class = 'row justify-content-center mt-5'>
+          <h3>{% trans 'No Active Orders!' %}</h3>
+          <table class="table table-hover table-bordered" style="border-collapse:collapse;">
+            <thead>
+                <tr>
+                      <th>{% trans 'Name' %}</th>
+                      <th>{% trans 'Email' %}</th>
+                      <th>{% trans 'Total' %}</th>
+                      <th>{% trans 'Payment' %}</th>
+                      <th>{% trans 'Fulfillment' %}</th>
+                      <th>{% trans 'Time' %}</th>
+                </tr>
+            </thead>
+          </table>
+        </div>
+
+        {% else %}
+          <div id="replaceable-content">
+                <table class="table table-hover table-bordered" style="border-collapse:collapse;">
+      				    <thead>
+      				        <tr>
+                            <th>{% trans 'Name' %}</th>
+                            <th>{% trans 'Email' %}</th>
+                            <th>{% trans 'Phone' %}</th>
+                            <th>{% trans 'Total' %}</th>
+                            <th>{% trans 'Payment' %}</th>
+                            <th>{% trans 'Fulfillment' %}</th>
+                            <th>{% trans 'Time' %}</th>
+      				        </tr>
+      				    </thead>
+      				    <tbody>
+              {% for order, list in orders_completed.items %}
+
+                  <tr colspan="5" data-toggle="collapse" data-target="#demo{{order.id}}" onclick="event.preventDefault();" >
+                  <!-- <tr colspan="5"> -->
+                      <input type = 'number' class = 'tracker_id_number' value = '{{order.id}}' hidden = 'true' readonly>
+                      <td data-toggle="collapse">{{ order.cart.shipping_info.full_name }}</td>
+                      <td data-toggle="collapse">{% if order.cart.shipping_info.email %}{{order.cart.shipping_info.email}}{% else %}{% trans 'no email' %}{% endif %}</td>
+                      <td data-toggle="collapse">{{ order.cart.shipping_info.tel }}</td>
+                      <td data-toggle="collapse">{{ order.cart.total }}</td>
+                      <td data-toggle="collapse">{% if order.cart.cash_payment %}{% trans 'Paying with Cash' %}{% else %} {% trans 'Card Payment' %} {% endif %}</td>
+                      <td data-toggle="collapse">{% if order.cart.shipping_address %}{{order.cart.shipping_address}}{% else %}{% trans 'Picking Up' %}{% endif %}</td>
+                      <td data-toggle="collapse">{{ order.cart.paid_at }}</td>
+                  </tr>
+                  <tr class="p">
+                      <td colspan="7" class="hiddenRow">
+                        <div class="accordian-body collapse p-3" id="demo{{order.id}}">
+                          <div class="row">
+                            <div class="col-sm">
+                              <div class="card shadow">
+                  	            <div class="card-body">
+                                  {% for item in list %}
+                                  <div class="row justify-content-center">
+                                    <h5><b>{{item.quantity}}</b> {{item.item.name}}</h5>
+                                  </div>
+                                    {% if item.custom_instructions %}
+                                    <div class = 'row justify-content-center'>
+                                      <h7 style = 'color:red;'>{{item.custom_instructions}}</h7>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if item.addon_items %}
+                                      {% for i in item.addon_items.all %}
+                                      <div class = 'row justify-content-center'>
+                                        <div class="col ml-1">
+                                        <h7 style = 'color:red;'> -- {{i.name}}</h7>
+                                        </div>
+                                      </div>
+                                      {% endfor %}
+                                    {% endif %}
+                                  {% endfor %}
+                  	            </div>
+                                <div class = 'card-footer'>
+                                  <div class = 'row justify-content-center'>
+                                    <form action = 'toggle_order_completion_status' method = 'post'>
+                                      {% csrf_token %}
+                                      <input type = 'number' value = '{{order.id}}' name = 'tracker_id' hidden = 'true' readonly>
+                                      <button type = 'submit' class = 'btn btn-danger'>{% trans 'Mark as Incomplete' %}</button>
+                                    </form>
+                                  </div>
+                                </div>
+    	                        </div>
+                            </div>
+                            <div class="col-sm">
+                              <div class="card shadow">
+                  	            <div class="card-body">
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Full Name" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.full_name}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Email" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.email}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Phone Number" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.tel}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Address" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.address}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "City" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.city_name}}
+                                    </div>
+                                  </div>
+                                  <div class="row justify-content-center">
+                                    <div class="col-sm justify-content-center">
+                                        <p><strong>{% trans "Post Code" %}</strong></p>
+                                    </div>
+                                    <div class="col-sm justify-content-center">
+                                        {{order.cart.shipping_info.postcode}}
+                                    </div>
+                                  </div>
+                  	            </div>
+    	                        </div>
+                            </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+              {% endfor %}
+            </tbody>
+        </table>
         </div>
         {% endif %}
-        </div>
-        <!-- hidden input to store language code -->
-        <input class = 'field' id = 'language_code' type = 'text' value = {{language_code}} hidden = 'true'  style = "display : none" readonly>
+    </div>
 {% endblock %}
