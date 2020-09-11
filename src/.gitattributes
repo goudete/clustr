@@ -1,0 +1,6 @@
+cashier/migrations merge=ours
+comms/migrations merge=ours
+customers/migrations merge=ours
+kitchen/migrations merge=ours
+restaurant_admin/migrations merge=ours
+shift_admin/migrations merge=ours
