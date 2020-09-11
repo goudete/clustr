@@ -428,7 +428,7 @@ def edit_menu(request, menu_id):
         #         url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'language_code':language_code, 'all_items': items, 'photo_path': photo_paths})
+                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'all_items': items, 'photo_path': photo_paths})
 
     else:
         curr_menu.name = request.POST['name']
@@ -709,8 +709,7 @@ def my_items(request):
     selct_options = SelectOption.objects.filter(restaurant = curr_rest)
 
     return render(request, 'restaurant/my_items.html', {'me': curr_rest,'category_items':category_items,
-                  'selct_options':selct_options, 'item_form': form, 'language_code':language_code,
-                  'all_items':all_items, 'photo_path': photo_paths})
+                  'selct_options':selct_options, 'item_form': form, 'all_items':all_items, 'photo_path': photo_paths})
 
 def add_item_no_menu(request):
     #if method is get, then user is filling out form for new item
