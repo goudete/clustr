@@ -87,7 +87,11 @@
 
                     <div class="form-group">
                       <b><label for="tagline">{% trans 'Your Business Tagline' %}</label></b>
+                      {% if me.info %}
                       <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
+                      {% else %}
+                      <input type = 'text' class="form-control" id = 'tagline' name = 'tagline' placeholder = "{{me.info}}">
+                      {% endif %}
                       <small id="taglineHelp" class="form-text text-muted">{% trans "This will be displayed under your business name to your customers." %}</small>
                     </div>
 

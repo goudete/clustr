@@ -428,7 +428,7 @@ def edit_menu(request, menu_id):
         #         url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'all_items': items, 'photo_path': photo_paths})
+                               'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'all_items': items, 'photo_path': photo_paths})
 
     else:
         curr_menu.name = request.POST['name']
