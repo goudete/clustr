@@ -77,3 +77,15 @@ class ShippingZone(models.Model):
     city = models.CharField(_('City'), default='', max_length=200)
     place_id = models.CharField(_('Place ID'), default='', max_length=200)
     cost = models.DecimalField(_('Shipping Cost'), decimal_places=2, max_digits=8, validators=[MinValueValidator(0.0)])
+
+class MenuItemPhotoUrls(models.Model):
+    menu_item = models.ForeignKey(MenuItem, null = True, on_delete = models.CASCADE)
+    photo_path = models.CharField(null = True, max_length = 255) #to easily reference the s3 storage
+
+# query all existing menu items
+# get the items photo path
+# menu item id, create new s3 object
+#
+# write this helper function and put in server
+# then redeploy without helper
+# then you can remove the photo path

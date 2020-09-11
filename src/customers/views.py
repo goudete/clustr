@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from restaurant_admin.models import Restaurant, Menu, MenuItem
+from restaurant_admin.models import Restaurant, Menu, MenuItem, MenuItemPhotoUrls
 from .models import Cart, MenuItemCounter, Customer, ShippingInfo, OrderTracker
 from restaurant_admin.models import Restaurant, SelectOption, AddOnGroup, AddOnItem
 from .forms import CustomOrderForm, EmailForm, FeedbackForm, PhoneForm, NameForm, ShippingInfoForm
@@ -73,6 +73,15 @@ def empty_categories(curr_rest, curr_menu):
             empty_cats.append(category.name)
     return empty_cats
 
+'''gets the first photo path associated with each menu item'''
+def get_photo_path_main(items):
+    photo_dict = {}
+    for item in items:
+        photo_paths = MenuItemPhotoUrls.objects.filter(menu_item = item).first()
+        if photo_paths:
+            photo_dict[item.id] = photo_paths.photo_path
+    return photo_dict
+
 
 '''Displays restaurant's menu'''
 def view_menu(request, cart_id, restaurant_id, menu_id):
@@ -91,10 +100,13 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
         category_items = {}
         for category in categories:
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu, is_in_stock = True)
+            photo_paths = get_photo_path_main(q_set)
             if len(q_set) > 0:
                 category_items[category] = q_set
 
-        return render(request, 'customers/menu.html', {'category_items': category_items, 'restaurant': curr_rest, 'cart': curr_cart, 'menu': curr_menu, 'categories': categories})
+        return render(request, 'customers/menu.html', {'category_items': category_items,
+                            'restaurant': curr_rest, 'cart': curr_cart,
+                            'menu': curr_menu, 'categories': categories, 'photo_path':photo_paths})
     else:
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
@@ -138,6 +150,15 @@ def item_addon_dict(item):
     # print(dict)
     return dict
 
+'''gets the photo paths associated with the menu item'''
+def get_photo_paths(item):
+    paths = []
+    photo_paths = MenuItemPhotoUrls.objects.filter(menu_item = item)
+    if photo_paths:
+        for path in photo_paths:
+            paths.append(path.photo_path)
+    return paths
+
 
 """ for this template, make sure the item has a button to add to the cart, with a specified quantity,
 send the item and specified quantity to the add_item url"""
@@ -145,13 +166,16 @@ def view_item(request, cart_id, restaurant_id, menu_id, item_id):
     if request.method == 'GET':
         form = CustomOrderForm()
         item = MenuItem.objects.filter(id = item_id).first()
+        photo_paths = get_photo_paths(item)
+        print(photo_paths)
         curr_cart = Cart.objects.get(id = cart_id)
         curr_rest = Restaurant.objects.filter(id = restaurant_id).first()
         curr_menu = Menu.objects.filter(id = menu_id).first()
-
         addon_dict = item_addon_dict(item)
 
-        return render(request, 'customers/view_item.html', {'item': item, 'cart': curr_cart, 'restaurant': curr_rest, 'menu': curr_menu, 'form':form, 'addon_dict': addon_dict})
+        return render(request, 'customers/view_item.html', {'item': item, 'cart': curr_cart,
+                                'restaurant': curr_rest, 'menu': curr_menu, 'form':form,
+                                'addon_dict': addon_dict, 'photo_path':photo_paths})
     else:
         #if method is a post, then just redirect to this page as a get
         return redirect('/customers/view_item/{c_id}/{r_id}/{m_id}/{i_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id, i_id = item_id))

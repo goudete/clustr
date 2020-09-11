@@ -11,9 +11,6 @@ import os
 import environ
 import django_heroku
 import dj_database_url
-
-DEV = True #false for production, else True for dev
-
 # from django.utils.translation import gettext as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -102,19 +99,18 @@ django_heroku.settings(locals())
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if DEV:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-              'NAME': env('DB_NAME'),
-              'USER': env('DB_USER'),
-              'PASSWORD': env("DB_PASS"),
-              'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
-              'PORT': '',
-        }
-     }
-else:
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#           'NAME': env('DB_NAME'),
+#           'USER': env('DB_USER'),
+#           'PASSWORD': env("DB_PASS"),
+#           'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
+#           'PORT': '',
+#     }
+#  }
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -200,7 +196,7 @@ EMAIL_HOST_USER = "clustrfood@gmail.com"
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 
-SITE_ID = 11
+SITE_ID = 10
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

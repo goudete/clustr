@@ -335,16 +335,14 @@ input:checked + .slider:before {
                               	</div>
                                 <div class="row text-center">
                                   <div class="col text-center">
-                                    {% if item.photo_path %}
-                                    <div style="max-width: 100%; max-height: 100%;">
-                                      <img class="rounded mx-auto d-block" src="{% static item.photo_path %}" height=250 width=250>
-                                    </div>
-                                    {% else %}
-                                    <div style="max-width: 100%; max-height: 100%;">
-                                      <img class="rounded mx-auto d-block" height=250 width=250>{% trans 'No Photo' %} </img>
-                                    </div>
+                                    {% for key, values in photo_path.items %}
+                                      {% if item.id == key %}
+                                        <div style="max-width: 100%; max-height: 100%;">
+                                          <img class="rounded mx-auto d-block" src="{% static values %}" height=250 width=250>
+                                        </div>
+                                      {% endif %}
+                                    {% endfor %}
 
-                                    {% endif %}
                                   </div>
                                 </div>
                                 <br>

@@ -547,9 +547,13 @@ input:checked + .slider:before {
               </div>
             </div>
             </div>
-            {% if item.photo_path %}
-            <img src="{% static item.photo_path %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
-            {% endif %}
+            <!-- display the first item photo_path -->
+            {% for key, values in photo_path.items %}
+              {% if item.id == key %}
+                <img src="{% static values %}" border=3 height=80 width=80 class="rounded float-right" alt="...">
+              {% endif %}
+            {% endfor %}
+
           </div>
 
         </div>
