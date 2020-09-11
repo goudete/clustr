@@ -25,7 +25,6 @@ class Cart(models.Model):
     is_paid = models.BooleanField(default = False)
     is_entered = models.BooleanField(default = False)
     shipping_cost = total = models.DecimalField(default = 0,decimal_places=2, max_digits=12, validators=[MinValueValidator(0.0)])
-    shipping_cost_stored = models.BooleanField(default=False) #needed to ensure we only add shipping cost to total once.
     total = models.DecimalField(decimal_places=2, max_digits=12, validators=[MinValueValidator(0.0)])
     stripe_order_id = models.CharField(null = True, max_length = 255) # The Stripe PaymentIntent API generates an id to reference paymentintent
     created_at = models.DateTimeField(auto_now_add=True)
