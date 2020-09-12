@@ -428,7 +428,7 @@ def edit_menu(request, menu_id):
         #         url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
-                                'url': url, 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'all_items': items, 'photo_path': photo_paths})
+                                'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'all_items': items, 'photo_path': photo_paths})
 
     else:
         curr_menu.name = request.POST['name']
@@ -477,11 +477,19 @@ def add_item(request, menu_id):
             photo = request.FILES.get('photo', False)
             if photo:
                 doc = request.FILES['photo'] #get file
+                #uniquely identify a photo within a menu item (one menu item could have multiple photos)
+                #item contains id of menu item
+                #Could uniquely identify by photo name
+                #name of photo is count of how many photos are associated with this menu item
                 files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                             item_number = 'item'+str(item.id))
+                #counts how many photos are associated with a menu item
+                item_count = MenuItemPhotoUrls.objects.filter(menu_item = item).count()
+                #name to uniquely identify photo
+                photo_name = str(item_count + 1)
                 file_storage = FileStorage()
                 mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-                doc_path = os.path.join(files_dir, "photo." + mime) #set path for file to be stored in
+                doc_path = os.path.join(files_dir, "photo" + photo_name + "."+ mime) #set path for file to be stored in
                 file_storage.save(doc_path, doc)
                 # item.photo_path = doc_path
                 # item.save()
@@ -545,9 +553,13 @@ def edit_item(request, item_id, origin, menu_id):
             doc = request.FILES['photo'] #get file
             files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                         item_number = 'item'+str(item.id))
+            #counts how many photos are associated with a menu item
+            item_count = MenuItemPhotoUrls.objects.filter(menu_item = item).count()
+            #name to uniquely identify photo
+            photo_name = item_count + 1
             file_storage = FileStorage()
             mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-            doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+            doc_path = os.path.join(files_dir, "photo" + photo_name + "."+ mime) #set path for file to be stored in
             file_storage.save(doc_path, doc)
 
             # item.photo_path = doc_path
@@ -619,9 +631,14 @@ def ajax_edit_item(request):
         doc = request.FILES['photo'] #get file
         files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                     item_number = 'item'+str(item.id))
+
+        #counts how many photos are associated with a menu item
+        item_count = MenuItemPhotoUrls.objects.filter(menu_item = item).count()
+        #name to uniquely identify photo
+        photo_name = str(item_count + 1)
         file_storage = FileStorage()
         mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-        doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+        doc_path = os.path.join(files_dir, "photo" + photo_name + "."+ mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
 
         # item.photo_path = doc_path
@@ -783,11 +800,15 @@ def ajax_add_item(request):
         doc = request.FILES['photo'] #get file
         files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                     item_number = 'item'+str(item.id))
+
+        #counts how many photos are associated with a menu item
+        item_count = MenuItemPhotoUrls.objects.filter(menu_item = item).count()
+        #name to uniquely identify photo
+        photo_name = str(item_count + 1)
         file_storage = FileStorage()
         mime = magic.from_buffer(doc.read(), mime=True).split("/")[1]
-        doc_path = os.path.join(files_dir, "photo."+mime) #set path for file to be stored in
+        doc_path = os.path.join(files_dir, "photo" + photo_name + "."+ mime) #set path for file to be stored in
         file_storage.save(doc_path, doc)
-
         # item.photo_path = doc_path
         # item.save()
 

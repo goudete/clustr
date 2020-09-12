@@ -98,15 +98,17 @@ def view_menu(request, cart_id, restaurant_id, menu_id):
             categories = SelectOption.objects.filter(restaurant = curr_rest, menus = curr_menu)
 
         category_items = {}
+        photo_path_list = []
         for category in categories:
             q_set = MenuItem.objects.filter(restaurant = curr_rest, category = category.name, menus = curr_menu, is_in_stock = True)
             photo_paths = get_photo_path_main(q_set)
+            photo_path_list.append(photo_paths)
             if len(q_set) > 0:
                 category_items[category] = q_set
-
+        print('DICT LIST:', photo_path_list)
         return render(request, 'customers/menu.html', {'category_items': category_items,
                             'restaurant': curr_rest, 'cart': curr_cart,
-                            'menu': curr_menu, 'categories': categories, 'photo_path':photo_paths})
+                            'menu': curr_menu, 'categories': categories, 'photo_path_list':photo_path_list})
     else:
         return redirect('/customers/view_menu/{c_id}/{r_id}/{m_id}'.format(c_id = cart_id, r_id = restaurant_id, m_id = menu_id))
 
