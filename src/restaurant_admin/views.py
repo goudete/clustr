@@ -415,17 +415,6 @@ def edit_menu(request, menu_id):
         existing_items = MenuItem.objects.filter(restaurant = restaurant)
         alphabetically_sorted = sorted(existing_items, key = lambda x: x.name)
         all_grps = AddOnGroup.objects.filter(restaurant = curr_menu.restaurant)
-        #generate pre-signed url to download the QR code
-
-        # s3 = boto3.resource('s3') #setup to get from AWS
-        # aws_dir = '{user}/photos/m/{menu_num}/qr/'.format(user = "R" + str(request.user.id), menu_num = 'menu'+str(curr_menu.id))
-        # bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
-        # objs = bucket.objects.filter(Prefix=aws_dir) #get folder
-        # url = "#"
-        # for obj in objs: #iterate over file objects in folder
-        #      if os.path.split(obj.key)[1].split('.')[1] == 'png':
-        #         s3Client = boto3.client('s3')
-        #         url = s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': obj.key}, ExpiresIn = 3600)
 
         return render(request, 'restaurant/edit_menu.html', {'menu': curr_menu, 'addon_dict':addon_dict, 'item_form': item_form, 'selct_options': selct_options,
                                 'all_addon_groups': all_grps, 'existing_items': alphabetically_sorted, 'all_items': items, 'photo_path': photo_paths})
@@ -477,10 +466,6 @@ def add_item(request, menu_id):
             photo = request.FILES.get('photo', False)
             if photo:
                 doc = request.FILES['photo'] #get file
-                #uniquely identify a photo within a menu item (one menu item could have multiple photos)
-                #item contains id of menu item
-                #Could uniquely identify by photo name
-                #name of photo is count of how many photos are associated with this menu item
                 files_dir = '{user}/photos/i/{item_number}'.format(user = "R" + str(request.user.id),
                                                                             item_number = 'item'+str(item.id))
                 #counts how many photos are associated with a menu item
