@@ -761,6 +761,8 @@ def add_existing_category(rest, menu, category):
     option.save()
 
 def ajax_add_item(request):
+    print("Post")
+    print(request.POST)
     curr_rest = request.user.restaurant
     form = MenuItemForm(request.POST, request.FILES)
     form.restaurant_id = curr_rest.id
@@ -825,7 +827,20 @@ def ajax_add_item(request):
 
     item.save()
 
-    create_addons(request, item)
+    addon_group_names = [s.split('_')[-1] for s in request.POST if s.startswith("addon_name")]
+    print("addon_group_names")
+    print(addon_group_names)
+    for name in addon_group_names:
+        name_list, quantity_list = request.POST.getlist("addon_name_" + name), request.POST.getlist("addon_quantity_" + name)
+        print("name, quantity list")
+        print(name_list)
+        print(quantity_list)
+        addon_group = AddOnGroup.objects.create(name = name, restaurant = curr_rest)
+        addon_group.menu_items.add(item)
+        addon_group.save()
+        for i in range(len(name_list)):
+            addon = AddOnItem.objects.create(name=name_list[i], quantity=quantity_list[i], group=addon_group)
+            addon.save()
 
     categories = MenuItem.objects.filter(restaurant=curr_rest).values_list('category', flat=True).distinct()
     category_items = {}
@@ -840,35 +855,6 @@ def ajax_add_item(request):
     # return JsonResponse({'success':True})
     #redirect back to edit menu page
     return redirect('/restaurant_admin/my_items')
-
-
-def create_addons(req, item):
-    get_addon_groups(req, item.restaurant, item)
-
-
-def get_addon_groups(req, rest, itm):
-    dict = {}
-    for key in req.POST:
-        if "addon_group" in key and "addon_item" not in key:
-            dict[key] = []
-        elif "addon_group" in key and "addon_item" in key:
-            for k in dict.keys():
-                if k in key:
-                    dict[k].append(key)
-    for k in dict.keys():
-        grp = AddOnGroup.objects.create(name = req.POST[k], restaurant = rest)
-        grp.save()
-        grp.menu_items.add(itm)
-        grp.save()
-        i = 0
-        while i < len(dict[k]):
-            add_itm = AddOnItem.objects.create(name = req.POST[dict[k][i]], group = grp, quantity = req.POST[dict[k][i+1]])
-            add_itm.save()
-            i += 2
-
-
-
-
 
 def receipt_page(request):
     if request.method == 'GET':

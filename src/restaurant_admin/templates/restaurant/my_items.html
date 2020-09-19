@@ -224,7 +224,7 @@ input:checked + .slider:before {
                   <hr>
 
                   <!-- Options begin -->
-                  <div class="row">
+                  <!-- <div class="row">
                     <div class="col">
                       <h6>{% trans 'Options' %}</h6>
                     </div>
@@ -238,9 +238,20 @@ input:checked + .slider:before {
                   </div>
                   <div class="row">
                     <span name="group_button_nuevo"><button type="button" class="btn btn-primary mt-2 mb-2 ml-3" name="plus_sign_nuevo_group">{% trans 'New Option Group' %}</button></span>
-                  </div>
+                  </div> -->
 
                   <!-- Options end -->
+                  <div class="form-group row ml-1">
+                     <h5 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h5> <span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" name="{{group.id}}" style="color: green;"></i></span>
+                   </div>
+                   <div class="row">
+                     <div class="col ml-2">
+                       <h6>{% trans "Add options to you product, such as sizes." %}</h6>
+                     </div>
+                   </div>
+                   <div class="form-group row ml-1">
+
+                   </div>
 
                   <!-- Buttons -->
 
@@ -565,55 +576,72 @@ input:checked + .slider:before {
           var qty = li.children("input")[1].value ;
           var ul = li.parent();
           var group_id = ul.attr('name');
-
-          $.ajax({
-            url: `/restaurant_admin/ajax/ajax_add_addon/${name}/${qty}/${group_id}`,
-            data: {
-              'name': name,
-              'qty': qty,
-              'group_id': group_id,
-            },
-            dataType: 'json',
-            success: function (data) {
-              console.log("here");
-              var newli = document.createElement("li");
-              newli.classList.add("list-group-item");
-              li[0].innerHTML = `${data.name} <span class="badge"> (${data.price})</span>
-              <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name=${data.addon_item_id} style="color: red;"></i></span>`;
-            }
-          });
+          if (group_id) {
+            $.ajax({
+              url: `/restaurant_admin/ajax/ajax_add_addon/${name}/${qty}/${group_id}`,
+              data: {
+                'name': name,
+                'qty': qty,
+                'group_id': group_id,
+              },
+              dataType: 'json',
+              success: function (data) {
+                console.log("here");
+                var newli = document.createElement("li");
+                newli.classList.add("list-group-item");
+                li[0].innerHTML = `${data.name} <span class="badge"> (${data.price})</span>
+                <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" name=${data.addon_item_id} style="color: red;"></i></span>`;
+              }
+            });
+          } else {
+            var group_name = ul.prev().children("h6")[0].innerText;
+            var newli = document.createElement("li");
+            newli.classList.add("list-group-item");
+            li[0].innerHTML = `${name} <span name="addon_quantity" class="badge"> (${qty})</span>
+            <input style="display: none;" name="addon_name_${group_name}" value="${name}"></input>
+            <input style="display: none;" name="addon_quantity_${group_name}" value="${qty}"></input>
+            <span style="margin-left: 10px;" class="float-right"><i class="fas fa-times addon_delete" style="color: red;"></i></span>`;
+          }
         });
     $(document).on("click", ".addon_delete", function(){
         var li = $(this).parent().parent();
         var addon_id = $(this).attr('name');
         console.log(addon_id);
-        $.ajax({
-          url: `/restaurant_admin/ajax/ajax_remove_addon/${addon_id}`,
-          data: {
-            'addon_id': addon_id,
-          },
-          dataType: 'json',
-          success: function (data) {
-            li.remove()
-            console.log("add on deleted ");
-          }
-        });
+        if (addon_id) {
+          $.ajax({
+            url: `/restaurant_admin/ajax/ajax_remove_addon/${addon_id}`,
+            data: {
+              'addon_id': addon_id,
+            },
+            dataType: 'json',
+            success: function (data) {
+              li.remove()
+              console.log("add on deleted ");
+            }
+          });
+        } else {
+          li.remove()
+        }
       });
       $(document).on("click", ".addon_group_delete", function(){
           var col = $(this).parent().parent().parent();
           var addon_group_id = $(this).attr('name');
           var item_id = $(this).parent().attr('name');
-          $.ajax({
-            url: `/restaurant_admin/ajax/ajax_remove_addon_group/${addon_group_id}/${item_id}`,
-            data: {
-              'addon_group_id': addon_group_id,
-              'item_id': item_id
-            },
-            dataType: 'json',
-            success: function (data) {
-              col.remove()
-            }
-          });
+          if (item_id) {
+            $.ajax({
+              url: `/restaurant_admin/ajax/ajax_remove_addon_group/${addon_group_id}/${item_id}`,
+              data: {
+                'addon_group_id': addon_group_id,
+                'item_id': item_id
+              },
+              dataType: 'json',
+              success: function (data) {
+                col.remove()
+              }
+            });
+          } else {
+            col.remove()
+          }
         });
         $(document).on("click", ".add_addon_group", function(){
             var row = $(this).parent().parent()
@@ -641,20 +669,43 @@ input:checked + .slider:before {
           $(document).on("click", ".save_addon_group", function(){
               var group_name = $(this).parent().parent().prev().children('input').val();
               var row = $(this).parent().parent().parent().next();
+              // var item_id = row.prev().children("h5")[0].getAttribute('name');
+              console.log("HERE");
               console.log(row);
-              var item_id = row.prev().children("h5")[0].getAttribute('name');
-              console.log(item_id);
-              $.ajax({
-                url: `/restaurant_admin/ajax/ajax_create_addon_group/${group_name}/${item_id}`,
-                data: {
-                  'group_name': group_name,
-                  'item_id': item_id
-                },
-                dataType: 'json',
-                success: function (data) {
-                  location.reload();
-                }
-              });
+              try {
+                var item_id = row.prev().children("h5")[0].getAttribute('name');
+                var edit_form = true;
+              } catch(error) {
+                var edit_form = false;
+              }
+              if (item_id) {
+                $.ajax({
+                  url: `/restaurant_admin/ajax/ajax_create_addon_group/${group_name}/${item_id}`,
+                  data: {
+                    'group_name': group_name,
+                    'item_id': item_id
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                    location.reload();
+                  }
+                });
+              }
+              else {
+                insert_row = $(this).parent().parent().parent().next().next()
+                console.log(insert_row[0]);
+                console.log("this sle");
+                insert_html = `<div class = col-sm>
+                                <div class="row justify-content-center">
+                                  <h6>${$(this).parent().parent().prev().children("input").val()}</h6><span name="{{item.id}}" style="margin-left: 20px;" class="float-right"><i class="fas fa-times fa-2x addon_group_delete" name="{{group.id}}" style="color: red; margin-bottom: 10px;"></i></span>
+                                </div>
+                                <ul class="list-group">
+                                  <li class="list-group-item add_addon" ><a><i class="fas fa-plus" style="color: green;"></i></a></li>
+                                </ul>
+                              </div>`;
+                insert_row.append(insert_html);
+                insert_row.prev().prev()[0].innerHTML = `<h5 name="{{item.id}}" class="ml-1">{% trans 'Options:' %}</h5> <span style="margin-left: 20px;" class="float-right"><i class="fas fa-plus fa-2x add_addon_group" style="color: green;"></i></span>`;
+              }
             });
   });
 </script>
